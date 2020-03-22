@@ -1,4 +1,4 @@
-import { renderToString } from 'react';
+import React, { renderToString } from 'react';
 
 import {
   Paper,
@@ -10,7 +10,7 @@ import {
   ThemeProvider,
   createMuiTheme,
   makeStyles
-} from '@material-ui/styles';
+} from '@material-ui/core/styles';
 
 const Component = () => {
   const classes = makeStyles(() => ({

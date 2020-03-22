@@ -7,8 +7,6 @@ const app = new Koa();
 
 app.use(bodyParserMiddleware());
 
-const router = routerMiddleware();
-
 // The middleware to print the request info to the console.
 app.use(async (ctx, next) => {
   const now = (new Date()).toLocaleTimeString();
@@ -20,7 +18,7 @@ app.use(async (ctx, next) => {
 // The middelware to route the request to the current page render.
 const router = routerMiddleware();
 
-import loadingComponent from './components/loading';
+import loadingComponent from './client/loadingComponent';
 import webpackLoader from './webpackLoader';
 
 router.get('/', async (ctx, next) => {
@@ -56,10 +54,9 @@ app.use(router.routes());
 import portScanner from './utils/portScanner';
 
 (async () => {
-  const port = await portScanner();
+  // const port = await portScanner();
+  const port = 3000;
 
-  // Create the HTTP server at the port 3000.
-  // You can change the argument to use the other port.
   app.listen(port);
   console.log(chalk.green(`Server has been running at the port ${port}.`));
 })()
