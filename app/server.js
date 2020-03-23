@@ -1,7 +1,8 @@
+import chalk from 'chalk';
+
 import Koa from 'koa';
 import routerMiddleware from 'koa-router';
 import bodyParserMiddleware from 'koa-bodyparser';
-import chalk from 'chalk';
 
 const app = new Koa();
 
@@ -18,9 +19,6 @@ app.use(async (ctx, next) => {
 // The middelware to route the request to the current page render.
 const router = routerMiddleware();
 
-import loadingComponent from './client/loadingComponent';
-import webpackLoader from './webpackLoader';
-
 router.get('/', async (ctx, next) => {
   ctx.response.type = 'text/html';
   ctx.response.body = `
@@ -34,16 +32,17 @@ router.get('/', async (ctx, next) => {
     }
   </style>
   <style>${
-    loadingComponent.loadCss()
+    ''
   }</style>
 <head>
 <body>
   <div id="root">${
-    loadingComponent.loadHtml()
+    ''
   }</div>
   <script>${
-    webpackLoader.getBundle()    
+    ''    
   }</script>
+  <script src="${''}" />
 </body>
 </html>
   `;
@@ -51,13 +50,9 @@ router.get('/', async (ctx, next) => {
 
 app.use(router.routes());
 
-import portScanner from './utils/portScanner';
+const port = 3000;
 
-(async () => {
-  // const port = await portScanner();
-  const port = 3000;
+app.listen(port);
+console.log(chalk.green(`Server has been running at the port ${port}.`));
 
-  app.listen(port);
-  console.log(chalk.green(`Server has been running at the port ${port}.`));
-})()
 

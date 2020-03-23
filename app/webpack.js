@@ -1,8 +1,25 @@
 import webpack from 'webpack';
-import chalk from 'chalk';
 
 webpack({
-  
+  entry: './clientIndex.js',
+
+  output: {
+    path: resolve('/dist/'),
+    filename: 'bundle.js'
+  },
+
+  watch: true,
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        use: {
+          loader: 'babel-loader'
+        },
+        exclude: '/node_modules/'
+      }
+    ]
+  }
 }, (err, status) => {
   if(err || status.hasErrors()) throw new Error(err || status.hasErrors());
 
