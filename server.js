@@ -4,6 +4,8 @@ import Koa from 'koa';
 import routerMiddleware from 'koa-router';
 import bodyParserMiddleware from 'koa-bodyparser';
 
+import webpackService from './webpack';
+
 const app = new Koa();
 
 app.use(bodyParserMiddleware());
@@ -50,9 +52,10 @@ router.get('/', async (ctx, next) => {
 
 app.use(router.routes());
 
-const port = 3000;
+(async () => {
+  let port = process.env.PORT || 3000;
 
-app.listen(port);
-console.log(chalk.green(`Server has been running at the port ${port}.`));
-
+  app.listen(port);
+  console.log(chalk.green(`Server has been running at the port ${port}.`));
+})();
 
