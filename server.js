@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { createReadStream } from 'fs';
 
 import Koa from 'koa';
 import routerMiddleware from 'koa-router';
@@ -14,7 +15,7 @@ app.use(bodyParserMiddleware());
 app.use(async (ctx, next) => {
   const now = (new Date()).toLocaleTimeString();
 
-  console.log(`${chalk.yellow(now)} ${chalk.green(ctx.request.method)} ${chalk.grey(ctx.request.ip)}: Hit ${chalk.blue(ctx.request.url)}`);
+  console.log(`${chalk.yellow(now)} ${chalk.green(ctx.request.method)} ${chalk.whiteBright(ctx.request.ip)}: Hit ${chalk.blue(ctx.request.url)}`);
   await next();
 });
 
@@ -44,11 +45,14 @@ router.get('/', async (ctx, next) => {
   <script>${
     ''    
   }</script>
-  <script src="${''}" />
+  <script src="/spa.js"></script>
 </body>
-</html>
-  `;
+</html>`;
 });
+
+router.get('/spa.js', (ctx, next) => {
+  ctx.response.body = createReadStream('bundle.js');
+})
 
 app.use(router.routes());
 
@@ -56,6 +60,8 @@ app.use(router.routes());
   let port = process.env.PORT || 3000;
 
   app.listen(port);
-  console.log(chalk.green(`Server has been running at the port ${port}.`));
+  
+  const now = (new Date()).toLocaleTimeString();
+  console.log(`${chalk.yellow(now)} ${chalk.blue('INFO')} Server has been running at the port ${port}.`);
 })();
 

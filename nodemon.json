@@ -1,7 +1,8 @@
 {
-  "verbose": true,
   "ignore": [
     "*.test.js",
-    "bundle.js"
+    "bundle.js",
+    "components",
+    "controllers"
   ]
 }
