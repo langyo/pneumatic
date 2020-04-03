@@ -10,7 +10,7 @@ import Index from './components/index';
 import indexCtr from './controllers/index';
 connect(Index, indexCtr, 'index');
 
-register('index');
+register('index', {}, 'index');
 
-export default renderToString(buildRootNode());
+export default (initState = {}) => renderToString(buildRootNode(initState));
 

@@ -3,14 +3,15 @@ import {
 } from '../lib/action-preset';
 
 export default {
-  init: () => ({
-    count: 1
+  $init: () => ({
+    drawerOpen: false,
+    page: 'overview'
   }),
 
-  increase: [
-    setState((payload, { getState }) => ({ count: getState().count + 1 }))
+  setDrawerOpen: [
+    setState((payload, { getState }) => ({ drawerOpen: payload }))
   ],
-  decrease: [
-    setState((payload, { getState }) => ({ count: getState().count - 1 }))
+  setPage: [
+    setState((payload, { getState }) => ({ page: payload }))
   ]
 };

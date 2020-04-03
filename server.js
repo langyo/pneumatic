@@ -6,6 +6,7 @@ import routerMiddleware from 'koa-router';
 import bodyParserMiddleware from 'koa-bodyparser';
 
 import webpackService from './webpack';
+// import SSRRender from './renderSSR';
 
 const app = new Koa();
 

@@ -25,7 +25,7 @@ export default () => {
           <Typography variant="h6">{"当前任务数量"}</Typography>
           <Typography variant="h6">{"1 / 2"}</Typography>
         </Grid>
-        <Grid iyem xs />
+        <Grid item xs />
       </Grid>
     </Paper>
   ];

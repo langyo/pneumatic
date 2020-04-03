@@ -19,7 +19,13 @@ import Task from "./task";
 
 const drawerWidth = 240;
 
-export default () => {
+export default ({
+  drawerOpen,
+  page,
+
+  setDrawerOpen,
+  setPage
+}) => {
   const classes = makeStyles(theme => ({
     root: {
       display: "flex"
@@ -43,9 +49,6 @@ export default () => {
     },
     toolbar: theme.mixins.toolbar
   }))();
-
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [page, setPage] = useState("overview");
 
   return (
     <div className={classes.root}>
