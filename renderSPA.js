@@ -12,5 +12,5 @@ connect(Index, indexCtr, 'index');
 
 register('index');
 
-hydrate(document.querySelector('#root'), buildRootNode());
+hydrate(buildRootNode(), document.querySelector('#root'));
 
