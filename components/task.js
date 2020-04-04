@@ -3,9 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import { Paper, Tabs, Tab } from "@material-ui/core";
 
-import Status from "./status";
-import Fetch from "./fetch";
-import Parse from "./parse";
+import Status from "./pages/status";
+import Fetch from "./pages/fetch";
+import Parse from "./pages/parse";
 
 export default () => {
   const [tab, setTab] = useState(0);

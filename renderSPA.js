@@ -12,5 +12,10 @@ connect(Index, indexCtr, 'index');
 
 register('index', {}, 'index');
 
-hydrate(buildRootNode(), document.querySelector('#root'));
+hydrate(buildRootNode({
+  initializing: true,
+
+  tasks: [],
+  account: {}
+}), document.querySelector('#root'));
 
