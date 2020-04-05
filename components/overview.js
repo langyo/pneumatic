@@ -6,7 +6,7 @@ import { Paper, Grid, Typography } from "@material-ui/core";
 import Icon from "@mdi/react";
 import { mdiDatabase } from "@mdi/js";
 
-export default () => {
+export default ({ tasks }) => {
   const classes = makeStyles(theme => ({
     paper: {
       padding: 8
@@ -23,7 +23,7 @@ export default () => {
         <Grid item xs={1} />
         <Grid item xs={6}>
           <Typography variant="h6">{"当前任务数量"}</Typography>
-          <Typography variant="h6">{"1 / 2"}</Typography>
+          <Typography variant="h6">{Object.keys(tasks).length}</Typography>
         </Grid>
         <Grid item xs />
       </Grid>

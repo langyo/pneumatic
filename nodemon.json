@@ -3,6 +3,7 @@
     "*.test.js",
     "bundle.js",
     "components",
-    "controllers"
+    "controllers",
+    "renderSPA.js"
   ]
 }

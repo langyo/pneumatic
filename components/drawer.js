@@ -1,5 +1,6 @@
 import React from "react";
 
+import { makeStyles } from "@material-ui/core/styles";
 import {
   List,
   Divider,
@@ -14,12 +15,21 @@ import Icon from "@mdi/react";
 import {
   mdiViewDashboard,
   mdiClose,
-  mdiChartBar,
-  mdiServerNetwork,
-  mdiPlus
+  mdiChartBar
 } from "@mdi/js";
 
-export default ({ page, setPage }) => {
+export default ({
+  page,
+  setPage,
+  tasks
+}) => {
+  const classes = makeStyles(theme => ({
+    divider: {
+      marginTop: 12,
+      marginBottom: 12
+    }
+  }))();
+
   return (
     <List>
       <ListItem
@@ -30,41 +40,29 @@ export default ({ page, setPage }) => {
         <ListItemIcon>
           <Icon path={mdiViewDashboard} size={1} />
         </ListItemIcon>
-        <ListItemText primary={"概览"} secondary={"正在运行 1 个计划"} />
+        <ListItemText primary={"概览"} secondary={`正在运行 ${Object.keys(tasks).length} 个计划`} />
       </ListItem>
-      <Divider />
-      <ListItem
+      <Divider className={classes.divider} />
+      {Object.keys(tasks).map(key => <ListItem
         button
-        selected={page === "task"}
-        onClick={() => setPage("task")}
+        selected={page === `task-${key}`}
+        onClick={() => setPage(`task-${key}`)}
+        key={key}
       >
         <ListItemIcon>
           <Icon path={mdiChartBar} size={1} />
         </ListItemIcon>
-        <ListItemText primary={"Steam"} secondary={"休眠中，可以检阅"} />
+        <ListItemText primary={key} secondary={
+          tasks[key].status === 'sleep' ? '休眠中' :
+          tasks[key].status === 'working' ? '运行中' :
+          '未知'
+        } />
         <ListItemSecondaryAction>
           <IconButton size="small">
             <Icon path={mdiClose} size={0.75} />
           </IconButton>
         </ListItemSecondaryAction>
-      </ListItem>
-      <ListItem button>
-        <ListItemIcon>
-          <Icon path={mdiServerNetwork} size={1} />
-        </ListItemIcon>
-        <ListItemText primary={"MCBBS"} secondary={"正在爬取: thread 994209"} />
-        <ListItemSecondaryAction>
-          <IconButton size="small">
-            <Icon path={mdiClose} size={0.75} />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>
-      <ListItem button>
-        <ListItemIcon>
-          <Icon path={mdiPlus} size={1} />
-        </ListItemIcon>
-        <ListItemText primary={"添加任务"} />
-      </ListItem>
+      </ListItem>)}
     </List>
   );
 };

@@ -1,31 +1,81 @@
 import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { Paper, Tabs, Tab } from "@material-ui/core";
+import {
+  Card,
+  CardHeader,
+  CardContent,
+  Paper,
+  Typography,
+  IconButton,
+  Fab
+} from "@material-ui/core";
 
-import Status from "./pages/status";
-import Fetch from "./pages/fetch";
-import Parse from "./pages/parse";
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip
+} from "recharts";
 
-export default () => {
-  const [tab, setTab] = useState(0);
+import Icon from "@mdi/react";
+import {
+  mdiFileTableBoxOutline,
+  mdiTableEdit
+} from "@mdi/js";
+
+export default ({
+  taskKey,
+  task
+}) => {
+  const classes = makeStyles(theme => ({
+    paper: {
+      padding: 8,
+      margin: 8
+    },
+    headTitle: {
+      marginLeft: 16
+    },
+    fab: {
+      position: 'absolute',
+      bottom: theme.spacing(3),
+      right: theme.spacing(3)
+    }
+  }))();
 
   return [
-    <Paper>
-      <Tabs
-        value={tab}
-        onChange={(e, v) => setTab(v)}
-        indicatorColor="primary"
-        textColor="primary"
-        centered
-      >
-        <Tab label="统计" />
-        <Tab label="爬取" />
-        <Tab label="分析" />
-      </Tabs>
+    <Paper className={classes.paper}>
+      <Typography variant="h6" className={classes.headTitle}>{taskKey}</Typography>
     </Paper>,
-    tab === 0 && <Status />,
-    tab === 1 && <Fetch />,
-    tab === 2 && <Parse />
+    <Fab className={classes.fab}>
+      <Icon path={mdiTableEdit} size={1} />
+    </Fab>,
+    ...task.analyze.map(({ target, data }) => {
+      switch (target.type) {
+        case 'single-var-line-chart':
+          return <Card className={classes.paper}>
+            <CardHeader
+              avatar={<Icon path={mdiFileTableBoxOutline} size={1} />}
+              title={target.title}
+            />
+            <CardContent>
+              <LineChart width={400} height={200} data={data}>
+                <Line type="monotone" dataKey="money" stroke="#8884d8" />
+                <CartesianGrid stroke="#ccc" />
+                <XAxis dataKey={target.rule.xAxis} />
+                <YAxis dataKey={target.rule.yAxis} />
+                <Tooltip />
+              </LineChart>
+            </CardContent>
+          </Card>;
+        default:
+          return <Paper className={classes.paper}>
+            <Typography variant="h6">{target.title}</Typography>
+            <Typography variant="h6">{`Unknown Object - ${target.type}`}</Typography>
+          </Paper>
+      }
+    })
   ];
 };

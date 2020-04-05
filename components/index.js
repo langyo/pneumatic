@@ -24,7 +24,9 @@ export default ({
   page,
 
   setDrawerOpen,
-  setPage
+  setPage,
+
+  tasks
 }) => {
   const classes = makeStyles(theme => ({
     root: {
@@ -80,6 +82,7 @@ export default ({
           <DrawerInside
             page={page}
             setPage={v => (setPage(v), setDrawerOpen(false))}
+            tasks={tasks}
           />
         </Drawer>
       </Hidden>
@@ -95,13 +98,14 @@ export default ({
           <DrawerInside
             page={page}
             setPage={v => (setPage(v), setDrawerOpen(false))}
+            tasks={tasks}
           />
         </Drawer>
       </Hidden>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        {page === "overview" && <Overview />}
-        {page === "task" && <Task />}
+        {page === "overview" && <Overview tasks={tasks} />}
+        {page !== "overview" && <Task taskKey={/^task-(.+)$/.exec(page)[1]} task={tasks[/^task-(.+)$/.exec(page)[1]]} />}
       </main>
     </div>
   );
