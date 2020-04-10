@@ -12,7 +12,7 @@ connect(Index, indexCtr, 'index');
 
 register('index', {}, 'index');
 
-hydrate(buildRootNode({
+hydrate(buildRootNode(() => <></>, {}, {
   initializing: true,
 
   tasks: {
