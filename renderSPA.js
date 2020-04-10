@@ -11,7 +11,7 @@ import indexController from './controllers/index';
 import EditDialog from './components/editDialog';
 import editDialogController from './controllers/editDialog';
 
-// connect(EditDialog, editDialogController, 'editDialog');
+connect(EditDialog, editDialogController, 'editDialog');
 
 hydrate(buildRootNode(IndexComponent, indexController, {
   initializing: true,
