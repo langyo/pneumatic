@@ -14,8 +14,6 @@ import Icon from "@mdi/react";
 import { mdiMenu } from "@mdi/js";
 
 import DrawerInside from "./utils/drawer";
-import Overview from "./overview";
-import Task from "./task";
 
 const drawerWidth = 240;
 
@@ -106,8 +104,6 @@ export default ({
       </Hidden>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        {page === "overview" && <Overview tasks={tasks} />}
-        {page !== "overview" && <Task taskKey={/^task-(.+)$/.exec(page)[1]} task={tasks[/^task-(.+)$/.exec(page)[1]]} />}
         {$models}
       </main>
     </div>

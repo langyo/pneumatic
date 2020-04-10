@@ -8,10 +8,21 @@ import {
 import IndexComponent from './components/index';
 import indexController from './controllers/index';
 
-import EditDialog from './components/editDialog';
-import editDialogController from './controllers/editDialog';
+import OverviewPage from './components/overviewPage';
+import overviewPageCtx from './components/overviewPage';
+connect(OverviewPage, overviewPageCtx, 'overview')
 
-connect(EditDialog, editDialogController, 'editDialog');
+import EditPage from './components/editPage';
+import editPageCtx from './controllers/editPage';
+connect(EditPage, editPageCtx, 'edit');
+
+import ParsePage from './components/parsePage';
+import parsePageCtx from './components/parsePage';
+connect(ParsePage, parsePageCtx, 'parse');
+
+import StatusPage from './components/statusPage';
+import statusPageCtx from './components/statusPage';
+connect(StatusPage, statusPageCtx, 'status');
 
 hydrate(buildRootNode(IndexComponent, indexController, {
   initializing: true,

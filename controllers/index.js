@@ -1,7 +1,6 @@
 import {
   setState,
-  setData,
-  createModel
+  togglePage
 } from '../lib/action-preset';
 
 export default {
@@ -11,14 +10,12 @@ export default {
   }),
 
   setDrawerOpen: [
-    setState((payload, { getState }) => ({ drawerOpen: payload }))
+    setState(payload => ({ drawerOpen: payload }))
   ],
   setPage: [
-    setData((payload) => ({ page: payload })),
-    createModel(payload => ({
-      type: 'editDialog',
-      name: payload,
-      initState: {}
+    togglePage(({ type, initState }) => ({
+      type,
+      initState
     }))
   ]
 };

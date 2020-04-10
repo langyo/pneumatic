@@ -9,7 +9,8 @@ import { mdiDatabase } from "@mdi/js";
 export default ({ tasks }) => {
   const classes = makeStyles(theme => ({
     paper: {
-      padding: 8
+      padding: 8,
+      margin: 8
     }
   }))();
 

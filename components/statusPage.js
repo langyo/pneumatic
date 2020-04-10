@@ -28,7 +28,7 @@ import {
 
 export default ({
   taskKey,
-  task
+  tasks
 }) => {
   const classes = makeStyles(theme => ({
     paper: {
@@ -52,7 +52,7 @@ export default ({
     <Fab className={classes.fab}>
       <Icon path={mdiTableEdit} size={1} />
     </Fab>,
-    ...task.analyze.map(({ target, data }) => {
+    ...tasks[taskKey].analyze.map(({ target, data }) => {
       switch (target.type) {
         case 'single-var-line-chart':
           return <Card className={classes.paper}>

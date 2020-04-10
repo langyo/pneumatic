@@ -3,8 +3,8 @@ import {
 } from '../lib/action-preset';
 
 export default {
-  $init: () => ({
-
+  $init: (taskKey) => ({
+    taskKey
   }),
   
 };

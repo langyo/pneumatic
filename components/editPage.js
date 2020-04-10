@@ -14,17 +14,23 @@ import {
 import Icon from "@mdi/react";
 import { mdiPlus, mdiFileEdit } from "@mdi/js";
 
-export default () => {
+export default ({
+  taskKey,
+  tasks
+}) => {
   const classes = makeStyles(theme => ({
     outside: {
-      marginTop: 20,
-      padding: 10
+      margin: 8,
+      padding: 8
+    },
+    title: {
+      marginLeft: 16
     }
   }))();
 
   return [
     <Paper className={classes.outside}>
-      <Typography variant="h6">{"当前共有 3 个页面爬取任务"}</Typography>
+      <Typography variant="h6" className={classes.title}>{"当前共有 3 个页面爬取任务"}</Typography>
       <List>
         <ListItem>
           <ListItemText
