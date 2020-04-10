@@ -2,17 +2,18 @@ import React from 'react';
 import { hydrate } from 'react-dom';
 import {
   connect,
-  register,
   buildRootNode
 } from './lib'
 
-import Index from './components/index';
-import indexCtr from './controllers/index';
-connect(Index, indexCtr, 'index');
+import IndexComponent from './components/index';
+import indexController from './controllers/index';
 
-register('index', {}, 'index');
+import EditDialog from './components/editDialog';
+import editDialogController from './controllers/editDialog';
 
-hydrate(buildRootNode(() => <></>, {}, {
+// connect(EditDialog, editDialogController, 'editDialog');
+
+hydrate(buildRootNode(IndexComponent, indexController, {
   initializing: true,
 
   tasks: {

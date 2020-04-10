@@ -13,7 +13,7 @@ import {
 import Icon from "@mdi/react";
 import { mdiMenu } from "@mdi/js";
 
-import DrawerInside from "./drawer";
+import DrawerInside from "./utils/drawer";
 import Overview from "./overview";
 import Task from "./task";
 
