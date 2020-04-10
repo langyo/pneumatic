@@ -20,6 +20,8 @@ import Task from "./task";
 const drawerWidth = 240;
 
 export default ({
+  $models,
+
   drawerOpen,
   page,
 
@@ -106,6 +108,7 @@ export default ({
         <div className={classes.toolbar} />
         {page === "overview" && <Overview tasks={tasks} />}
         {page !== "overview" && <Task taskKey={/^task-(.+)$/.exec(page)[1]} task={tasks[/^task-(.+)$/.exec(page)[1]]} />}
+        {$models}
       </main>
     </div>
   );
