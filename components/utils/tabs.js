@@ -10,11 +10,11 @@ export default ({
   pageType,
   setTab
 }) => {
-  const classes = makeStyles({
+  const classes = makeStyles(theme => ({
     outside: {
       margin: 8
     }
-  })();
+  }))();
 
   return (
     <Paper className={classes.outside}>

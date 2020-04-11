@@ -34,24 +34,10 @@ export default ({
     paper: {
       padding: 8,
       margin: 8
-    },
-    headTitle: {
-      marginLeft: 16
-    },
-    fab: {
-      position: 'absolute',
-      bottom: theme.spacing(3),
-      right: theme.spacing(3)
     }
   }))();
 
   return [
-    <Paper className={classes.paper}>
-      <Typography variant="h6" className={classes.headTitle}>{taskKey}</Typography>
-    </Paper>,
-    <Fab className={classes.fab}>
-      <Icon path={mdiTableEdit} size={1} />
-    </Fab>,
     ...tasks[taskKey].analyze.map(({ target, data }) => {
       switch (target.type) {
         case 'single-var-line-chart':

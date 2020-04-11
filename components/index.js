@@ -15,6 +15,7 @@ import { mdiMenu } from "@mdi/js";
 
 import DrawerInside from "./utils/drawer";
 import TabsInside from "./utils/tabs";
+import FabsInside from "./utils/fabs";
 
 const drawerWidth = 240;
 
@@ -112,6 +113,7 @@ export default ({
         {$page !== 'overview' && <TabsInside pageType={$page} setTab={page => setTab({ type: page, initState: { taskKey: showingTask } })} />}
         {$models}
       </main>
+      <FabsInside pageType={$page} />
     </div>
   );
 };
