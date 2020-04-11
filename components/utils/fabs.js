@@ -2,8 +2,10 @@ import React from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import Fab from '@material-ui/core/Fab';
-import Zoom from '@material-ui/core/Zoom';
+import {
+  Fab,
+  Zoom
+}from '@material-ui/core';
 
 import Icon from "@mdi/react";
 import {
