@@ -37,6 +37,10 @@ import ParseConfigDialog from './components/dialogs/parseConfig';
 import parseConfigDialogCtx from './controllers/dialogs/parseConfig';
 connect(ParseConfigDialog, parseConfigDialogCtx, 'parseConfigDialog');
 
+import AboutDialog from './components/dialogs/aboutDialog';
+import aboutDialogCtx from './controllers/dialogs/aboutDialog';
+connect(AboutDialog, aboutDialogCtx, 'aboutDialog');
+
 register('overview', {}, '$page');
 
 hydrate(buildRootNode(IndexComponent, indexController, {
@@ -62,7 +66,7 @@ hydrate(buildRootNode(IndexComponent, indexController, {
       parse: [
         {
           title: '茶馆活跃度感知',
-          type: 'single-var-line-chart',
+          type: 'line-chart',
           sourceTable: 'forumTable',
           rules: {
             xAxis: 'time',

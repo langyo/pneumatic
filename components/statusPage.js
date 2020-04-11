@@ -44,7 +44,7 @@ export default ({
 
   return tasks[taskKey].parse.map(({ title, type, sourceTable, rules }, index) => {
     switch (type) {
-      case 'single-var-line-chart':
+      case 'line-chart':
         return <Card className={classes.paper} key={index}>
           <CardHeader
             avatar={<Icon path={mdiFileTableBoxOutline} size={1} />}

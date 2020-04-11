@@ -15,14 +15,18 @@ import Icon from "@mdi/react";
 import {
   mdiViewDashboard,
   mdiClose,
-  mdiChartBar
+  mdiChartBar,
+  mdiPlus,
+  mdiInformationOutline
 } from "@mdi/js";
 
 export default ({
   page,
   showingTask,
   setPage,
-  tasks
+  tasks,
+  loadCreateNewTaskDialog,
+  loadAboutDialog
 }) => {
   const classes = makeStyles(theme => ({
     divider: {
@@ -66,6 +70,19 @@ export default ({
           </ListItemSecondaryAction>
         </ListItem>)
       }
+      <ListItem button onClick={loadCreateNewTaskDialog}>
+        <ListItemIcon>
+          <Icon path={mdiPlus} size={1} />
+        </ListItemIcon>
+        <ListItemText primary={"创建新任务"} />
+      </ListItem>
+      <Divider className={classes.divider} />
+      <ListItem button onClick={loadAboutDialog}>
+        <ListItemIcon>
+          <Icon path={mdiInformationOutline} size={1} />
+        </ListItemIcon>
+        <ListItemText primary={"关于"} />
+      </ListItem>
     </List>
   );
 };

@@ -16,7 +16,6 @@ import {
 export default ({
   pageType,
 
-  loadCreateNewTaskDialog,
   loadFetchDialog,
   loadParseDialog
 }) => {
@@ -30,7 +29,7 @@ export default ({
 
   return <>
     <Zoom in={pageType === 'status'}>
-      <Fab className={classes.fab} onClick={loadCreateNewTaskDialog}>
+      <Fab className={classes.fab}>
         <Icon path={mdiTableEdit} size={1} />
       </Fab>
     </Zoom>

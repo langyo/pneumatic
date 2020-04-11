@@ -33,23 +33,17 @@ export default ({
       open={isOpen}
       onClose={destory}
     >
-      <DialogTitle>{"创建新任务组"}</DialogTitle>
+      <DialogTitle>{"关于"}</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          在具体指定一批爬取与解析方案之前，您只需要先为整个任务组设置一个标识名。
+          {`该作品由伊欧(@langyo)开发，是 NickelCat Framework 的示例应用。
+            源代码以 Apache-2.0 协议开源。
+            版本 ${require('../../package.json').version}。`}
         </DialogContentText>
-        <TextField
-          className={classes.field}
-          autoFocus
-          fullWidth
-          variant='outlined'
-          label='标识名'
-        />
+        <Button onClick={() => window.open('https://github.com/langyo/pneumatic')}>访问源代码仓库</Button>
+        <Button onClick={() => window.open('https://github.com/langyo')}>访问作者 Github 主页</Button>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={destory} color="primary">
-          取消
-        </Button>
         <Button onClick={destory} color="primary" autoFocus>
           确认
         </Button>

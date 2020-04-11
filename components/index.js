@@ -31,6 +31,7 @@ export default ({
   loadCreateNewTaskDialog,
   loadFetchDialog,
   loadParseDialog,
+  loadAboutDialog,
 
   showingTask,
   tasks
@@ -91,6 +92,8 @@ export default ({
             setPage={obj => (setPage(obj), setDrawerOpen(false))}
             showingTask={showingTask}
             tasks={tasks}
+            loadCreateNewTaskDialog={loadCreateNewTaskDialog}
+            loadAboutDialog={loadAboutDialog}
           />
         </Drawer>
       </Hidden>
@@ -108,6 +111,8 @@ export default ({
             setPage={obj => (setPage(obj), setDrawerOpen(false))}
             showingTask={showingTask}
             tasks={tasks}
+            loadCreateNewTaskDialog={loadCreateNewTaskDialog}
+            loadAboutDialog={loadAboutDialog}
           />
         </Drawer>
       </Hidden>
@@ -118,7 +123,6 @@ export default ({
       </main>
       <FabsInside
         pageType={$page}
-        loadCreateNewTaskDialog={loadCreateNewTaskDialog}
         loadParseDialog={loadParseDialog}
         loadFetchDialog={loadFetchDialog}
       />

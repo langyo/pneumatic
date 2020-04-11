@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
-  TextField
+  TextField,
+  MenuItem
 } from '@material-ui/core';
 
 import useTheme from '@material-ui/core/styles/useTheme';
@@ -21,9 +21,13 @@ export default ({
 }) => {
   const theme = useTheme();
   const classes = makeStyles(theme => ({
-
+    field: {
+      marginTop: theme.spacing(2)
+    }
   }))();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const [tableType, setTableType] = useState('line-chart')
 
   return (
     <Dialog
@@ -33,27 +37,43 @@ export default ({
     >
       <DialogTitle>{"解析配置"}</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          解析配置暂时只支持将数据映射到二元折线统计表，未来会提供更多的支持。
-        </DialogContentText>
         <TextField
+          className={classes.field}
           autoFocus
           fullWidth
           variant='outlined'
           label='任务名'
         />
         <TextField
-          autoFocus
+          className={classes.field}
+          select
           fullWidth
-          variant='outlined'
-          label='使用的数据元 X'
-        />
-        <TextField
-          autoFocus
-          fullWidth
-          variant='outlined'
-          label='使用的数据元 Y'
-        />
+          label="统计生成类型"
+          variant="outlined"
+          value={tableType}
+          onChange={e => setTableType(e.target.value)}
+        >
+          <MenuItem value='line-chart'>
+            曲线统计图
+          </MenuItem>
+          <MenuItem value='table'>
+            表格
+          </MenuItem>
+        </TextField>
+        {tableType === 'line-chart' && <>
+          <TextField
+            className={classes.field}
+            fullWidth
+            variant='outlined'
+            label='使用的数据元 X'
+          />
+          <TextField
+            className={classes.field}
+            fullWidth
+            variant='outlined'
+            label='使用的数据元 Y'
+          />
+        </>}
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={destory} color="primary">

@@ -44,5 +44,11 @@ export default {
       type: 'parseConfigDialog',
       initState: {}
     }))
+  ],
+  loadAboutDialog: [
+    createModel(payload => ({
+      type: 'aboutDialog',
+      initState: {}
+    }))
   ]
 };

@@ -5,9 +5,9 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
-  TextField
+  TextField,
+  InputAdornment
 } from '@material-ui/core';
 
 import useTheme from '@material-ui/core/styles/useTheme';
@@ -21,7 +21,9 @@ export default ({
 }) => {
   const theme = useTheme();
   const classes = makeStyles(theme => ({
-
+    field: {
+      marginTop: theme.spacing(2)
+    }
   }))();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -33,27 +35,29 @@ export default ({
     >
       <DialogTitle>{"爬取配置"}</DialogTitle>
       <DialogContent>
-        <DialogContentText>
-          爬取配置方案目前暂只支持一个普通的 URL，未来更新会加入对带参数动态生成的多份 URL 提供支持。
-        </DialogContentText>
         <TextField
+          className={classes.field}
           autoFocus
           fullWidth
           variant='outlined'
           label='任务名'
         />
         <TextField
+          className={classes.field}
           autoFocus
           fullWidth
           variant='outlined'
-          label='地址'
+          label='URL 地址模板'
         />
         <TextField
-          autoFocus
+          className={classes.field}
           fullWidth
-          disabled
+          type='number'
           variant='outlined'
-          label='解析数据元列表'
+          label='间隔时间'
+          InputProps={{
+            endAdornment: <InputAdornment position='end'>{'分钟'}</InputAdornment>
+          }}
         />
       </DialogContent>
       <DialogActions>

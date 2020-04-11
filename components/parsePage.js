@@ -36,7 +36,7 @@ export default ({
           <ListItemText
             primary={title}
             secondary={({
-              'single-var-line-chart': '线性报表'
+              'line-chart': '线性报表'
             })[type]}
           />
           <ListItemSecondaryAction>
