@@ -84,7 +84,7 @@ export default ({
           <div className={classes.toolbar} />
           <DrawerInside
             page={$page}
-            setPage={v => (setPage(v), setDrawerOpen(false))}
+            setPage={obj => (setPage(obj), setDrawerOpen(false))}
             showingTask={showingTask}
             tasks={tasks}
           />
@@ -101,7 +101,7 @@ export default ({
         >
           <DrawerInside
             page={$page}
-            setPage={v => (setPage(v), setDrawerOpen(false))}
+            setPage={obj => (setPage(obj), setDrawerOpen(false))}
             showingTask={showingTask}
             tasks={tasks}
           />

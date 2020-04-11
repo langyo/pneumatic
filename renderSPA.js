@@ -10,19 +10,19 @@ import IndexComponent from './components/index';
 import indexController from './controllers/index';
 
 import OverviewPage from './components/overviewPage';
-import overviewPageCtx from './components/overviewPage';
+import overviewPageCtx from './controllers/overviewPage';
 connect(OverviewPage, overviewPageCtx, 'overview')
 
-import EditPage from './components/editPage';
-import editPageCtx from './controllers/editPage';
-connect(EditPage, editPageCtx, 'edit');
+import FetchPage from './components/fetchPage';
+import fetchPageCtx from './controllers/fetchPage';
+connect(FetchPage, fetchPageCtx, 'fetch');
 
 import ParsePage from './components/parsePage';
-import parsePageCtx from './components/parsePage';
+import parsePageCtx from './controllers/parsePage';
 connect(ParsePage, parsePageCtx, 'parse');
 
 import StatusPage from './components/statusPage';
-import statusPageCtx from './components/statusPage';
+import statusPageCtx from './controllers/statusPage';
 connect(StatusPage, statusPageCtx, 'status');
 
 register('overview', { }, '$page');

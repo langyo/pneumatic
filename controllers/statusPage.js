@@ -3,7 +3,7 @@ import {
 } from '../lib/action-preset';
 
 export default {
-  $init: (taskKey) => ({
+  $init: ({ taskKey }) => ({
     taskKey
   }),
   
