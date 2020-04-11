@@ -2,6 +2,7 @@ import React from 'react';
 import { hydrate } from 'react-dom';
 import {
   connect,
+  register,
   buildRootNode
 } from './lib'
 
@@ -24,8 +25,11 @@ import StatusPage from './components/statusPage';
 import statusPageCtx from './components/statusPage';
 connect(StatusPage, statusPageCtx, 'status');
 
+register('overview', { }, '$page');
+
 hydrate(buildRootNode(IndexComponent, indexController, {
   initializing: true,
+  $page: 'overview',
 
   tasks: {
     'MCBBS': {

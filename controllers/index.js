@@ -1,12 +1,12 @@
 import {
   setState,
+  setData,
   togglePage
 } from '../lib/action-preset';
 
 export default {
   $init: () => ({
-    drawerOpen: false,
-    page: 'overview'
+    drawerOpen: false
   }),
 
   setDrawerOpen: [
@@ -16,6 +16,7 @@ export default {
     togglePage(({ type, initState }) => ({
       type,
       initState
-    }))
+    })),
+    setData(({ initState }) => ({ showingTask: initState.taskKey }))
   ]
 };

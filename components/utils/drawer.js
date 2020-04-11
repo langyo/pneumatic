@@ -19,7 +19,8 @@ import {
 } from "@mdi/js";
 
 export default ({
-  $page,
+  page,
+  showingTask,
   setPage,
   tasks
 }) => {
@@ -34,7 +35,7 @@ export default ({
     <List>
       <ListItem
         button
-        selected={$page === "overview"}
+        selected={page === "overview"}
         onClick={() => setPage({ type: "overview", initState: {} })}
       >
         <ListItemIcon>
@@ -46,7 +47,7 @@ export default ({
       {
         Object.keys(tasks).map(key => <ListItem
           button
-          selected={$page === status && showingTask === key}
+          selected={page !== 'overview' && showingTask === key}
           onClick={() => setPage({ type: 'status', initState: { taskKey: key } })}
           key={key}
         >

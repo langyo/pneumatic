@@ -19,13 +19,14 @@ const drawerWidth = 240;
 
 export default ({
   $models,
+  $page,
 
   drawerOpen,
-  page,
 
   setDrawerOpen,
   setPage,
 
+  showingTask,
   tasks
 }) => {
   const classes = makeStyles(theme => ({
@@ -80,8 +81,9 @@ export default ({
         >
           <div className={classes.toolbar} />
           <DrawerInside
-            page={page}
+            page={$page}
             setPage={v => (setPage(v), setDrawerOpen(false))}
+            showingTask={showingTask}
             tasks={tasks}
           />
         </Drawer>
@@ -96,8 +98,9 @@ export default ({
           onClose={() => setDrawerOpen(false)}
         >
           <DrawerInside
-            page={page}
+            page={$page}
             setPage={v => (setPage(v), setDrawerOpen(false))}
+            showingTask={showingTask}
             tasks={tasks}
           />
         </Drawer>
