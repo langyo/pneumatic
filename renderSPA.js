@@ -25,6 +25,18 @@ import StatusPage from './components/statusPage';
 import statusPageCtx from './controllers/statusPage';
 connect(StatusPage, statusPageCtx, 'status');
 
+import CreateNewTaskDialog from './components/dialogs/createNewTask';
+import createNewTaskDialogCtx from './controllers/dialogs/createNewTask';
+connect(CreateNewTaskDialog, createNewTaskDialogCtx, 'createNewTaskDialog');
+
+import FetchConfigDialog from './components/dialogs/fetchConfig';
+import fetchConfigDialogCtx from './controllers/dialogs/fetchConfig';
+connect(FetchConfigDialog, fetchConfigDialogCtx, 'fetchConfigDialog');
+
+import ParseConfigDialog from './components/dialogs/parseConfig';
+import parseConfigDialogCtx from './controllers/dialogs/parseConfig';
+connect(ParseConfigDialog, parseConfigDialogCtx, 'parseConfigDialog');
+
 register('overview', {}, '$page');
 
 hydrate(buildRootNode(IndexComponent, indexController, {

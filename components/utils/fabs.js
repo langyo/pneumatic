@@ -14,7 +14,11 @@ import {
 } from "@mdi/js";
 
 export default ({
-  pageType
+  pageType,
+
+  loadCreateNewTaskDialog,
+  loadFetchDialog,
+  loadParseDialog
 }) => {
   const classes = makeStyles(theme => ({
     fab: {
@@ -26,16 +30,16 @@ export default ({
 
   return <>
     <Zoom in={pageType === 'status'}>
-      <Fab className={classes.fab}>
+      <Fab className={classes.fab} onClick={loadCreateNewTaskDialog}>
         <Icon path={mdiTableEdit} size={1} />
       </Fab>
     </Zoom>
-    <Zoom in={pageType === 'fetch'}>
+    <Zoom in={pageType === 'fetch'} onClick={loadFetchDialog}>
       <Fab className={classes.fab}>
         <Icon path={mdiPlus} size={1} />
       </Fab>
     </Zoom>
-    <Zoom in={pageType === 'parse'}>
+    <Zoom in={pageType === 'parse'} onClick={loadParseDialog}>
       <Fab className={classes.fab}>
         <Icon path={mdiPlus} size={1} />
       </Fab>

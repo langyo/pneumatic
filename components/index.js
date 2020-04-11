@@ -28,6 +28,9 @@ export default ({
   setDrawerOpen,
   setPage,
   setTab,
+  loadCreateNewTaskDialog,
+  loadFetchDialog,
+  loadParseDialog,
 
   showingTask,
   tasks
@@ -113,7 +116,12 @@ export default ({
         {$page !== 'overview' && <TabsInside pageType={$page} setTab={page => setTab({ type: page, initState: { taskKey: showingTask } })} />}
         {$models}
       </main>
-      <FabsInside pageType={$page} />
+      <FabsInside
+        pageType={$page}
+        loadCreateNewTaskDialog={loadCreateNewTaskDialog}
+        loadParseDialog={loadParseDialog}
+        loadFetchDialog={loadFetchDialog}
+      />
     </div>
   );
 };

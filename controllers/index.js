@@ -1,7 +1,8 @@
 import {
   setState,
   setData,
-  togglePage
+  togglePage,
+  createModel
 } from '../lib/action-preset';
 
 export default {
@@ -23,6 +24,25 @@ export default {
     togglePage(({ type, initState }) => ({
       type,
       initState
+    }))
+  ],
+
+  loadCreateNewTaskDialog: [
+    createModel(payload => ({
+      type: 'createNewTaskDialog',
+      initState: {}
+    }))
+  ],
+  loadFetchDialog: [
+    createModel(payload => ({
+      type: 'fetchConfigDialog',
+      initState: {}
+    }))
+  ],
+  loadParseDialog: [
+    createModel(payload => ({
+      type: 'parseConfigDialog',
+      initState: {}
     }))
   ]
 };
