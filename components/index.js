@@ -14,6 +14,7 @@ import Icon from "@mdi/react";
 import { mdiMenu } from "@mdi/js";
 
 import DrawerInside from "./utils/drawer";
+import TabsInside from "./utils/tabs";
 
 const drawerWidth = 240;
 
@@ -25,6 +26,7 @@ export default ({
 
   setDrawerOpen,
   setPage,
+  setTab,
 
   showingTask,
   tasks
@@ -107,6 +109,7 @@ export default ({
       </Hidden>
       <main className={classes.content}>
         <div className={classes.toolbar} />
+        {$page !== 'overview' && <TabsInside pageType={$page} setTab={page => setTab({ type: page, initState: { taskKey: showingTask } })} />}
         {$models}
       </main>
     </div>

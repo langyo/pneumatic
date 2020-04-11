@@ -18,5 +18,11 @@ export default {
       initState
     })),
     setData(({ initState }) => ({ showingTask: initState.taskKey }))
+  ],
+  setTab: [
+    togglePage(({ type, initState }) => ({
+      type,
+      initState
+    }))
   ]
 };
