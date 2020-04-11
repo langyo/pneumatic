@@ -28,22 +28,21 @@ export default ({
     }
   }))();
 
-  return [
-    <Paper className={classes.outside}>
-      <Typography variant="h6" className={classes.title}>{"当前共有 3 个页面爬取任务"}</Typography>
-      <List>
-        <ListItem>
+  return <Paper className={classes.outside}>
+    <Typography variant="h6" className={classes.title}>{`当前共有 ${tasks[taskKey].fetch.length} 个页面爬取任务`}</Typography>
+    <List>
+      {tasks[taskKey].fetch.map(({ title, rule, interval, parseCode }, index) =>
+        <ListItem key={index}>
           <ListItemText
-            primary="https://xxx.xxx.xxx/xxxx"
-            secondary="距离下一次爬取开始还有 5 分钟"
+            primary={title}
+            secondary={rule.type === 'static' ? rule.href : ''}
           />
           <ListItemSecondaryAction>
             <IconButton>
               <Icon path={mdiFileEdit} size={1} />
             </IconButton>
           </ListItemSecondaryAction>
-        </ListItem>
-      </List>
-    </Paper>
-  ];
+        </ListItem>)}
+    </List>
+  </Paper>;
 };

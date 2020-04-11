@@ -2,35 +2,49 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 
 import {
-  Card,
-  CardHeader,
-  CardContent,
   Paper,
-  Typography
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemSecondaryAction,
+  IconButton
 } from "@material-ui/core";
+
+import Icon from "@mdi/react";
+import { mdiPlus, mdiFileEdit } from "@mdi/js";
 
 export default ({
   taskKey,
   tasks
 }) => {
   const classes = makeStyles(theme => ({
-    paper: {
-      padding: 8,
-      margin: 8
+    outside: {
+      margin: 8,
+      padding: 8
     },
-    headTitle: {
+    title: {
       marginLeft: 16
-    },
-    fab: {
-      position: 'absolute',
-      bottom: theme.spacing(3),
-      right: theme.spacing(3)
     }
   }))();
 
-  return [
-    <Paper className={classes.paper}>
-      <Typography variant="h6" className={classes.headTitle}>{'解析'}</Typography>
-    </Paper>
-  ];
+  return <Paper className={classes.outside}>
+    <Typography variant="h6" className={classes.title}>{`当前共有 ${tasks[taskKey].parse.length} 个分析单元`}</Typography>
+    <List>
+      {tasks[taskKey].parse.map(({ title, type }, index) =>
+        <ListItem key={index}>
+          <ListItemText
+            primary={title}
+            secondary={({
+              'single-var-line-chart': '线性报表'
+            })[type]}
+          />
+          <ListItemSecondaryAction>
+            <IconButton>
+              <Icon path={mdiFileEdit} size={1} />
+            </IconButton>
+          </ListItemSecondaryAction>
+        </ListItem>)}
+    </List>
+  </Paper>;
 };

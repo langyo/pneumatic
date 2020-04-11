@@ -25,7 +25,7 @@ import StatusPage from './components/statusPage';
 import statusPageCtx from './controllers/statusPage';
 connect(StatusPage, statusPageCtx, 'status');
 
-register('overview', { }, '$page');
+register('overview', {}, '$page');
 
 hydrate(buildRootNode(IndexComponent, indexController, {
   initializing: true,
@@ -36,56 +36,48 @@ hydrate(buildRootNode(IndexComponent, indexController, {
       status: 'sleep',
       fetch: [
         {
-          title: 'forum',
+          title: '主页',
           rule: {
             type: 'static',
             href: 'https://www.mcbbs.net/forum.php'
           },
           interval: {
             min: 30
+          },
+          parseCode: '() => ({ degree: +$("#category_50 > table > tbody > tr:nth-child(1) > td:nth-child(2) > h2 > em").innerText, time: (new Date()).toLocaleTimeString() })'
+        }
+      ],
+      parse: [
+        {
+          title: '茶馆活跃度感知',
+          type: 'single-var-line-chart',
+          sourceTable: 'forumTable',
+          rules: {
+            xAxis: 'time',
+            yAxis: 'degree'
           }
         }
       ],
-      analyze: [
-        {
-          source: [
-            {
-              type: 'static',
-              href: 'https://www.mcbbs.net/forum.php'
-            }
-          ],
-          target: {
-            title: '茶馆活跃度感知',
-            type: 'single-var-line-chart',
-            rule: {
-              xAxis: 'time',
-              yAxis: 'degree'
-            },
-            parseCode: '() => ({ degree: +$("#category_50 > table > tbody > tr:nth-child(1) > td:nth-child(2) > h2 > em").innerText, time: (new Date()).toLocaleTimeString() })'
-          },
-          bind: [
-            'forum'
-          ],
-          data: [
-            {
-              time: '06:00',
-              degree: 2023
-            }, {
-              time: '06:30',
-              degree: 2087
-            }, {
-              time: '07:00',
-              degree: 1970
-            }, {
-              time: '07:30',
-              degree: 1543
-            }, {
-              time: '08:00',
-              degree: 1992
-            }
-          ]
-        }
-      ]
+      data: {
+        'forumTable': [
+          {
+            time: '06:00',
+            degree: 2023
+          }, {
+            time: '06:30',
+            degree: 2087
+          }, {
+            time: '07:00',
+            degree: 1970
+          }, {
+            time: '07:30',
+            degree: 1543
+          }, {
+            time: '08:00',
+            degree: 1992
+          }
+        ]
+      }
     }
   },
   account: {}

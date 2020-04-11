@@ -37,31 +37,34 @@ export default ({
     }
   }))();
 
-  return [
-    ...tasks[taskKey].analyze.map(({ target, data }) => {
-      switch (target.type) {
-        case 'single-var-line-chart':
-          return <Card className={classes.paper}>
-            <CardHeader
-              avatar={<Icon path={mdiFileTableBoxOutline} size={1} />}
-              title={target.title}
-            />
-            <CardContent>
-              <LineChart width={400} height={200} data={data}>
-                <Line type="monotone" dataKey="money" stroke="#8884d8" />
-                <CartesianGrid stroke="#ccc" />
-                <XAxis dataKey={target.rule.xAxis} />
-                <YAxis dataKey={target.rule.yAxis} />
-                <Tooltip />
-              </LineChart>
-            </CardContent>
-          </Card>;
-        default:
-          return <Paper className={classes.paper}>
-            <Typography variant="h6">{target.title}</Typography>
-            <Typography variant="h6">{`Unknown Object - ${target.type}`}</Typography>
-          </Paper>
-      }
-    })
-  ];
+  if (tasks[taskKey].parse.length === 0)
+    return <Paper className={classes.paper}>
+      <Typography variant="h6">{'您尚未添加任何数据分析统计单元'}</Typography>
+    </Paper>;
+
+  return tasks[taskKey].parse.map(({ title, type, sourceTable, rules }, index) => {
+    switch (type) {
+      case 'single-var-line-chart':
+        return <Card className={classes.paper} key={index}>
+          <CardHeader
+            avatar={<Icon path={mdiFileTableBoxOutline} size={1} />}
+            title={title}
+          />
+          <CardContent>
+            <LineChart width={400} height={200} data={tasks[taskKey].data[sourceTable]}>
+              <Line type="monotone" dataKey={rules.yAxis} stroke="#8884d8" />
+              <CartesianGrid stroke="#ccc" />
+              <XAxis dataKey={rules.xAxis} />
+              <YAxis dataKey={rules.yAxis} />
+              <Tooltip />
+            </LineChart>
+          </CardContent>
+        </Card>;
+      default:
+        return <Paper className={classes.paper} key={index}>
+          <Typography variant="h6">{title}</Typography>
+          <Typography variant="h6">{`Unknown Object - ${type}`}</Typography>
+        </Paper>;
+    }
+  });
 };
