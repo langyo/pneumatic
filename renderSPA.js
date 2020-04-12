@@ -37,8 +37,8 @@ import ParseConfigDialog from './components/dialogs/parseConfig';
 import parseConfigDialogCtx from './controllers/dialogs/parseConfig';
 connect(ParseConfigDialog, parseConfigDialogCtx, 'parseConfigDialog');
 
-import AboutDialog from './components/dialogs/aboutDialog';
-import aboutDialogCtx from './controllers/dialogs/aboutDialog';
+import AboutDialog from './components/dialogs/about';
+import aboutDialogCtx from './controllers/dialogs/about';
 connect(AboutDialog, aboutDialogCtx, 'aboutDialog');
 
 register('overview', {}, '$page');

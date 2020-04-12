@@ -35,6 +35,7 @@ router.get('/', async (ctx, next) => {
       margin: 0px;
     }
   </style>
+  <meta name="viewport" id="viewport" content="width=device-width, initial-scale=1" />
   <style>${
     ''
   }</style>
