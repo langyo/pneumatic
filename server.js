@@ -48,6 +48,14 @@ router.get('/', async (ctx, next) => {
     ''    
   }</script>
   <script src="/spa.js"></script>
+  <script>
+;(function () {
+  var src = '//cdn.jsdelivr.net/npm/eruda';
+  if (!/mobile_dev=true/.test(window.location)) return;
+  document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
+  document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
+})();
+  </script>
 </body>
 </html>`;
 });
