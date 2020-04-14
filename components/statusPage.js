@@ -34,12 +34,15 @@ export default ({
     paper: {
       padding: 8,
       margin: 8
+    },
+    title: {
+      marginLeft: 16
     }
   }))();
 
   if (tasks[taskKey].parse.length === 0)
     return <Paper className={classes.paper}>
-      <Typography variant="h6">{'您尚未添加任何数据分析统计单元'}</Typography>
+      <Typography variant="h6" className={classes.title}>{'您尚未添加任何数据分析统计单元'}</Typography>
     </Paper>;
 
   return tasks[taskKey].parse.map(({ title, type, sourceTable, rules }, index) => {
