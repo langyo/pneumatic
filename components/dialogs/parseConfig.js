@@ -7,7 +7,9 @@ import {
   DialogContent,
   DialogTitle,
   TextField,
-  MenuItem
+  MenuItem,
+  Backdrop,
+  CircularProgress
 } from '@material-ui/core';
 
 import useTheme from '@material-ui/core/styles/useTheme';
@@ -16,13 +18,19 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 
 export default ({
   isOpen,
+  isFetching,
 
+  submit,
   destory
 }) => {
   const theme = useTheme();
   const classes = makeStyles(theme => ({
     field: {
       marginTop: theme.spacing(2)
+    },
+    backdrop: {
+      zIndex: theme.zIndex.drawer + 1,
+      color: '#fff'
     }
   }))();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -79,10 +87,13 @@ export default ({
         <Button autoFocus onClick={destory} color="primary">
           取消
         </Button>
-        <Button onClick={destory} color="primary" autoFocus>
+        <Button onClick={submit} color="primary" autoFocus>
           确认
         </Button>
       </DialogActions>
+      <Backdrop open={isFetching} className={classes.backdrop}>
+        <CircularProgress color='inherit' />
+      </Backdrop>
     </Dialog>
   );
 }
