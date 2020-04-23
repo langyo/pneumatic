@@ -30,4 +30,4 @@ yarn.lock
 *.log
 *.swp
 
-/bundle.js
+/dist

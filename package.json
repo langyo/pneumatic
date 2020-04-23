@@ -2,9 +2,9 @@
   "name": "pneumatic",
   "version": "0.1.0",
   "description": "A server that using to watch and compare the changes for the web page.",
-  "private": "true",
+  "private": true,
   "scripts": {
-    "start": "nodemon --exec \"babel-node server.js\"",
+    "start": "nodemon --exec \"babel-node main.js\"",
     "test": "jest --watch"
   },
   "repository": {
@@ -44,6 +44,7 @@
     "recharts": "^1.8.5",
     "redux": "^4.0.5",
     "shortid": "^2.2.15",
+    "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.42.0",
     "ws": "^7.2.3"
   }

@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { createReadStream } from 'fs';
+import { resolve } from 'path';
 
 import Koa from 'koa';
 import routerMiddleware from 'koa-router';
@@ -61,7 +62,7 @@ router.get('/', async (ctx, next) => {
 });
 
 router.get('/spa.js', (ctx, next) => {
-  ctx.response.body = createReadStream('bundle.js');
+  ctx.response.body = createReadStream(resolve('./dist/renderSPA.js'));
 })
 
 app.use(router.routes());

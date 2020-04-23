@@ -1,9 +1,10 @@
 {
   "ignore": [
     "*.test.js",
-    "bundle.js",
     "components",
     "controllers",
-    "renderSPA.js"
+    "renderSPA.js",
+    "services.js",
+    "/dist"
   ]
 }
