@@ -7,7 +7,7 @@ import { resolve } from 'path';
 
 const webpackServerSide = webpackLoader({
   webpackConfig: {
-    entry: resolve('./packages/services.js'),
+    entry: resolve('./services.js'),
 
     output: {
       path: resolve('./dist/'),
@@ -18,17 +18,21 @@ const webpackServerSide = webpackLoader({
   defaultDirPath: './dist'
 });
 
-export default new Promise(resolve => webpackServerSide.once('ready', () => {
-  const { send, restart } = parentCreator('./dist/services.js');
+export default new Promise(resolveFunc => webpackServerSide.once('ready', () => {
+  const now = (new Date()).toLocaleTimeString();
+  console.log(`${chalk.yellow(now)} ${chalk.blue('INFO')} The server has ready.`);
+  const { send, restart } = parentCreator(resolve('./dist/services.js'));
   webpackServerSide.on('change', () => {
+    const now = (new Date()).toLocaleTimeString();
+    console.log(`${chalk.yellow(now)} ${chalk.blue('INFO')} Restarting server.`);
     restart();
   });
-  resolve(middlewareRelay(send, 'koa'));
+  resolveFunc(middlewareRelay(send, 'koa'));
 }));
 
 const webpackClientSide = webpackLoader({
   webpackConfig: {
-    entry: resolve('./packages/renderSPA.js'),
+    entry: resolve('./renderSPA.js'),
 
     output: {
       path: resolve('./dist/'),
@@ -38,5 +42,11 @@ const webpackClientSide = webpackLoader({
   },
   defaultDirPath: './dist/'
 });
-webpackClientSide.once('ready', () => console.log('Client side ready.'));
-webpackClientSide.on('change', () => console.log('Client side has been changed.'));
+webpackClientSide.once('ready', () => {
+  const now = (new Date()).toLocaleTimeString();
+  console.log(`${chalk.yellow(now)} ${chalk.blue('INFO')} Webpack has been compiled the static file. (renderSPA)`);
+});
+webpackClientSide.on('change', () => {
+  const now = (new Date()).toLocaleTimeString();
+  console.log(`${chalk.yellow(now)} ${chalk.blue('INFO')} Webpack has been compiled the static file. (renderSPA)`);
+});
