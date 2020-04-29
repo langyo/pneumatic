@@ -1,6 +1,8 @@
-import { parentCreator } from './lib/server/childProcessCreator';
-import webpackLoader from './lib/server/webpackLoader';
-import middlewareRelay from './lib/server/middlewareRelay';
+import {
+  parentCreator,
+  webpackLoader,
+  middlewareRelay
+} from './lib/server';
 
 import chalk from 'chalk';
 import { resolve } from 'path';

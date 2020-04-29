@@ -1,7 +1,7 @@
-import connect from './lib/server/connect'
 import {
+  connect,
   initRoutes
-} from './lib/server/register'
+} from './lib/server';
 import { loadActionModel } from './lib';
 
 import presetActionPackage from './lib/action-preset';
