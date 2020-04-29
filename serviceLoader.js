@@ -4,7 +4,7 @@ import {
   middlewareRelay
 } from './lib/server';
 
-import chalk from 'chalk';
+import { serverLog as log } from './lib/utils/logger';
 import { resolve } from 'path';
 
 const webpackServerSide = webpackLoader({
@@ -21,12 +21,10 @@ const webpackServerSide = webpackLoader({
 });
 
 export default new Promise(resolveFunc => webpackServerSide.once('ready', () => {
-  const now = (new Date()).toLocaleTimeString();
-  console.log(`${chalk.yellow(now)} ${chalk.blue('INFO')} The server has ready.`);
+  log('info', `The server has ready.`);
   const { send, restart } = parentCreator(resolve('./dist/services.js'));
   webpackServerSide.on('change', () => {
-    const now = (new Date()).toLocaleTimeString();
-    console.log(`${chalk.yellow(now)} ${chalk.blue('INFO')} Restarting server.`);
+    log('info', `Restarting server.`);
     restart();
   });
   resolveFunc(middlewareRelay(send, 'koa'));
@@ -45,10 +43,8 @@ const webpackClientSide = webpackLoader({
   defaultDirPath: './dist/'
 });
 webpackClientSide.once('ready', () => {
-  const now = (new Date()).toLocaleTimeString();
-  console.log(`${chalk.yellow(now)} ${chalk.blue('INFO')} Webpack has been compiled the static file. (renderSPA)`);
+  log('info', `Webpack has been compiled the static file. (renderSPA)`);
 });
 webpackClientSide.on('change', () => {
-  const now = (new Date()).toLocaleTimeString();
-  console.log(`${chalk.yellow(now)} ${chalk.blue('INFO')} Webpack has been compiled the static file. (renderSPA)`);
+  log('info', `Webpack has been compiled the static file. (renderSPA)`);
 });
