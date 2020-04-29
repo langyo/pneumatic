@@ -3,9 +3,13 @@ import { hydrate } from 'react-dom';
 import {
   connect,
   register,
-  buildRootNode
+  buildRootNode,
+  loadActionModel
 } from './lib'
 import initState from './configs/initState';
+
+import presetActionPackage from './lib/action-preset';
+loadActionModel(presetActionPackage);
 
 import IndexComponent from './components/index';
 import indexController from './controllers/index';

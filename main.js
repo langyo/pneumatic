@@ -6,7 +6,6 @@ import Koa from 'koa';
 import routerMiddleware from 'koa-router';
 import bodyParserMiddleware from 'koa-bodyparser';
 
-import webpackService from './webpack';
 import serviceLoader from './serviceLoader';
 
 const app = new Koa();

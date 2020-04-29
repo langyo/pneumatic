@@ -2,6 +2,10 @@ import connect from './lib/server/connect'
 import {
   initRoutes
 } from './lib/server/register'
+import { loadActionModel } from './lib';
+
+import presetActionPackage from './lib/action-preset';
+loadActionModel(presetActionPackage);
 
 import OverviewPage from './components/overviewPage';
 import overviewPageCtx from './controllers/overviewPage';
