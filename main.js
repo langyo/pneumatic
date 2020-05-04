@@ -23,13 +23,13 @@ app.use(bodyParserMiddleware());
   // The middelware to route the request to the current page render.
   const router = routerMiddleware();
 
-  router.get('/', await serviceLoader);
-
   router.get('/spa.js', (ctx, next) => {
     ctx.response.body = createReadStream(resolve('./dist/renderSPA.js'));
   })
 
   app.use(router.routes());
+
+  app.use(await serviceLoader);
 
   let port = process.env.PORT || 3000;
 

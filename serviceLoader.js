@@ -27,7 +27,7 @@ export default new Promise(resolveFunc => webpackServerSide.once('ready', () => 
     log('info', `Restarting server.`);
     restart();
   });
-  resolveFunc(middlewareRelay(send, 'koa'));
+  resolveFunc(middlewareRelay({ sendFunc: send }));
 }));
 
 const webpackClientSide = webpackLoader({
