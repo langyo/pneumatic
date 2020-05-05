@@ -24,7 +24,7 @@ export default new Promise(resolveFunc => webpackServerSide.once('ready', () => 
   log('info', `The server has ready.`);
   const { send, restart } = parentCreator(resolve('./dist/services.js'));
   webpackServerSide.on('change', () => {
-    log('info', `Restarting server.`);
+    log('info', `Restarting services.`);
     restart();
   });
   resolveFunc(middlewareRelay({ sendFunc: send }));
@@ -43,8 +43,8 @@ const webpackClientSide = webpackLoader({
   defaultDirPath: './dist/'
 });
 webpackClientSide.once('ready', () => {
-  log('info', `Webpack has been compiled the static file. (renderSPA)`);
+  log('info', `Webpack has been compiled the static file.`);
 });
 webpackClientSide.on('change', () => {
-  log('info', `Webpack has been compiled the static file. (renderSPA)`);
+  log('info', `Webpack has been compiled the static file.`);
 });
