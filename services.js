@@ -40,11 +40,16 @@ import AboutDialog from './components/dialogs/about';
 import aboutDialogCtx from './controllers/dialogs/about';
 connect(AboutDialog, aboutDialogCtx, 'aboutDialog');
 
-initRoutes();
+import { rootPageRelay } from './configs';
+initRoutes({
+  rootPageRelay
+});
 
 import { childCreator, router } from './lib/server';
+import extraConfigs from './configs';
 
 childCreator(async ({
   type,
-  payload
-}) => router(type, payload, getRoutes()));
+  payload,
+  configs
+}) => router(type, payload, getRoutes(), { ...configs, ...extraConfigs }));

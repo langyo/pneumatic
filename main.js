@@ -24,7 +24,7 @@ app.use(bodyParserMiddleware());
   const router = routerMiddleware();
 
   router.get('/spa.js', (ctx, next) => {
-    ctx.response.body = createReadStream(resolve('./dist/renderSPA.js'));
+    ctx.response.body = createReadStream(resolve('./dist/clientRender.js'));
   })
 
   app.use(router.routes());

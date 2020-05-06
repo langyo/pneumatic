@@ -27,16 +27,18 @@ export default new Promise(resolveFunc => webpackServerSide.once('ready', () => 
     log('info', `Restarting services.`);
     restart();
   });
-  resolveFunc(middlewareRelay({ sendFunc: send }));
+  resolveFunc(middlewareRelay({
+    sendFunc: send
+  }));
 }));
 
 const webpackClientSide = webpackLoader({
   webpackConfig: {
-    entry: resolve('./renderSPA.js'),
+    entry: resolve('./clientRender.js'),
 
     output: {
       path: resolve('./dist/'),
-      filename: 'renderSPA.js'
+      filename: 'clientRender.js'
     },
     target: 'web'
   },

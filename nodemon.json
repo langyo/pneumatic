@@ -3,7 +3,8 @@
     "*.test.js",
     "components",
     "controllers",
-    "renderSPA.js",
+    "configs",
+    "clientRender.js",
     "services.js",
     "/dist"
   ]
