@@ -4,6 +4,7 @@ import {
   getRoutes
 } from './lib/server';
 import { loadActionModel } from './lib';
+import initState from './configs/initState';
 
 import presetActionPackage from './lib/action-preset';
 loadActionModel(presetActionPackage);
@@ -44,9 +45,32 @@ import extraConfigs from './configs';
 initRoutes(extraConfigs);
 
 import { childCreator, router } from './lib/server';
+import RootComponent from './components/index';
+import rootController from './controllers/index';
+
+import { renderToString } from 'react-dom/server';
+import { ServerStyleSheets } from '@material-ui/core/styles';
 
 childCreator(async ({
   type,
   payload,
   configs
-}) => router(type, payload, getRoutes(), { ...configs, ...extraConfigs }));
+}) => router(type, payload, getRoutes(), {
+  ...configs,
+  ...extraConfigs,
+  rootGuide: {
+    rootComponent: RootComponent,
+    rootController: rootController,
+    initState,
+    headProcessor: node => {
+      const sheets = new ServerStyleSheets();
+      const html = renderToString(sheets.collect(node));
+      return {
+        renderHTML: html,
+        renderCSS: {
+          'ssr-css': sheets.toString()
+        }
+      }
+    }
+  }
+}));

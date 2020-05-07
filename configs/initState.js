@@ -1,7 +1,4 @@
 export default {
-  initializing: true,
-  $page: 'overview',
-
   tasks: {
     'MCBBS': {
       status: 'sleep',

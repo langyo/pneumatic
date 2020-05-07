@@ -6,13 +6,12 @@ import {
   buildRootNode,
   loadActionModel
 } from './lib'
-import initState from './configs/initState';
 
 import presetActionPackage from './lib/action-preset';
 loadActionModel(presetActionPackage);
 
-import IndexComponent from './components/index';
-import indexController from './controllers/index';
+import RootComponent from './components/index';
+import RootController from './controllers/index';
 
 import OverviewPage from './components/overviewPage';
 import overviewPageCtx from './controllers/overviewPage';
@@ -48,5 +47,9 @@ connect(AboutDialog, aboutDialogCtx, 'aboutDialog');
 
 register('overview', {}, '$page');
 
-hydrate(buildRootNode(IndexComponent, indexController, initState || {}), document.querySelector('#root'));
+hydrate(buildRootNode(RootComponent, RootController, window.__NICKELCAT_INIT__ || {}), document.querySelector('#root'));
 
+const ssrStyles = document.querySelector('#ssr-css');
+if (ssrStyles) {
+  ssrStyles.parentElement.removeChild(ssrStyles);
+}
