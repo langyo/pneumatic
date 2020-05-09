@@ -45,9 +45,17 @@ import AboutDialog from './components/dialogs/about';
 import aboutDialogCtx from './controllers/dialogs/about';
 connect(AboutDialog, aboutDialogCtx, 'aboutDialog');
 
-register('overview', {}, '$page');
+register(
+  window.__NICKELCAT_INIT__.pageType,
+  window.__NICKELCAT_INIT__.pagePreloadState,
+  '$page'
+);
 
-hydrate(buildRootNode(RootComponent, RootController, window.__NICKELCAT_INIT__ || {}), document.querySelector('#root'));
+hydrate(buildRootNode(
+  RootComponent,
+  RootController,
+  window.__NICKELCAT_INIT__ || {}
+), document.querySelector('#root'));
 
 const ssrStyles = document.querySelector('#ssr-css');
 if (ssrStyles) {
