@@ -60,6 +60,8 @@ export default ({
     toolbar: theme.mixins.toolbar
   }))();
 
+  console.log(showingTask)
+
   return (
     <div className={classes.root}>
       <CssBaseline />
@@ -118,7 +120,10 @@ export default ({
       </Hidden>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        {$page !== 'overview' && <TabsInside pageType={$page} setTab={page => setTab({ type: page, initState: { taskKey: showingTask } })} />}
+        {$page !== 'overview' && <TabsInside
+          pageType={$page}
+          setTab={page => setTab({ type: page, initState: { taskKey: showingTask } })}
+        />}
         {$models}
       </main>
       <FabsInside
