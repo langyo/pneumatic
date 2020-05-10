@@ -60,8 +60,6 @@ export default ({
     toolbar: theme.mixins.toolbar
   }))();
 
-  console.log(showingTask)
-
   return (
     <div className={classes.root}>
       <CssBaseline />
