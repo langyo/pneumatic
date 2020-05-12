@@ -4,13 +4,19 @@ import { makeStyles } from "@material-ui/core/styles";
 import {
   Paper,
   Grid,
-  Typography
+  Typography,
+  Button
 } from "@material-ui/core";
 
 import Icon from "@mdi/react";
 import { mdiDatabase } from "@mdi/js";
 
-export default ({ tasks }) => {
+export default ({
+  tasks,
+
+  testValue,
+  onTestFetch
+}) => {
   const classes = makeStyles(theme => ({
     paper: {
       padding: 8,
@@ -32,6 +38,7 @@ export default ({ tasks }) => {
         </Grid>
         <Grid item xs />
       </Grid>
-    </Paper>
+    </Paper>,
+    <Button onClick={() => onTestFetch({ testValue })}>{testValue}</Button>
   ];
 };
