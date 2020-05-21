@@ -44,7 +44,8 @@ connect(AboutDialog, aboutDialogCtx, 'aboutDialog');
 import extraConfigs from './configs';
 initRoutes(extraConfigs);
 
-import { childCreator, router } from './lib/server';
+import { router } from './lib/server';
+import { childCreator } from './lib/dev-server/childProcessCreator';
 import RootComponent from './components/index';
 import rootController from './controllers/index';
 

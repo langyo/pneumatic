@@ -1,13 +1,11 @@
 import chalk from 'chalk';
-import { createReadStream } from 'fs';
-import { resolve } from 'path';
 
 import Koa from 'koa';
-import routerMiddleware from 'koa-router';
 import bodyParserMiddleware from 'koa-bodyparser';
 
 import { serverLog as log } from './lib/utils/logger';
-import serviceLoader from './serviceLoader';
+import serviceLoader from './lib/dev-server/serviceLoader';
+import { resolve } from 'path';
 
 const app = new Koa();
 
@@ -20,16 +18,7 @@ app.use(bodyParserMiddleware());
     await next();
   });
 
-  // The middelware to route the request to the current page render.
-  const router = routerMiddleware();
-
-  router.get('/spa.js', (ctx, next) => {
-    ctx.response.body = createReadStream(resolve('./dist/clientRender.js'));
-  })
-
-  app.use(router.routes());
-
-  app.use(await serviceLoader);
+  app.use(await serviceLoader({ workDirPath: resolve('./') }));
 
   let port = process.env.PORT || 3000;
 
