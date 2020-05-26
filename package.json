@@ -45,7 +45,7 @@
     "recharts": "^1.8.5",
     "redux": "^4.0.5",
     "shortid": "^2.2.15",
-    "uglifyjs-webpack-plugin": "^2.2.0",
+    "terser-webpack-plugin": "^3.0.1",
     "webpack": "^4.42.0",
     "ws": "^7.2.3"
   }
