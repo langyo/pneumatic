@@ -14,9 +14,12 @@ export default {
       '/api/test',
       ({ testValue }) => ({ testValue }),
       [
-        deal(async ({ testValue }) =>  ({ testValue: testValue + 1 }))
+        deal(async ({ testValue }) => ({ testValue: testValue + 1 }))
       ]
-    ),
+    ).catch([
+      setState((error) => ({ testValue: 'nfail' })),
+      setState((error) => ({ testValue: 'fail' }))
+    ]),
     setState(({ testValue }) => ({ testValue }))
   ]
 };
