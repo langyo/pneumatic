@@ -16,7 +16,7 @@ export default {
       [
         deal(async ({ testValue }) => ({ testValue: testValue + 1 }))
       ]
-    ).$catch([
+    ).catch([
       setState((error) => ({ testValue: 'fail' }))
     ]),
     setState(({ testValue }) => ({ testValue }))
