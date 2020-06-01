@@ -118,7 +118,7 @@ export default ({
       </Hidden>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        {$page !== 'overview' && <TabsInside
+        {$page !== 'overviewPage' && <TabsInside
           pageType={$page}
           setTab={page => setTab({ type: page, initState: { taskKey: showingTask } })}
         />}

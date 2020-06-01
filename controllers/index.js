@@ -29,25 +29,25 @@ export default {
 
   loadCreateNewTaskDialog: [
     createModel(payload => ({
-      type: 'createNewTaskDialog',
+      type: 'dialog.createNewTask',
       initState: {}
     }))
   ],
   loadFetchDialog: [
     createModel(payload => ({
-      type: 'fetchConfigDialog',
+      type: 'dialog.fetchConfig',
       initState: {}
     }))
   ],
   loadParseDialog: [
     createModel(payload => ({
-      type: 'parseConfigDialog',
+      type: 'dialog.parseConfig',
       initState: {}
     }))
   ],
   loadAboutDialog: [
     createModel(payload => ({
-      type: 'aboutDialog',
+      type: 'dialog.about',
       initState: {}
     }))
   ]

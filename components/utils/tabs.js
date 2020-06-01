@@ -21,8 +21,8 @@ export default ({
   return (
     <Paper className={classes.outside}>
       <Tabs
-        value={['status', 'fetch', 'parse'].indexOf(pageType)}
-        onChange={(e, newValue) => setTab(['status', 'fetch', 'parse'][newValue])}
+        value={['statusPage', 'fetchPage', 'parsePage'].indexOf(pageType)}
+        onChange={(e, newValue) => setTab(['statusPage', 'fetchPage', 'parsePage'][newValue])}
         centered
         indicatorColor="primary"
         textColor="primary"

@@ -28,17 +28,17 @@ export default ({
   }))();
 
   return <>
-    <Zoom in={pageType === 'status'}>
+    <Zoom in={pageType === 'statusPage'}>
       <Fab className={classes.fab}>
         <Icon path={mdiTableEdit} size={1} />
       </Fab>
     </Zoom>
-    <Zoom in={pageType === 'fetch'} onClick={loadFetchDialog}>
+    <Zoom in={pageType === 'fetchPage'} onClick={loadFetchDialog}>
       <Fab className={classes.fab}>
         <Icon path={mdiPlus} size={1} />
       </Fab>
     </Zoom>
-    <Zoom in={pageType === 'parse'} onClick={loadParseDialog}>
+    <Zoom in={pageType === 'parsePage'} onClick={loadParseDialog}>
       <Fab className={classes.fab}>
         <Icon path={mdiPlus} size={1} />
       </Fab>

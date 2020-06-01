@@ -39,8 +39,8 @@ export default ({
     <List>
       <ListItem
         button
-        selected={page === "overview"}
-        onClick={() => setPage({ type: "overview", initState: {} })}
+        selected={page === "overviewPage"}
+        onClick={() => setPage({ type: "overviewPage", initState: {} })}
       >
         <ListItemIcon>
           <Icon path={mdiViewDashboard} size={1} />
@@ -51,8 +51,8 @@ export default ({
       {
         Object.keys(tasks).map(key => <ListItem
           button
-          selected={page !== 'overview' && showingTask === key}
-          onClick={() => setPage({ type: 'status', initState: { taskKey: key } })}
+          selected={page !== 'overviewPage' && showingTask === key}
+          onClick={() => setPage({ type: 'statusPage', initState: { taskKey: key } })}
           key={key}
         >
           <ListItemIcon>
