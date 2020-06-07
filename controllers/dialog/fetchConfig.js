@@ -3,7 +3,7 @@ import {
   setData,
   destoryModel,
   wait
-} from '../../lib/action-preset';
+} from 'nickelcat-action-preset';
 
 export default {
   $init: () => ({

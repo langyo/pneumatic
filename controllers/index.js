@@ -2,7 +2,7 @@ import {
   setState,
   togglePage,
   createModel
-} from '../lib/action-preset';
+} from 'nickelcat-action-preset';
 
 export default {
   $init: ({ taskKey }) => ({

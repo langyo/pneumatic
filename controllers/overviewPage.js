@@ -2,7 +2,7 @@ import {
   setState,
   fetch,
   deal
-} from '../lib/action-preset';
+} from 'nickelcat-action-preset';
 
 export default {
   $init: () => ({

@@ -3,8 +3,8 @@ import chalk from 'chalk';
 import Koa from 'koa';
 import bodyParserMiddleware from 'koa-bodyparser';
 
-import { serverLog as log } from './lib/utils/logger';
-import serviceLoader from './lib/dev-server/serviceLoader';
+import { serverLog as log } from 'nickelcat/utils/logger';
+import serviceLoader from 'nickelcat-dev-server/serviceLoader';
 import { resolve } from 'path';
 
 const app = new Koa();
