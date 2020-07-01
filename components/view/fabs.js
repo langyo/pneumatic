@@ -14,7 +14,7 @@ import {
 } from "@mdi/js";
 
 export default ({
-  pageType,
+  $type,
 
   loadFetchDialog,
   loadParseDialog
@@ -28,17 +28,17 @@ export default ({
   }))();
 
   return <>
-    <Zoom in={pageType === 'statusPage'}>
+    <Zoom in={$type === 'statusPage'}>
       <Fab className={classes.fab}>
         <Icon path={mdiTableEdit} size={1} />
       </Fab>
     </Zoom>
-    <Zoom in={pageType === 'fetchPage'} onClick={loadFetchDialog}>
+    <Zoom in={$type === 'fetchPage'} onClick={loadFetchDialog}>
       <Fab className={classes.fab}>
         <Icon path={mdiPlus} size={1} />
       </Fab>
     </Zoom>
-    <Zoom in={pageType === 'parsePage'} onClick={loadParseDialog}>
+    <Zoom in={$type === 'parsePage'} onClick={loadParseDialog}>
       <Fab className={classes.fab}>
         <Icon path={mdiPlus} size={1} />
       </Fab>

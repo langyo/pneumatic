@@ -10,38 +10,21 @@ export default {
     showingTask: taskKey
   }),
 
-  setDrawerOpen: [
-    setState(payload => ({ drawerOpen: payload }))
-  ],
   setPage: [
     togglePage(({ type, initState }) => ({
       type,
       initState
     })),
-    setState(({ initState: { taskKey }}) => ({ showingTask: taskKey }))
+    setState(({ initState: { taskKey }}) => ({ showingTask: taskKey })),
+    setState(() => ({ drawerOpen: false }))
   ],
-  setTab: [
-    togglePage(({ type, initState }) => ({
-      type,
-      initState
-    }))
+  setDrawerState: [
+    setState(({ open }) => ({ drawerOpen: open }))
   ],
 
   loadCreateNewTaskDialog: [
     createModel(payload => ({
       type: 'dialog.createNewTask',
-      initState: {}
-    }))
-  ],
-  loadFetchDialog: [
-    createModel(payload => ({
-      type: 'dialog.fetchConfig',
-      initState: {}
-    }))
-  ],
-  loadParseDialog: [
-    createModel(payload => ({
-      type: 'dialog.parseConfig',
       initState: {}
     }))
   ],
