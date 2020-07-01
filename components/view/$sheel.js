@@ -13,6 +13,7 @@ import Icon from "@mdi/react";
 import { mdiMenu } from "@mdi/js";
 
 export default ({
+  $models,
   setDrawerOpen
 }) => {
   const classes = makeStyles(theme => ({
@@ -52,6 +53,7 @@ export default ({
       </AppBar>
       <main className={classes.content}>
         <div className={classes.toolbar} />
+        {$models}
       </main>
     </div>
   );

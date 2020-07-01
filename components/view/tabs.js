@@ -20,10 +20,10 @@ export default ({
 
   return <>
     {
-      $page !== 'overviewPage' && <Paper className={classes.outside}>
+      $page !== 'page.overview' && <Paper className={classes.outside}>
         <Tabs
-          value={['statusPage', 'fetchPage', 'parsePage'].indexOf($page)}
-          onChange={(e, newValue) => setTab(['statusPage', 'fetchPage', 'parsePage'][newValue])}
+          value={['page.status', 'page.fetch', 'page.parse'].indexOf($page)}
+          onChange={(e, newValue) => setTab(['page.status', 'page.fetch', 'page.parse'][newValue])}
           centered
           indicatorColor="primary"
           textColor="primary"
