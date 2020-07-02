@@ -48,8 +48,8 @@ export default ({
   const drawerBody = <List>
     <ListItem
       button
-      selected={$page === "overviewPage"}
-      onClick={() => setPage({ type: "overviewPage", initState: {} })}
+      selected={$page === "page.overview"}
+      onClick={() => setPage({ type: "page.overview", initState: {} })}
     >
       <ListItemIcon>
         <Icon path={mdiViewDashboard} size={1} />
@@ -60,8 +60,8 @@ export default ({
     {
       Object.keys(tasks).map(key => <ListItem
         button
-        selected={$page !== 'overviewPage' && showingTask === key}
-        onClick={() => setPage({ type: 'statusPage', initState: { taskKey: key } })}
+        selected={$page !== 'page.overview' && showingTask === key}
+        onClick={() => setPage({ type: 'page.status', initState: { taskKey: key } })}
         key={key}
       >
         <ListItemIcon>

@@ -10,6 +10,7 @@ import {
 
 export default ({
   $page,
+  showingTask,
   setTab
 }) => {
   const classes = makeStyles(theme => ({
@@ -23,7 +24,10 @@ export default ({
       $page !== 'page.overview' && <Paper className={classes.outside}>
         <Tabs
           value={['page.status', 'page.fetch', 'page.parse'].indexOf($page)}
-          onChange={(e, newValue) => setTab(['page.status', 'page.fetch', 'page.parse'][newValue])}
+          onChange={(e, newValue) => setTab({
+            type: ['page.status', 'page.fetch', 'page.parse'][newValue],
+            initState: { taskKey: showingTask }
+          })}
           centered
           indicatorColor="primary"
           textColor="primary"
