@@ -13,7 +13,26 @@ import {
   mdiPlus
 } from "@mdi/js";
 
-export default ({
+import {
+  createModel
+} from 'nickelcat-action-preset';
+
+export const controller = {
+  loadFetchDialog: [
+    createModel(payload => ({
+      type: 'dialog.fetchConfig',
+      initState: {}
+    }))
+  ],
+  loadParseDialog: [
+    createModel(payload => ({
+      type: 'dialog.parseConfig',
+      initState: {}
+    }))
+  ]
+};
+
+export const component = ({
   $type,
 
   loadFetchDialog,
@@ -33,13 +52,13 @@ export default ({
         <Icon path={mdiTableEdit} size={1} />
       </Fab>
     </Zoom>
-    <Zoom in={$type === 'fetchPage'} onClick={loadFetchDialog}>
-      <Fab className={classes.fab}>
+    <Zoom in={$type === 'fetchPage'}>
+      <Fab className={classes.fab} onClick={loadFetchDialog}>
         <Icon path={mdiPlus} size={1} />
       </Fab>
     </Zoom>
-    <Zoom in={$type === 'parsePage'} onClick={loadParseDialog}>
-      <Fab className={classes.fab}>
+    <Zoom in={$type === 'parsePage'}>
+      <Fab className={classes.fab} onClick={loadParseDialog}>
         <Icon path={mdiPlus} size={1} />
       </Fab>
     </Zoom>

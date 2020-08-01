@@ -14,7 +14,25 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
-export default ({
+import {
+  setState,
+  destoryModel,
+  wait
+} from 'nickelcat-action-preset';
+
+export const controller = {
+  $init: () => ({
+    isOpen: true
+  }),
+
+  destory: [
+    setState({ isOpen: false }),
+    wait(1000),
+    destoryModel((payload, { modelType, modelID }) => ({ type: modelType, id: modelID }))
+  ]
+};
+
+export const component = ({
   isOpen,
 
   destory

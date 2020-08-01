@@ -14,7 +14,14 @@ import {
 import Icon from "@mdi/react";
 import { mdiPlus, mdiFileEdit } from "@mdi/js";
 
-export default ({
+export const controller = {
+  $init: ({ taskKey }) => ({
+    taskKey
+  }),
+  
+};
+
+export const component = ({
   taskKey,
   tasks
 }) => {

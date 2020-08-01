@@ -11,7 +11,32 @@ import {
 import Icon from "@mdi/react";
 import { mdiDatabase } from "@mdi/js";
 
-export default ({
+import {
+  setState,
+  fetch,
+  deal
+} from 'nickelcat-action-preset';
+
+export const controller = {
+  $init: () => ({
+    testValue: 1
+  }),
+
+  onTestFetch: [
+    fetch(
+      '/api/test',
+      ({ testValue }) => ({ testValue }),
+      [
+        deal(async ({ testValue }) => ({ testValue: testValue + 1 }))
+      ]
+    ).catch([
+      setState((error) => ({ testValue: 'fail' }))
+    ]),
+    setState(({ testValue }) => ({ testValue }))
+  ]
+};
+
+export const component = ({
   tasks,
 
   testValue,

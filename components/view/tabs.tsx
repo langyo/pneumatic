@@ -8,7 +8,24 @@ import {
   Tab
 } from '@material-ui/core';
 
-export default ({
+import {
+  togglePage
+} from 'nickelcat-action-preset';
+
+export const controller = {
+  $init: ({ taskKey }) => ({
+    showingTask: taskKey
+  }),
+
+  setTab: [
+    togglePage(({ type, initState }) => ({
+      type,
+      initState
+    }))
+  ]
+};
+
+export const component = ({
   $page,
   showingTask,
   setTab

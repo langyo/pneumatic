@@ -16,7 +16,45 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 
-export default ({
+import {
+  setState,
+  setData,
+  destoryModel,
+  wait
+} from 'nickelcat-action-preset';
+
+export const controller = {
+  $init: () => ({
+    isOpen: true,
+    isFetching: false
+  }),
+
+  submit: [
+    setState({ isFetching: true }),
+    wait(1000),
+    setData(({ taskName }) => ({
+      tasks: {
+        [taskName]: {
+          status: 'sleep',
+          fetch: [],
+          parse: [],
+          data: {}
+        }
+      }
+    })),
+    setState({ isFetching: false, isOpen: false }),
+    wait(1000),
+    destoryModel((payload, { modelType, modelID }) => ({ type: modelType, id: modelID }))
+  ],
+
+  destory: [
+    setState({ isOpen: false }),
+    wait(1000),
+    destoryModel((payload, { modelType, modelID }) => ({ type: modelType, id: modelID }))
+  ]
+};
+
+export const component = ({
   isOpen,
   isFetching,
 

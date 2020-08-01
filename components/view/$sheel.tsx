@@ -12,7 +12,17 @@ import {
 import Icon from "@mdi/react";
 import { mdiMenu } from "@mdi/js";
 
-export default ({
+import {
+  dispatch
+} from 'nickelcat-action-preset';
+
+export const controller = {
+  setDrawerOpen: [
+    dispatch('view.drawer', '$view', 'setDrawerState', { open: true })
+  ]
+};
+
+export const component = ({
   $models,
   setDrawerOpen
 }) => {
