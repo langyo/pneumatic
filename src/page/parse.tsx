@@ -21,7 +21,7 @@ export const controller = {
   
 };
 
-export const component = ({
+export default ({
   taskKey,
   tasks
 }) => {

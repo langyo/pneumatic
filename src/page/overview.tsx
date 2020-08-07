@@ -36,7 +36,7 @@ export const controller = {
   ]
 };
 
-export const component = ({
+export default ({
   tasks,
 
   testValue,

@@ -46,7 +46,7 @@ export const controller = {
   ]
 };
 
-export const component = ({
+export default ({
   isOpen,
   isFetching,
 

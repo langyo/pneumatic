@@ -25,7 +25,7 @@ export const controller = {
   ]
 };
 
-export const component = ({
+export default ({
   $page,
   showingTask,
   setTab

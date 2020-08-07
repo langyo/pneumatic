@@ -60,7 +60,7 @@ export const controller = {
   ]
 };
 
-export const component = ({
+export default ({
   $page,
   drawerOpen,
   showingTask,

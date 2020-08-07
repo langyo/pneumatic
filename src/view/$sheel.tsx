@@ -22,7 +22,7 @@ export const controller = {
   ]
 };
 
-export const component = ({
+export default ({
   $models,
   setDrawerOpen
 }) => {

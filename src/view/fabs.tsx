@@ -32,7 +32,7 @@ export const controller = {
   ]
 };
 
-export const component = ({
+export default ({
   $type,
 
   loadFetchDialog,
