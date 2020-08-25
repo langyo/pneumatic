@@ -18,7 +18,7 @@ import {
 
 export const controller = {
   setDrawerOpen: [
-    dispatch('view.drawer', '$view', 'setDrawerState', { open: true })
+    dispatch('view.drawer', 'setDrawerState', { open: true })
   ]
 };
 

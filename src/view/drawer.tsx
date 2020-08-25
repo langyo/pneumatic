@@ -24,9 +24,11 @@ import {
 
 import {
   setState,
-  togglePage,
   createModel
 } from 'nickelcat-action-preset';
+import {
+  togglePage
+} from 'nickelcat-action-routes';
 
 export const controller = {
   $init: ({ taskKey }) => ({

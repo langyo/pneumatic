@@ -18,7 +18,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 
 import {
   setState,
-  setData,
+  setGlobalState,
   destoryModel,
   wait
 } from 'nickelcat-action-preset';
@@ -32,7 +32,7 @@ export const controller = {
   submit: [
     setState({ isFetching: true }),
     wait(1000),
-    setData(({ }) => ({
+    setGlobalState(({ }) => ({
     })),
     setState({ isFetching: false, isOpen: false }),
     wait(1000),

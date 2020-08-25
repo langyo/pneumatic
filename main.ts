@@ -1,11 +1,11 @@
-import chalk from 'chalk';
+/// <reference types="node" />
 
-import Koa from 'koa';
-import bodyParserMiddleware from 'koa-bodyparser';
+import * as chalk from 'chalk';
 
-import { serverLog as log } from 'nickelcat/utils/logger';
-import serviceLoader from 'nickelcat-dev-server/serviceLoader';
-import { resolve } from 'path';
+import * as Koa from 'koa';
+import * as bodyParserMiddleware from 'koa-bodyparser';
+
+import { serviceLoader } from 'nickelcat-dev-server/serviceLoader';
 
 const app = new Koa();
 
@@ -14,16 +14,16 @@ app.use(bodyParserMiddleware());
 (async () => {
   // The middleware to print the request info to the console.
   app.use(async (ctx, next) => {
-    log('info', `${chalk.green(ctx.request.method)} ${chalk.whiteBright(ctx.request.ip)}: Hit ${chalk.blue(ctx.request.url)}`);
+    console.log(`${chalk.green(ctx.request.method)} ${chalk.whiteBright(ctx.request.ip)}: Hit ${chalk.blue(ctx.request.url)}`);
     await next();
   });
 
-  app.use(await serviceLoader({ workDirPath: resolve('./') }));
+  app.use(await serviceLoader());
 
   let port = process.env.PORT || 3000;
 
   app.listen(port);
 
-  log('info', `Server has been running at the port ${port}.`);
+  console.log(`Server has been running at the port ${port}.`);
 })();
 
