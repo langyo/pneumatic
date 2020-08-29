@@ -26,4 +26,3 @@ app.use(bodyParserMiddleware());
 
   console.log(`Server has been running at the port ${port}.`);
 })();
-
