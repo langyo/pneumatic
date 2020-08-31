@@ -5,7 +5,7 @@ import * as chalk from 'chalk';
 import * as Koa from 'koa';
 import * as bodyParserMiddleware from 'koa-bodyparser';
 
-import { serviceLoader } from 'nickelcat-dev-server/serviceLoader';
+import { serviceLoader } from 'nickelcat-dev-server';
 
 const app = new Koa();
 
@@ -18,7 +18,7 @@ app.use(bodyParserMiddleware());
     await next();
   });
 
-  app.use(await serviceLoader());
+  app.use(await serviceLoader('koa'));
 
   let port = process.env.PORT || 3000;
 
