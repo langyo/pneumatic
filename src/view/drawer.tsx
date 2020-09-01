@@ -36,24 +36,10 @@ export const controller = {
     showingTask: taskKey
   }),
 
-  setPage: [
-    togglePage(({ type, initState }) => ({
-      type,
-      initState
-    })),
-    setState(({ initState: { taskKey }}) => ({ showingTask: taskKey })),
-    setState(() => ({ drawerOpen: false }))
-  ],
   setDrawerState: [
     setState(({ open }) => ({ drawerOpen: open }))
   ],
 
-  loadCreateNewTaskDialog: [
-    createModel(payload => ({
-      type: 'dialog.createNewTask',
-      initState: {}
-    }))
-  ],
   loadAboutDialog: [
     createModel(payload => ({
       type: 'dialog.about',
@@ -63,13 +49,9 @@ export const controller = {
 };
 
 export default ({
-  $page,
   drawerOpen,
-  showingTask,
   setPage,
   setDrawerOpen,
-  tasks,
-  loadCreateNewTaskDialog,
   loadAboutDialog
 }) => {
   const drawerWidth = 240;
@@ -87,46 +69,6 @@ export default ({
     }
   }))();
   const drawerBody = <List>
-    <ListItem
-      button
-      selected={$page === "page.overview"}
-      onClick={() => setPage({ type: "page.overview", initState: {} })}
-    >
-      <ListItemIcon>
-        <Icon path={mdiViewDashboard} size={1} />
-      </ListItemIcon>
-      <ListItemText primary={"概览"} secondary={`正在运行 ${Object.keys(tasks).length} 个计划`} />
-    </ListItem>
-    <Divider className={classes.divider} />
-    {
-      Object.keys(tasks).map(key => <ListItem
-        button
-        selected={$page !== 'page.overview' && showingTask === key}
-        onClick={() => setPage({ type: 'page.status', initState: { taskKey: key } })}
-        key={key}
-      >
-        <ListItemIcon>
-          <Icon path={mdiChartBar} size={1} />
-        </ListItemIcon>
-        <ListItemText primary={key} secondary={
-          tasks[key].status === 'sleep' ? '休眠中' :
-            tasks[key].status === 'working' ? '运行中' :
-              '未知'
-        } />
-        <ListItemSecondaryAction>
-          <IconButton size="small">
-            <Icon path={mdiClose} size={0.75} />
-          </IconButton>
-        </ListItemSecondaryAction>
-      </ListItem>)
-    }
-    <ListItem button onClick={loadCreateNewTaskDialog}>
-      <ListItemIcon>
-        <Icon path={mdiPlus} size={1} />
-      </ListItemIcon>
-      <ListItemText primary={"创建新任务"} />
-    </ListItem>
-    <Divider className={classes.divider} />
     <ListItem button onClick={loadAboutDialog}>
       <ListItemIcon>
         <Icon path={mdiInformationOutline} size={1} />
