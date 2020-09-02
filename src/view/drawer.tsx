@@ -31,7 +31,7 @@ import {
 } from 'nickelcat-action-routes';
 
 export const controller = {
-  $init: ({ taskKey }) => ({
+  init: ({ taskKey }) => ({
     drawerOpen: false,
     showingTask: taskKey
   }),

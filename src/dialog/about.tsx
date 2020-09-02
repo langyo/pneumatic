@@ -21,7 +21,7 @@ import {
 } from 'nickelcat-action-preset';
 
 export const controller = {
-  $init: () => ({
+  init: () => ({
     isOpen: true
   }),
 

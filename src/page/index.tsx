@@ -7,7 +7,7 @@ import {
 } from "@material-ui/core";
 
 export const controller = {
-  $init: () => ({}),
+  init: () => ({}),
 };
 
 export default ({ }) => {
