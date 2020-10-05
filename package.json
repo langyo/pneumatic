@@ -4,7 +4,7 @@
   "description": "A server that using to watch and compare the changes for the web page.",
   "private": true,
   "scripts": {
-    "start": "ts-node main.ts",
+    "start": "set PORT=8080 & ts-node main.ts",
     "test": "jest --watch"
   },
   "repository": {
