@@ -18,11 +18,11 @@ import { join } from 'path';
 let clientBundleContent: string = '';
 
 const webpackClientSideFunc = webpackCompilerFactory({
-  entry: join(process.cwd(), './__nickelcat_defaultClientLoader.js'),
+  entry: join(process.cwd(), './lib/SPAEntry'),
   target: 'web'
 });
 const webpackServerSideFunc = webpackCompilerFactory({
-  entry: join(process.cwd(), './__nickelcat_defaultServerLoader.js'),
+  entry: join(process.cwd(), './lib/SSREntry'),
   target: 'node'
 });
 
