@@ -17,18 +17,22 @@ import { join } from 'path';
 
 let clientBundleContent: string = '';
 
-const webpackClientSideFunc = webpackCompilerFactory({
-  entry: join(process.cwd(), './lib/SPAEntry'),
-  target: 'web'
-});
-const webpackServerSideFunc = webpackCompilerFactory({
-  entry: join(process.cwd(), './lib/SSREntry'),
-  target: 'node'
-});
+const webpackClientSideFunc = webpackCompilerFactory(
+  join(process.cwd(), './src/SPAEntry.ts'),
+  'web'
+);
+const webpackServerSideFunc = webpackCompilerFactory(
+  join(process.cwd(), './src/SSREntry.ts'),
+  'node'
+);
 
 dirWatcher(async () => {
-  clientBundleContent = (await webpackClientSideFunc(staticDepsBuilder())).code;
-  build(await webpackServerSideFunc(staticDepsBuilder()));
+  clientBundleContent = (await webpackClientSideFunc(staticDepsBuilder(
+    join(process.cwd(), './src/')
+  ))).code;
+  build(await webpackServerSideFunc(staticDepsBuilder(
+    join(process.cwd(), './src/')
+  )));
 });
 
 const app = new Koa();
