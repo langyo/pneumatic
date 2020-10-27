@@ -9,22 +9,27 @@ import * as bodyParserMiddleware from 'koa-bodyparser';
 import {
   vmLoader,
   webpackCompiler,
-  dirWatcher
+  dirWatcher,
+  dirScanner
 } from 'nickelcat-dev-server';
 
 let routeTasks: { match: RegExp, call: (stream: Writable) => Promise<void> }[] = [];
 let staticSPACodes: { [route: string]: string } = {};
 
 function parseRoute() { }
-function parseComponent() { }
-function parseService() { }
-function routeStatic() { }
-function routeStaticComponent() { }
+function parseFrontend() { }
+function parseBackend() { }
+function routeStaticFile() { }
+function routeStaticFrontend() { }
+
+console.log(dirScanner(join(process.cwd(), './public')));
 
 dirWatcher(
   join(process.cwd(), './public'),
-  async (diffPaths: { path: string, type: string }[]) => {
-
+  async diffPaths => {
+    for (const { path, type, route } of diffPaths) {
+      console.log(`${type}: ${path} ${route}`);
+    }
   }
 );
 

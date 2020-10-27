@@ -31,4 +31,3 @@ yarn.lock
 *.swp
 
 /dist
-/public
