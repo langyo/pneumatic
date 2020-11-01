@@ -25,10 +25,29 @@ function parseBackend() { }
 function routeStaticFile() { }
 function routeStaticFrontend() { }
 
-console.log(dirScanner(join(process.cwd(), './public')));
-
+// Watch the frontend part.
 dirWatcher(
-  join(process.cwd(), './public'),
+  join(process.cwd(), './public/frontend'),
+  async diffPaths => {
+    for (const { path, type, route } of diffPaths) {
+      console.log(`${type}: ${path} ${route}`);
+    }
+  }
+);
+
+// Watch the backend part.
+dirWatcher(
+  join(process.cwd(), './public/backend'),
+  async diffPaths => {
+    for (const { path, type, route } of diffPaths) {
+      console.log(`${type}: ${path} ${route}`);
+    }
+  }
+);
+
+// Watch the routes part.
+dirWatcher(
+  join(process.cwd(), './public/routes'),
   async diffPaths => {
     for (const { path, type, route } of diffPaths) {
       console.log(`${type}: ${path} ${route}`);
