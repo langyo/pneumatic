@@ -9,21 +9,27 @@ import * as bodyParserMiddleware from 'koa-bodyparser';
 import {
   vmLoader,
   webpackCompiler,
-  dirWatcher,
-  dirScanner
+  dirWatcher
 } from 'nickelcat-dev-server';
 
 let routeTasks: {
-  match: ({ path: string, query: { [key: string]: string } }),
-  call: (stream: Writable) => Promise<void>
-}[] = [];
+  [id: number]: {
+    match: ({ path: string, query: { [key: string]: string } }),
+    call: (stream: Writable) => Promise<void>
+  }
+} = {};
 let staticSPACodes: { [route: string]: string } = {};
 
-function parseRoute() { }
-function parseFrontend() { }
-function parseBackend() { }
-function routeStaticFile() { }
-function routeStaticFrontend() { }
+function parseFrontend({ component, preload }, routePath: string) {
+
+}
+
+function parseBackend({ matcher, level, service, protocol }, routePath: string) {
+
+}
+
+function routeStaticFile(path, routePath) { }
+function routeStaticFrontend(path, routePath) { }
 
 // Watch the frontend part.
 dirWatcher(
