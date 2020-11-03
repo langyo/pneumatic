@@ -6,11 +6,9 @@ import * as chalk from 'chalk';
 import * as Koa from 'koa';
 import * as bodyParserMiddleware from 'koa-bodyparser';
 
-import {
-  vmLoader,
-  webpackCompiler,
-  dirWatcher
-} from 'nickelcat-dev-server';
+import { vmLoader } from './virtualMachineLoader';
+import { webpackCompiler } from './webpackLoader';
+import { dirWatcher } from './dirWatcher';
 
 let routeTasks: {
   [id: number]: {
