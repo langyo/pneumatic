@@ -8,7 +8,7 @@ import * as bodyParserMiddleware from 'koa-bodyparser';
 
 import { vmLoader } from './virtualMachineLoader';
 import { webpackCompiler } from './webpackLoader';
-import { dirWatcher } from './dirWatcher';
+import { watch as watchFiles } from 'chokidar';
 
 let routeTasks: {
   [id: number]: {
@@ -30,34 +30,38 @@ function routeStaticFile(path, routePath) { }
 function routeStaticFrontend(path, routePath) { }
 
 // Watch the frontend part.
-dirWatcher(
-  join(process.cwd(), './public/frontend'),
-  async diffPaths => {
-    for (const { path, type, route } of diffPaths) {
-      console.log(`${type}: ${path} ${route}`);
-    }
+watchFiles(
+  join(process.cwd(), './public/frontend'), {
+  ignored: /(node_modules)|(\.git)/
+}).on('all', async (type, filePath) => {
+  if (['add', 'change', 'unlink'].indexOf(type) < 0) {
+    return;
   }
-);
+
+  const route = /^\.?(.+)(\.[a-z]+)$/.exec(filePath
+    .substr(join(process.cwd(), './public/frontend').length)
+    .split(/[\\\/]/)
+    .join('.'))[1];
+
+  console.log(type, route, filePath);
+});
 
 // Watch the backend part.
-dirWatcher(
-  join(process.cwd(), './public/backend'),
-  async diffPaths => {
-    for (const { path, type, route } of diffPaths) {
-      console.log(`${type}: ${path} ${route}`);
-    }
+watchFiles(
+  join(process.cwd(), './public/backend'), {
+  ignored: /(node_modules)|(\.git)/
+}).on('all', async (type, filePath) => {
+  if (['add', 'change', 'unlink'].indexOf(type) < 0) {
+    return;
   }
-);
 
-// Watch the routes part.
-dirWatcher(
-  join(process.cwd(), './public/routes'),
-  async diffPaths => {
-    for (const { path, type, route } of diffPaths) {
-      console.log(`${type}: ${path} ${route}`);
-    }
-  }
-);
+  const route = /^\.?(.+)(\.[a-z]+)$/.exec(filePath
+    .substr(join(process.cwd(), './public/backend').length)
+    .split(/[\\\/]/)
+    .join('.'))[1];
+
+  console.log(type, route, filePath);
+});
 
 const app = new Koa();
 
