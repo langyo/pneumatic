@@ -78,7 +78,7 @@ function compareLevel(
   }
 }
 
-export function levelExprParser(
+export function pirorityParser(
   routePriorityMap: { [route: string]: number },
   sourceRoutePath: string,
   expr: string
