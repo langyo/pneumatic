@@ -79,7 +79,18 @@ function allocatePriority(
 }
 
 // Routes that have been prioritized
-export let routePriority: { [route: string]: number } = {};
+export let routePriority: { [route: string]: number } = {
+  $head: 1,
+  $begin: 1,
+  $foot: -1,
+  $feet: -1,
+  $end: -1,
+  $static: 10000,
+  $staticFileService: 10000,
+  $page: 30000,
+  $pageService: 30000,
+  $errPage: -10000
+};
 // Routes that have not been given available priority.
 export let routePriorityCache: { [route: string]: string } = {};
 
