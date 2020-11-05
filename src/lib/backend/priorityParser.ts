@@ -30,7 +30,7 @@ function splitThroughRegex(expr: string, str: string): string[] {
   let ret: string[] = [];
   let lastPos = 0, pos = Math.min(str.indexOf(expr), str.indexOf('/'));
 
-  while(pos > -1) {
+  while (pos > -1) {
     if (str[pos] === expr) {
       ret.push(str.substr(lastPos, pos));
       pos += expr.length;
@@ -78,17 +78,22 @@ function compareLevel(
   }
 }
 
+// Routes that have been prioritized
+export let routePriority: { [route: string]: number } = {};
+// Routes that have not been given available priority.
+export let routePriorityCache: { [route: string]: string } = {};
+
+// Returns true when a priority is successfully assigned.
 export function pirorityParser(
-  routePriorityMap: { [route: string]: number },
-  sourceRoutePath: string,
-  expr: string
-): number {
+  expr: string,
+  sourceRoutePath: string
+): boolean {
   // First split it into several determinants separated by '&'.
   const subExpr = splitThroughRegex('&', expr).map(n => n.trim());
-  
+
   let matchPriority = 0;
   // Parse each expression.
-  for(const expr of subExpr) {
+  for (const expr of subExpr) {
     // Recognize the operator corresponding to the first character.
     if (['>', '<', '=', '^', '~'].indexOf(expr[0]) < 0) {
       throw new Error('The first character must be a comparison operator.');
@@ -113,22 +118,24 @@ export function pirorityParser(
 
     // Handle the case that all wildcards are universal.
     if (paths.length === 1 && (paths[0] === '*' || paths[0] === '**')) {
-      return op === '>' ? -1 : 1;
+      routePriority[sourceRoutePath] = op === '>' ? -1 : 1;
+      return true;
     }
 
     // Handle the case where the operator is an equal operator.
-    for (const route of Object.keys(routePriorityMap)) {
+    for (const route of Object.keys(routePriority)) {
       if (expr.substr(1).trim() === route) {
-        return routePriorityMap[route];
+        routePriority[sourceRoutePath] = routePriority[route];
+        return true;
       }
-      // At present, no registered route can match it. The error is
-      // temporarily thrown, and the cache mechanism will be added later.
-      throw new Error('[TODO] Features not implemented.');
+      // At present, no registered route can match it.
+      routePriorityCache[sourceRoutePath] = expr;
+      return false;
     }
 
     // Handle the other cases.
     let hasMatched = false;
-    for (const route of Object.keys(routePriorityMap)) {
+    for (const route of Object.keys(routePriority)) {
       const otherPaths = route.split('.');
 
       if (paths.indexOf('**') >= 0) {
@@ -159,7 +166,7 @@ export function pirorityParser(
         if (hasSuccess) {
           hasMatched = true;
           matchPriority = compareLevel(
-            op as any, matchPriority, routePriorityMap[route]
+            op as any, matchPriority, routePriority[route]
           );
         }
       } else {
@@ -176,7 +183,7 @@ export function pirorityParser(
         if (hasSuccess) {
           hasMatched = true;
           matchPriority = compareLevel(
-            op as any, matchPriority, routePriorityMap[route]
+            op as any, matchPriority, routePriority[route]
           );
         }
       }
@@ -184,9 +191,19 @@ export function pirorityParser(
     if (!hasMatched) {
       // There is no matching result, which is put in the cache list to wait
       // for the newly registered route.
-      throw new Error('[TODO] Features not implemented.');
+      routePriorityCache[sourceRoutePath] = expr;
+      return false;
     }
   }
 
-  return matchPriority;
+  routePriority[sourceRoutePath] = matchPriority;
+
+  // Handle the remaining routes in the cache.
+  for (const path of Object.keys(routePriorityCache)) {
+    if (pirorityParser(routePriorityCache[path], path)) {
+      delete routePriorityCache[path];
+    }
+  }
+
+  return true;
 }
