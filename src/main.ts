@@ -1,22 +1,12 @@
 /// <reference types="node" />
 
 import { join } from 'path';
-import { Writable } from 'stream';
 import * as chalk from 'chalk';
 import * as Koa from 'koa';
 import * as bodyParserMiddleware from 'koa-bodyparser';
-
-import { vmLoader } from './virtualMachineLoader';
-import { webpackCompiler } from './webpackLoader';
 import { watch as watchFiles } from 'chokidar';
-
-let routeTasks: {
-  [id: number]: {
-    match: ({ path: string, query: { [key: string]: string } }),
-    call: (stream: Writable) => Promise<void>
-  }
-} = {};
-let staticSPACodes: { [route: string]: string } = {};
+import { parser as frontendParser } from './frontendParser';
+import { parser as backendParser } from './backendParser';
 
 function parseFrontend({ component, preload }, routePath: string) {
 
@@ -27,7 +17,6 @@ function parseBackend({ matcher, level, service, protocol }, routePath: string) 
 }
 
 function routeStaticFile(path, routePath) { }
-function routeStaticFrontend(path, routePath) { }
 
 // Watch the frontend part.
 watchFiles(

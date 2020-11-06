@@ -1,3 +1,10 @@
+import { Writable } from 'stream';
+import { vmLoader } from './virtualMachineLoader';
+
+function matcherParser() {
+
+}
+
 function matchName(expr: string, str: string): boolean {
   // Expression does not allow two consecutive '*'.
   if (expr.indexOf('**') >= 0) {
@@ -95,7 +102,7 @@ export let routePriority: { [route: string]: number } = {
 export let routePriorityCache: { [route: string]: string } = {};
 
 // Returns true when a priority is successfully assigned.
-export function pirorityParser(
+function pirorityParser(
   expr: string,
   sourceRoutePath: string
 ): boolean {
@@ -217,4 +224,23 @@ export function pirorityParser(
   }
 
   return true;
+}
+
+function serviceParser() {
+
+}
+
+export let routeTasks: {
+  [id: number]: {
+    match: ({ path: string, query: { [key: string]: string } }),
+    call: (stream: Writable) => Promise<void>
+  }
+} = {};
+
+function protocolParser() {
+
+}
+
+export function parser() {
+
 }
