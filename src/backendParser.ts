@@ -113,10 +113,7 @@ function pirorityParser(
   // Parse each expression.
   for (const expr of subExpr) {
     // Recognize the operator corresponding to the first character.
-    if (['>', '<', '=', '^', '~'].indexOf(expr[0]) < 0) {
-      throw new Error('The first character must be a comparison operator.');
-    }
-    const op = expr[0] === '^' ? '>' : expr[0] === '~' ? '=' : expr[0];
+    const op = ['>', '<', '='].indexOf(expr[0]) >= 0 ? expr[0] : '=';
 
     // When the operator is an equal operator, no wildcards or regular
     // expressions can appear.
@@ -124,7 +121,9 @@ function pirorityParser(
       throw new Error('No wildcards or regular expressions can appear.');
     }
 
-    const paths = splitThroughRegex('.', expr.substr(1).trim());
+    const paths = splitThroughRegex(
+      '.', ['>', '<', '='].indexOf(expr[0]) >= 0 ? expr.substr(1).trim() : expr
+    );
 
     // Cannot have more than one "**".
     if (
