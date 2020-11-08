@@ -1,88 +1,13 @@
 import { Writable } from 'stream';
-import { vmLoader } from './virtualMachineLoader';
+import {
+  allocatePriority,
+  exprVerify,
+  splitThroughRegex,
+  vmLoader
+} from './utils';
 
-function matcherParser() {
+export function matcherParser() {
 
-}
-
-function matchName(expr: string, str: string): boolean {
-  // Expression does not allow two consecutive '*'.
-  if (expr.indexOf('**') >= 0) {
-    throw new Error('Expression does not allow two consecutive \'*\'.');
-  }
-
-  const subExpr = expr.split('*');
-  let pos = 0;
-  for (const expr of subExpr) {
-    if (expr === '') { continue; }
-    while (true) {
-      pos = str.indexOf(expr[0], pos);
-      if (pos === -1) return false;
-
-      let hasMatched = true;
-      for (let i = 0; i < expr.length; ++i, ++pos) {
-        if (expr[i] === '?') { continue; }
-        else if (expr[i] !== str[pos]) {
-          hasMatched = false;
-          break;
-        }
-      }
-      if (hasMatched) { break; }
-    }
-  }
-  return true;
-}
-
-function splitThroughRegex(expr: string, str: string): string[] {
-  let ret: string[] = [];
-  let lastPos = 0, pos = Math.min(str.indexOf(expr), str.indexOf('/'));
-
-  while (pos > -1) {
-    if (str[pos] === expr) {
-      ret.push(str.substr(lastPos, pos));
-      pos += expr.length;
-      lastPos = pos;
-    } else {
-      for (
-        pos = str.indexOf('/', pos + 1);
-        str[pos - 1] === '\\';
-        pos = str.indexOf('/', pos + 1)
-      ) {
-        if (pos < 0) {
-          throw new Error('Incomplete regular expressions.');
-        }
-        pos += 1;
-      }
-    }
-    pos = Math.min(str.indexOf(expr, pos), str.indexOf('/', pos));
-  }
-  ret.push(str.substr(lastPos));
-  return ret;
-}
-
-function allocatePriority(
-  op: '>' | '<', oldLevel: number, newLevel: number
-): number {
-  if (op === '>') {
-    if (oldLevel >= 0 && newLevel > 0 || oldLevel < 0 && newLevel < 0) {
-      return Math.max(oldLevel, newLevel) === -1 ? -1 : Math.max(oldLevel, newLevel) + 1;
-    } else if (oldLevel >= 0 && newLevel < 0) {
-      return newLevel === -1 ? -1 : newLevel + 1;
-    } else {
-      // oldLevel < 0 && newLevel >= 0
-      return oldLevel === -1 ? -1 : oldLevel + 1;
-    }
-  } else {
-    // op === '<'
-    if (oldLevel >= 0 && newLevel > 0 || oldLevel < 0 && newLevel < 0) {
-      return Math.min(oldLevel, newLevel) === 1 ? 1 : Math.min(oldLevel, newLevel) - 1;
-    } else if (oldLevel >= 0 && newLevel < 0) {
-      return oldLevel === 1 ? 1 : oldLevel;
-    } else {
-      // oldLevel < 0 && newLevel >= 0
-      return newLevel === 1 ? 1 : newLevel;
-    }
-  }
 }
 
 // Routes that have been prioritized
@@ -102,7 +27,7 @@ export let routePriority: { [route: string]: number } = {
 export let routePriorityCache: { [route: string]: string } = {};
 
 // Returns true when a priority is successfully assigned.
-function pirorityParser(
+export function pirorityParser(
   expr: string,
   sourceRoutePath: string
 ): boolean {
@@ -162,7 +87,7 @@ function pirorityParser(
 
         let hasSuccess = true;
         for (let i = 0; i < left.length; ++i) {
-          if (!matchName(left[i], otherPaths[i])) {
+          if (!exprVerify(left[i], otherPaths[i])) {
             hasSuccess = false;
             break;
           }
@@ -173,7 +98,7 @@ function pirorityParser(
             i >= otherPaths.length - right.length;
             --i
           ) {
-            if (!matchName(right[i], otherPaths[i])) {
+            if (!exprVerify(right[i], otherPaths[i])) {
               hasSuccess = false;
               break;
             }
@@ -192,7 +117,7 @@ function pirorityParser(
 
         let hasSuccess = true;
         for (let i = 0; i < paths.length; ++i) {
-          if (!matchName(paths[i], otherPaths[i])) {
+          if (!exprVerify(paths[i], otherPaths[i])) {
             hasSuccess = false;
             break;
           }
@@ -225,7 +150,7 @@ function pirorityParser(
   return true;
 }
 
-function serviceParser() {
+export function serviceParser() {
 
 }
 
@@ -235,11 +160,3 @@ export let routeTasks: {
     call: (stream: Writable) => Promise<void>
   }
 } = {};
-
-function protocolParser() {
-
-}
-
-export function parser() {
-
-}
