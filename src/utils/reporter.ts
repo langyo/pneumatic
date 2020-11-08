@@ -5,7 +5,7 @@ export function parseEnterReport(
   path: string
 ) {
   console.log(
-    bgYellow((new Date()).toLocaleString()),
+    bgYellow.black((new Date()).toLocaleString()),
     green('Parsing'),
     blue(`${type} - ${path}`)
   );
@@ -16,7 +16,7 @@ export function parseCrashReport(
   path: string, reason: string
 ) {
   console.log(
-    bgYellow((new Date()).toLocaleString()),
+    bgYellow.black((new Date()).toLocaleString()),
     red('Error when parsing'),
     blue(`${type} - ${path}`),
     white('-'),
@@ -29,7 +29,7 @@ export function parseDoneReport(
   path: string
 ) {
   console.log(
-    bgYellow((new Date()).toLocaleString()),
+    bgYellow.black((new Date()).toLocaleString()),
     green('Parsed'),
     blue(`${type} - ${path}`)
   );
@@ -37,7 +37,7 @@ export function parseDoneReport(
 
 export function serverEnterReport(ip: string, url: string) {
   console.log(
-    bgYellow((new Date()).toLocaleString()),
+    bgYellow.black((new Date()).toLocaleString()),
     blue(ip),
     white(url)
   );
@@ -45,7 +45,7 @@ export function serverEnterReport(ip: string, url: string) {
 
 export function serverCrashReport(ip: string, reason: string) {
   console.log(
-    bgYellow((new Date()).toLocaleString()),
+    bgYellow.black((new Date()).toLocaleString()),
     blue(ip),
     red('Error'),
     white(reason)
