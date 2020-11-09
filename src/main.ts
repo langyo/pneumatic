@@ -5,6 +5,7 @@ import * as Koa from 'koa';
 import * as bodyParserMiddleware from 'koa-bodyparser';
 import { watch as watchFiles } from 'chokidar';
 import * as reporter from './utils/reporter';
+import { protocolSpliter } from './utils';
 
 // Watch the frontend part.
 watchFiles(
@@ -34,8 +35,11 @@ watchFiles(
       .substr(join(process.cwd(), './public/frontend').length)
       .split(/[\\\/]/)
       .join('.'))[1];
-  const protocol = typeof ref.protocol !== 'undefined' ? ref.protocol
-    : '' /* TODO */;
+  try {
+    const protocol = protocolSpliter(ref.protocol || 'js.browser');
+  } catch ({ message }) {
+    reporter.parseCrashReport('frontend', path, message);
+  }
   reporter.parseEnterReport('frontend', path);
 
 });
@@ -68,8 +72,11 @@ watchFiles(
       .substr(join(process.cwd(), './public/backend').length)
       .split(/[\\\/]/)
       .join('.'))[1];
-  const protocol = typeof ref.protocol !== 'undefined' ? ref.protocol
-    : '' /* TODO */;
+  try {
+    const protocol = protocolSpliter(ref.protocol || 'js.node>http:80');
+  } catch ({ message }) {
+    reporter.parseCrashReport('backend', path, message);
+  }
   reporter.parseEnterReport('backend', path);
 
 });
