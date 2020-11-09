@@ -6,10 +6,6 @@ import {
   vmLoader
 } from './utils';
 
-export function matcherParser() {
-
-}
-
 // Routes that have been prioritized
 export let routePriority: { [route: string]: number } = {
   $head: 1,

@@ -22,7 +22,9 @@ watchFiles(
     );
     return;
   }
-  if (typeof ref.protocol !== 'undefined' && typeof ref.protocol !== 'string') {
+  if (
+    typeof ref.protocol !== 'undefined' && typeof ref.protocol !== 'string'
+  ) {
     reporter.parseCrashReport(
       'frontend', '[unknown]', 'The protocol must be a string.'
     );
@@ -59,7 +61,9 @@ watchFiles(
     );
     return;
   }
-  if (typeof ref.protocol !== 'undefined' && typeof ref.protocol !== 'string') {
+  if (
+    typeof ref.protocol !== 'undefined' && typeof ref.protocol !== 'string'
+  ) {
     reporter.parseCrashReport(
       'frontend', '[unknown]', 'The protocol must be a string.'
     );
