@@ -1,10 +1,37 @@
 import { Writable } from 'stream';
+import * as reporter from './utils/reporter';
 import {
+  protocolSpliter,
+  IProtocol,
   allocatePriority,
   exprVerify,
   splitThroughRegex,
   vmLoader
 } from './utils';
+
+export async function protocolParser(
+  protocol: string, path: string
+): Promise<IProtocol> {
+  const { platform, major, minor } = protocolSpliter(protocol);
+
+  switch (platform) {
+    case 'js.node':
+      switch (major) {
+        case 'http':
+          if (!/^[0-9]+$/.test(minor)) {
+            throw new Error('The port must be a number!');
+          }
+          break;
+        default:
+          throw new Error(`Unsupport protocol '${major}'.`);
+      }
+      break;
+    default:
+      throw new Error(`Unsupport platform '${platform}'!`);
+  }
+
+  return { platform, major, minor };
+}
 
 // Routes that have been prioritized
 export let routePriority: { [route: string]: number } = {

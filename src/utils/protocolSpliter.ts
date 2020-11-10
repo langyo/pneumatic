@@ -1,25 +1,24 @@
-export function protocolSpliter(str: string): {
+import { parseCrashReport } from './reporter';
+
+export interface IProtocol {
   platform: string,
   major: string,
   minor: string
-} {
-  const platform = str.indexOf('>') >= 0
-    ? str.substr(0, str.indexOf('>')).trim()
-    : str;
-  const major = str.indexOf('>') >= 0
-    ? str.indexOf(':') > str.indexOf('>')
-      ? str.substr(str.indexOf('>') + 1, str.indexOf(':')).trim()
-      : str.substr(str.indexOf('>')).trim()
-    : '';
-  const minor = str.indexOf('>') >= 0 && str.indexOf(':') > str.indexOf('>')
-    ? str.substr(str.indexOf(':') + 1).trim() : '';
+};
 
-  // Verify the platform.
-  if ([
-    'js.browser', 'js.node', 'js.electron', 'js.cordova', 'js.flutter'
-  ].indexOf(platform) < 0) {
-    throw new Error(`Unknown platform '${platform}'!`);
-  }
+export function protocolSpliter(
+  protocol: string
+): IProtocol {
+  const platform = protocol.indexOf('>') >= 0
+    ? protocol.substr(0, protocol.indexOf('>')).trim()
+    : protocol;
+  const major = protocol.indexOf('>') >= 0
+    ? protocol.indexOf(':') > protocol.indexOf('>')
+      ? protocol.substr(protocol.indexOf('>') + 1, protocol.indexOf(':')).trim()
+      : protocol.substr(protocol.indexOf('>')).trim()
+    : '';
+  const minor = protocol.indexOf('>') >= 0 && protocol.indexOf(':') > protocol.indexOf('>')
+    ? protocol.substr(protocol.indexOf(':') + 1).trim() : '';
 
   return { platform, major, minor };
 }
