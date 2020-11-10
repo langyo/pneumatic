@@ -183,3 +183,16 @@ export let routeTasks: {
     call: (stream: Writable) => Promise<void>
   }
 } = {};
+
+export function entry(ref: any, path: string) {
+  if (typeof ref.protocol !== 'undefined') {
+    // When it has the export 'protocol', it will be parsed as a route.
+    if (typeof ref.protocol !== 'string') {
+      throw new Error('You must use a string as the protocol identifier.')
+    }
+    const protocol = protocolParser(ref.protocol, path);
+  } else {
+    // It will be parsed as some static action streams.
+
+  }
+}

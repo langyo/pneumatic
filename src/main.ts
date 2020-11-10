@@ -5,8 +5,8 @@ import * as Koa from 'koa';
 import * as bodyParserMiddleware from 'koa-bodyparser';
 import { watch as watchFiles } from 'chokidar';
 import * as reporter from './utils/reporter';
-import * as frontendUtils from './frontend';
-import * as backendUtils from './backend';
+import { entry as frontendEntry } from './frontend';
+import { entry as backendEntry } from './backend';
 
 // Watch the frontend part.
 watchFiles(
@@ -29,10 +29,9 @@ watchFiles(
       .split(/[\\\/]/)
       .join('.'))[1];
 
+  // Main parse logic.
   try {
-    if (typeof ref.protocol !== 'undefined') {
-      const protocol = frontendUtils.protocolParser(ref.protocol, path);
-    }
+    frontendEntry(ref, path);
   } catch ({ message }) {
     reporter.parseCrashReport('frontend', path, message);
   }
@@ -62,10 +61,9 @@ watchFiles(
       .split(/[\\\/]/)
       .join('.'))[1];
 
+  // Main parse logic.
   try {
-    if (typeof ref.protocol !== 'undefined') {
-      const protocol = backendUtils.protocolParser(ref.protocol, path);
-    }
+    backendEntry(ref, path);
   } catch ({ message }) {
     reporter.parseCrashReport('backend', path, message);
   }
