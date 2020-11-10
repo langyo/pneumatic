@@ -41,7 +41,8 @@ export async function componentParser(
       const { code, sourceMap } = await webpackCompiler(`
 window.__nickelcat_action_preset.modelManager.storageComponent(
   ${path},
-  require(${filePath}).component.args.func
+  require(${filePath}).component.args.component,
+  require(${filePath}).component.args.init
 );
       `, 'web', {
         externals: {
@@ -63,7 +64,7 @@ window.__nickelcat_action_preset.modelManager.storageComponent(
   }
 }
 
-export async function initParser() {
+export async function staticActionParser() {
 
 }
 
@@ -85,6 +86,6 @@ export async function entry(ref: any, path: string, filePath: string) {
     }
   } else {
     // It will be parsed as some static action streams.
-
+    
   }
 }
