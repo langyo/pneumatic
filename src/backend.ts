@@ -9,9 +9,7 @@ import {
   vmLoader
 } from './utils';
 
-export async function protocolParser(
-  protocol: string, path: string
-): Promise<IProtocol> {
+export async function protocolParser(protocol: string): Promise<IProtocol> {
   const { platform, major, minor } = protocolSpliter(protocol);
 
   switch (platform) {
@@ -50,10 +48,10 @@ export let routePriority: { [route: string]: number } = {
 export let routePriorityCache: { [route: string]: string } = {};
 
 // Returns true when a priority is successfully assigned.
-export function pirorityParser(
+export async function pirorityParser(
   expr: string,
   sourceRoutePath: string
-): boolean {
+): Promise<boolean> {
   // First split it into several determinants separated by '&'.
   const subExpr = splitThroughRegex('&', expr).map(n => n.trim());
 
@@ -173,7 +171,7 @@ export function pirorityParser(
   return true;
 }
 
-export function serviceParser() {
+export async function serviceParser() {
 
 }
 
@@ -184,13 +182,14 @@ export let routeTasks: {
   }
 } = {};
 
-export function entry(ref: any, path: string) {
+export async function entry(ref: any, path: string, filePath: string) {
   if (typeof ref.protocol !== 'undefined') {
     // When it has the export 'protocol', it will be parsed as a route.
     if (typeof ref.protocol !== 'string') {
       throw new Error('You must use a string as the protocol identifier.')
     }
-    const protocol = protocolParser(ref.protocol, path);
+    const protocol = await protocolParser(ref.protocol);
+
   } else {
     // It will be parsed as some static action streams.
 

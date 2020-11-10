@@ -31,7 +31,7 @@ watchFiles(
 
   // Main parse logic.
   try {
-    frontendEntry(ref, path);
+    await frontendEntry(ref, path, filePath);
   } catch ({ message }) {
     reporter.parseCrashReport('frontend', path, message);
   }
@@ -63,7 +63,7 @@ watchFiles(
 
   // Main parse logic.
   try {
-    backendEntry(ref, path);
+    await backendEntry(ref, path, filePath);
   } catch ({ message }) {
     reporter.parseCrashReport('backend', path, message);
   }
