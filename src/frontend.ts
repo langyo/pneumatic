@@ -41,8 +41,7 @@ export async function componentParser(
       const { code, sourceMap } = await webpackCompiler(`
 window.__nickelcat_action_preset.modelManager.storageComponent(
   ${path},
-  require(${filePath}).component.args.component,
-  require(${filePath}).component.args.init
+  require(${filePath}).component
 );
       `, 'web', {
         externals: {
