@@ -35,7 +35,7 @@ export function filterSpecialAction(stream: IRuntimeObject, type: string) {
   return ret;
 }
 
-import { hasAction } from 'nickelcat/runtimeManager'
+import { hasAction } from 'nickelcat/actionManager'
 
 export function filterSpecialPlatform(stream: IRuntimeObject, platform: IPlatforms) {
   const dfs = (obj: IRuntimeObject, route: string = ''): IRuntimeObject => {
