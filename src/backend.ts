@@ -31,7 +31,7 @@ export async function protocolParser(protocol: string): Promise<IProtocol> {
   return { platform, major, minor };
 }
 
-// Routes that have been prioritized
+// Routes that have been prioritized.
 export let routePriority: { [route: string]: number } = {
   $head: 1,
   $begin: 1,
