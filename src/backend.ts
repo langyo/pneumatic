@@ -16,7 +16,7 @@ export async function protocolParser(protocol: string): Promise<IProtocol> {
     case 'js.node':
       switch (major) {
         case 'http':
-          if (!/^[0-9]+$/.test(minor)) {
+          if (minor !== '' && !/^[0-9]+$/.test(minor)) {
             throw new Error('The port must be a number!');
           }
           break;

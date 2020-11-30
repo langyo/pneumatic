@@ -15,7 +15,7 @@ export function protocolSpliter(
   const major = protocol.indexOf('>') >= 0
     ? protocol.indexOf(':') > protocol.indexOf('>')
       ? protocol.substr(protocol.indexOf('>') + 1, protocol.indexOf(':')).trim()
-      : protocol.substr(protocol.indexOf('>')).trim()
+      : protocol.substr(protocol.indexOf('>') + 1).trim()
     : '';
   const minor = protocol.indexOf('>') >= 0 && protocol.indexOf(':') > protocol.indexOf('>')
     ? protocol.substr(protocol.indexOf(':') + 1).trim() : '';
