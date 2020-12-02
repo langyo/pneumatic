@@ -1,5 +1,4 @@
-export function preload() { }
+import { renderReactComponent } from 'nickelcat-action-preset';
 
-export function init() { }
-
-export function component() { }
+export const component = renderReactComponent(
+);

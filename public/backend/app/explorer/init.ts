@@ -1,6 +1,5 @@
-export const level = '=app.frontend.init';
-export const protocol = 'js.node>http';
+import { routeHttp } from 'nickelcat-action-preset';
 
-export function matcher() { }
+export const router = routeHttp(
 
-export function service() { }
+);
