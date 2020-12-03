@@ -4,7 +4,7 @@ import { join } from 'path';
 import * as Koa from 'koa';
 import * as bodyParserMiddleware from 'koa-bodyparser';
 import { watch as watchFiles } from 'chokidar';
-import * as reporter from './utils/reporter';
+import * as logger from './logger';
 import { installComponent  } from 'nickelcat-dev-server/frontendLoader';
 import { installRoute } from 'nickelcat-dev-server/backendLoader';
 
@@ -22,7 +22,7 @@ watchFiles(
       .join('.'))[1];
 
   // Main parse logic.
-  reporter.parseEnterReport('frontend', routePath);
+  logger.parseEnterReport('frontend', routePath);
 
   try {
     await installComponent(
@@ -36,7 +36,7 @@ watchFiles(
       { routePath }
     );
   } catch ({ message }) {
-    reporter.parseCrashReport('frontend', routePath, message);
+    logger.parseCrashReport('frontend', routePath, message);
   }
 
 });
@@ -55,7 +55,7 @@ watchFiles(
       .join('.'))[1];
 
   // Main parse logic.
-  reporter.parseEnterReport('backend', routePath);
+  logger.parseEnterReport('backend', routePath);
 
   try {
     await installRoute(
@@ -69,7 +69,7 @@ watchFiles(
       { routePath }
     );
   } catch ({ message }) {
-    reporter.parseCrashReport('backend', routePath, message);
+    logger.parseCrashReport('backend', routePath, message);
   }
 
 });
@@ -86,7 +86,7 @@ watchFiles(
     .split(/[\\\/]/)
     .join('.'))[1];
 
-  reporter.parseEnterReport('static', routePath);
+  logger.parseEnterReport('static', routePath);
 });
 
 const app = new Koa();
