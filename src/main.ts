@@ -1,28 +1,42 @@
 /// <reference types="node" />
 
 import { join } from 'path';
+import { accessSync, mkdirSync } from 'fs';
 import * as Koa from 'koa';
 import * as bodyParserMiddleware from 'koa-bodyparser';
 import { watch as watchFiles } from 'chokidar';
-import * as logger from './logger';
-import { installComponent  } from 'nickelcat-dev-server/frontendLoader';
+import { installComponent } from 'nickelcat-dev-server/frontendLoader';
 import { installRoute } from 'nickelcat-dev-server/backendLoader';
 
-// Watch the frontend part.
+import { blue, red, green, yellow, white } from 'chalk';
+import { log, registerCallback, ILog } from 'nickelcat/logManager';
+import { access } from 'fs/promises';
+
+// Register the log printer.
+registerCallback((log: ILog) => {
+  console.log(
+    white.bold((new Date(log.time)).toLocaleString()),
+    blue(log.eventType.toUpperCase()),
+    green(log.path),
+    white(log.extraInfo)
+  );
+});
+
+// Watch the web OS's part.
 watchFiles(
-  join(process.cwd(), './public/frontend'), {
+  join(process.cwd(), './src/app/'), {
   ignored: /(node_modules)|(\.git)/
 }).on('all', async (type, filePath) => {
   if (['add', 'change', 'unlink'].indexOf(type) < 0) { return; }
   const ref = require(filePath);
 
-  const routePath = /^\.?(.+)(\.[a-z]+)$/.exec(filePath
-      .substr(join(process.cwd(), './public/backend').length)
-      .split(/[\\\/]/)
-      .join('.'))[1];
+  const routePath = `pneumatic.app.${/^\.?(.+)(\.[a-z]+)$/.exec(filePath
+    .substr(join(process.cwd(), './src/app').length)
+    .split(/[\\\/]/)
+    .join('.'))}`;
 
   // Main parse logic.
-  logger.parseEnterReport('frontend', routePath);
+  log('info', `Parsing '${routePath}'`);
 
   try {
     await installComponent(
@@ -36,26 +50,31 @@ watchFiles(
       { routePath }
     );
   } catch ({ message }) {
-    logger.parseCrashReport('frontend', routePath, message);
+    log('error', `Parsing failed at '${routePath}': ${message}`);
   }
 
 });
 
-// Watch the backend part.
+// Watch the user's services part.
+try {
+  accessSync(join(process.cwd(), './public/'));
+} catch (_e) {
+  mkdirSync(join(process.cwd(), './public/'));
+}
 watchFiles(
-  join(process.cwd(), './public/backend'), {
+  join(process.cwd(), './public/'), {
   ignored: /(node_modules)|(\.git)/
 }).on('all', async (type, filePath) => {
   if (['add', 'change', 'unlink'].indexOf(type) < 0) { return; }
   const ref = require(filePath);
 
   const routePath = /^\.?(.+)(\.[a-z]+)$/.exec(filePath
-      .substr(join(process.cwd(), './public/backend').length)
-      .split(/[\\\/]/)
-      .join('.'))[1];
+    .substr(join(process.cwd(), './public/').length)
+    .split(/[\\\/]/)
+    .join('.'))[1];
 
   // Main parse logic.
-  logger.parseEnterReport('backend', routePath);
+  log('info', `Parsing '${routePath}'`);
 
   try {
     await installRoute(
@@ -69,7 +88,7 @@ watchFiles(
       { routePath }
     );
   } catch ({ message }) {
-    logger.parseCrashReport('backend', routePath, message);
+    log('error', `Parsing failed at '${routePath}': ${message}`);
   }
 
 });
@@ -86,7 +105,7 @@ watchFiles(
     .split(/[\\\/]/)
     .join('.'))[1];
 
-  logger.parseEnterReport('static', routePath);
+  log('info', `Registering static files: '${routePath}'`);
 });
 
 const app = new Koa();
