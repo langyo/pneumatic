@@ -22,6 +22,33 @@ registerCallback((log: ILog) => {
   );
 });
 
+function parseFile(routePath: string, ref: { [key: string]: unknown }) {
+  // try {
+  //   await installComponent(
+  //     ref.component,
+  //     Object.keys(ref)
+  //       .filter(n => n !== 'component')
+  //       .reduce((obj, key) => ({
+  //         ...obj, [key]: ref[key]
+  //       }), {}),
+  //     filePath,
+  //     { routePath }
+  //   );
+  //   await installRoute(
+  //     ref.router,
+  //     Object.keys(ref)
+  //       .filter(n => n !== 'router')
+  //       .reduce((obj, key) => ({
+  //         ...obj, [key]: ref[key]
+  //       }), {}),
+  //     filePath,
+  //     { routePath }
+  //   );
+  // } catch ({ message }) {
+  //   log('error', `Parsing failed at '${routePath}': ${message}`);
+  // }
+}
+
 // Watch the web OS's part.
 watchFiles(
   join(process.cwd(), './src/app/'), {
@@ -37,22 +64,7 @@ watchFiles(
 
   // Main parse logic.
   log('info', `Parsing '${routePath}'`);
-
-  try {
-    await installComponent(
-      ref.component,
-      Object.keys(ref)
-        .filter(n => n !== 'component')
-        .reduce((obj, key) => ({
-          ...obj, [key]: ref[key]
-        }), {}),
-      filePath,
-      { routePath }
-    );
-  } catch ({ message }) {
-    log('error', `Parsing failed at '${routePath}': ${message}`);
-  }
-
+  parseFile(routePath, ref);
 });
 
 // Watch the user's services part.
@@ -75,22 +87,7 @@ watchFiles(
 
   // Main parse logic.
   log('info', `Parsing '${routePath}'`);
-
-  try {
-    await installRoute(
-      ref.router,
-      Object.keys(ref)
-        .filter(n => n !== 'router')
-        .reduce((obj, key) => ({
-          ...obj, [key]: ref[key]
-        }), {}),
-      filePath,
-      { routePath }
-    );
-  } catch ({ message }) {
-    log('error', `Parsing failed at '${routePath}': ${message}`);
-  }
-
+  parseFile(routePath, ref);
 });
 
 // Watch the static files' folder.
@@ -106,6 +103,7 @@ watchFiles(
     .join('.'))[1];
 
   log('info', `Registering static files: '${routePath}'`);
+  // TODO - Write the middleware logic.
 });
 
 const app = new Koa();
