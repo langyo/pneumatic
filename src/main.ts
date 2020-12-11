@@ -5,8 +5,7 @@ import { accessSync, mkdirSync } from 'fs';
 import * as Koa from 'koa';
 import * as bodyParserMiddleware from 'koa-bodyparser';
 import { watch as watchFiles } from 'chokidar';
-import { installComponent } from 'nickelcat-dev-server/frontendLoader';
-import { installRoute } from 'nickelcat-dev-server/backendLoader';
+import { parseActionObject, parseAST } from 'nickelcat-dev-server/actionTraitParser';
 
 import { blue, red, green, yellow, white } from 'chalk';
 import { log, registerCallback, ILog } from 'nickelcat/logManager';
@@ -23,30 +22,11 @@ registerCallback((log: ILog) => {
 });
 
 function parseFile(routePath: string, ref: { [key: string]: unknown }) {
-  // try {
-  //   await installComponent(
-  //     ref.component,
-  //     Object.keys(ref)
-  //       .filter(n => n !== 'component')
-  //       .reduce((obj, key) => ({
-  //         ...obj, [key]: ref[key]
-  //       }), {}),
-  //     filePath,
-  //     { routePath }
-  //   );
-  //   await installRoute(
-  //     ref.router,
-  //     Object.keys(ref)
-  //       .filter(n => n !== 'router')
-  //       .reduce((obj, key) => ({
-  //         ...obj, [key]: ref[key]
-  //       }), {}),
-  //     filePath,
-  //     { routePath }
-  //   );
-  // } catch ({ message }) {
-  //   log('error', `Parsing failed at '${routePath}': ${message}`);
-  // }
+  for (const actionName of Object.keys(ref)) {
+    if (typeof ref[actionName] === 'object') {
+      parseActionObject(routePath, actionName, ref[actionName];)
+    }
+  }
 }
 
 // Watch the web OS's part.
