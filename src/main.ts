@@ -90,7 +90,7 @@ const app = new Koa();
 
 app.use(bodyParserMiddleware());
 
-app.use(async (ctx: Koa.BaseContext, next: () => Promise<any>) => {
+app.use(async (ctx: Koa.BaseContext, next: () => Promise<unknown>) => {
 
   await next();
 });
