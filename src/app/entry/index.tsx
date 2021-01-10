@@ -7,12 +7,41 @@ import {
   mdiPlus,
   mdiFolderOutline,
   mdiMemory,
-  mdiApplication
+  mdiApplication,
+  mdiViewCarouselOutline,
+  mdiWeb,
+  mdiDatabase,
+  mdiFormatListChecks,
+  mdiConsole,
+  mdiPaletteOutline,
+  mdiApps
 } from "@mdi/js";
 
-import { Guide } from "./guide";
-import { Explorer } from "../explorer";
-import { Monitor } from "../monitor";
+import { Explorer } from "./explorer";
+import { Monitor } from "./monitor";
+
+const IconButton = ({ iconPath, onClick }) => (
+  <button
+    className={css`
+      border: none;
+      outline: none;
+      background: none;
+      width: 24px;
+      height: 24px;
+      margin: 2px;
+      padding: 2px;
+      &:hover {
+        background: rgba(0.5, 0.5, 0.5, 0.2);
+      }
+      &:active {
+        background: rgba(0.5, 0.5, 0.5, 0.4);
+      }
+    `}
+    onClick={onClick}
+  >
+    <Icon path={iconPath} size={0.8} color="#fff" />
+  </button>
+);
 
 const Tag = ({ title, iconPath, isActive, onToggle, onClose }) => (
   <div
@@ -20,9 +49,11 @@ const Tag = ({ title, iconPath, isActive, onToggle, onClose }) => (
       margin: 0px 2px 0px 0px;
       padding: 0px;
       width: 220px;
+      min-width: 50px;
       ${isActive && "background: rgba(0.5, 0.5, 0.5, 0.1);"}
       display: flex;
       flex-direction: row;
+      justify-content: space-between;
       &:hover {
         background: rgba(0.5, 0.5, 0.5, 0.1);
       }
@@ -34,48 +65,41 @@ const Tag = ({ title, iconPath, isActive, onToggle, onClose }) => (
   >
     <div
       className={css`
-        margin: 2px 4px;
-        padding: 2px;
-        width: 20px;
-        height: 20px;
+        display: flex;
+        flex-direction: row;
+        overflow-x: hidden;
       `}
     >
-      <Icon path={iconPath} size={0.8} color="#fff" />
+      <div
+        className={css`
+          margin: 2px 4px;
+          padding: 2px;
+          width: 20px;
+          height: 20px;
+        `}
+      >
+        <Icon path={iconPath} size={0.8} color="#fff" />
+      </div>
+      <div
+        className={css`
+          margin: 0px 4px;
+          line-height: 28px;
+          white-space: nowrap;
+          overflow-x: hidden;
+          text-overflow: ellipsis;
+          user-select: none;
+        `}
+      >
+        {title}
+      </div>
     </div>
-    <div
-      className={css`
-        margin: 0px 4px;
-        line-height: 28px;
-        user-select: none;
-      `}
-    >
-      {title}
-    </div>
-    <button
-      className={css`
-        border: none;
-        outline: none;
-        background: none;
-        width: 24px;
-        height: 24px;
-        margin: 2px;
-        margin-left: auto;
-        margin-right: 4px;
-        padding: 2px;
-        &:hover {
-          background: rgba(0.5, 0.5, 0.5, 0.2);
-        }
-        &:active {
-          background: rgba(0.5, 0.5, 0.5, 0.4);
-        }
-      `}
+    <IconButton
+      iconPath={mdiClose}
       onClick={(e) => {
         e.stopPropagation();
         onClose();
       }}
-    >
-      <Icon path={mdiClose} size={0.8} color="#fff" />
-    </button>
+    />
   </div>
 );
 
@@ -91,6 +115,30 @@ const tagMap = {
   monitor: {
     iconPath: mdiMemory,
     title: "状态监控"
+  },
+  browser: {
+    iconPath: mdiWeb,
+    title: "代理浏览器"
+  },
+  database: {
+    iconPath: mdiDatabase,
+    title: "数据库管理"
+  },
+  plan: {
+    iconPath: mdiFormatListChecks,
+    title: "计划任务"
+  },
+  console: {
+    iconPath: mdiConsole,
+    title: "命令行终端"
+  },
+  theme: {
+    iconPath: mdiPaletteOutline,
+    title: "主题配置"
+  },
+  market: {
+    iconPath: mdiApps,
+    title: "应用市场"
   }
 };
 
@@ -136,104 +184,94 @@ export default function () {
             color: #fff;
             display: flex;
             flex-direction: row;
+            width: calc(100% - 56px);
           `}
         >
-          {tags.map(({ type }, index) => (
-            <Tag
-              title={tagMap[type].title}
-              iconPath={tagMap[type].iconPath}
-              isActive={index === activeTag}
-              onToggle={() => setActiveTag(index)}
-              onClose={() => {
-                if (tags.length === 1) {
-                  setActiveTag(-1);
-                } else if (activeTag !== 0 && activeTag >= index) {
-                  setActiveTag(activeTag - 1);
-                }
-                setTags(tags.filter((_name, i) => i !== index));
-              }}
-            />
-          ))}
-          {activeTag === -1 && (
-            <div
-              className={css`
-                margin: 0px 2px 0px 0px;
-                padding: 0px;
-                width: 220px;
-                display: flex;
-                flex-direction: row;
-              `}
-            >
+          <div
+            className={css`
+              display: flex;
+              flex-direction: row;
+              max-width: calc(100% - 28px);
+              overflow-x: hidden;
+            `}
+          >
+            {tags.map(({ type }, index) => (
+              <Tag
+                title={tagMap[type].title}
+                iconPath={tagMap[type].iconPath}
+                isActive={index === activeTag}
+                onToggle={() => setActiveTag(index)}
+                onClose={() => {
+                  if (tags.length === 1) {
+                    setActiveTag(-1);
+                  } else if (activeTag !== 0 && activeTag >= index) {
+                    setActiveTag(activeTag - 1);
+                  }
+                  setTags(tags.filter((_name, i) => i !== index));
+                }}
+              />
+            ))}
+            {activeTag === -1 && (
               <div
                 className={css`
-                  margin: 2px 4px;
-                  padding: 2px;
-                  width: 20px;
-                  height: 20px;
+                  margin: 0px 2px 0px 0px;
+                  padding: 0px;
+                  width: 220px;
+                  display: flex;
+                  flex-direction: row;
                 `}
               >
-                <Icon path={mdiApplication} size={0.8} color="#fff" />
+                <div
+                  className={css`
+                    margin: 2px 4px;
+                    padding: 2px;
+                    width: 20px;
+                    height: 20px;
+                  `}
+                >
+                  <Icon path={mdiApplication} size={0.8} color="#fff" />
+                </div>
+                <div
+                  className={css`
+                    margin: 0px 4px;
+                    line-height: 28px;
+                    user-select: none;
+                  `}
+                >
+                  {tagMap.guide.title}
+                </div>
               </div>
-              <div
-                className={css`
-                  margin: 0px 4px;
-                  line-height: 28px;
-                  user-select: none;
-                `}
-              >
-                {tagMap.guide.title}
-              </div>
-            </div>
-          )}
+            )}
+          </div>
           {activeTag !== -1 && (
-            <button
-              className={css`
-                border: none;
-                outline: none;
-                background: none;
-                width: 24px;
-                height: 24px;
-                margin: 2px;
-                padding: 2px;
-                &:hover {
-                  background: rgba(0.5, 0.5, 0.5, 0.2);
-                }
-                &:active {
-                  background: rgba(0.5, 0.5, 0.5, 0.4);
-                }
-              `}
+            <IconButton
               onClick={() => {
                 const tagId = tags.length;
                 setTags([...tags, { type: "guide" }]);
                 setActiveTag(tagId);
               }}
-            >
-              <Icon path={mdiPlus} size={0.8} color="#fff" />
-            </button>
+              iconPath={mdiPlus}
+            />
           )}
         </div>
-        <button
+        <div
+          className={css`
+            position: absolute;
+            right: 28px;
+            top: 0px;
+          `}
+        >
+          <IconButton iconPath={mdiViewCarouselOutline} />
+        </div>
+        <div
           className={css`
             position: absolute;
             right: 2px;
             top: 0px;
-            border: none;
-            outline: none;
-            background: none;
-            width: 24px;
-            height: 24px;
-            margin: 2px;
-            padding: 2px;
-            &:hover {
-              background: rgba(0.5, 0.5, 0.5, 0.2);
-            }
-            &:active {
-              background: rgba(0.5, 0.5, 0.5, 0.4);
-            }
           `}
         >
-          <Icon path={mdiUnfoldMoreVertical} size={0.8} color="#fff" />
-        </button>
+          <IconButton iconPath={mdiUnfoldMoreVertical} />
+        </div>
       </div>
       {/* App area */}
       <div
@@ -246,18 +284,89 @@ export default function () {
         `}
       >
         {(activeTag === -1 || tags[activeTag].type === "guide") && (
-          <Guide
-            pushNewTag={(type) => {
-              if (activeTag === -1) {
-                setTags([{ type }]);
-                setActiveTag(0);
-              } else {
-                let temp = [...tags];
-                temp[activeTag] = { type };
-                setTags(temp);
-              }
-            }}
-          />
+          <div
+            className={css`
+              margin: 0px;
+              height: 100%;
+              width: 100%;
+              background: rgba(0.5, 0.5, 0.5, 0.1);
+            `}
+          >
+            <div
+              className={css`
+                font-size: 32px;
+                margin: 16px 32px;
+                height: 36px;
+                line-height: 36px;
+                padding: 4px;
+                display: inline-block;
+                user-select: none;
+              `}
+            >
+              {"导航"}
+            </div>
+            <div
+              className={css`
+                width: 90%;
+                margin: 8px;
+                display: flex;
+                flex-wrap: wrap;
+              `}
+            >
+              {[
+                "explorer",
+                "monitor",
+                "plan",
+                "console",
+                "browser",
+                "database",
+                "theme",
+                "market"
+              ].map((type) => (
+                <div
+                  className={css`
+                    width: 96px;
+                    height: 96px;
+                    margin: 8px;
+                    padding-top: 16px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    &:hover {
+                      background: rgba(0.5, 0.5, 0.5, 0.2);
+                    }
+                  `}
+                  onClick={() => {
+                    if (activeTag === -1) {
+                      setTags([{ type }]);
+                      setActiveTag(0);
+                    } else {
+                      let temp = [...tags];
+                      temp[activeTag] = { type };
+                      setTags(temp);
+                    }
+                  }}
+                >
+                  <Icon path={tagMap[type].iconPath} size={2} />
+                  <p
+                    className={css`
+                      margin: 0px;
+                      line-height: 24px;
+                      font-size: 14px;
+                      height: 48px;
+                      width: 92px;
+                      word-break: break-all;
+                      text-align: center;
+                      user-select: none;
+                    `}
+                  >
+                    {tagMap[type].title}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
         {activeTag !== -1 && (
           <div>
