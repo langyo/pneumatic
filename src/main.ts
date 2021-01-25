@@ -11,9 +11,12 @@ app.use(bodyParserMiddleware());
   console.log('Compiling the SPA part.');
   const { code } = await webpackCompiler(`
     import { render } from 'react-dom';
+    import { createElement } from 'react';
     render(
-      document.querySelector('#root'),
-      require('${join(__dirname, './entry/index.tsx')}')
+      createElement(
+        require('${join(__dirname, './entry/index.tsx')}').default
+      ),
+      document.querySelector('#root')
     );
   `);
 
