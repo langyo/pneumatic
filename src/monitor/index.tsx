@@ -10,12 +10,12 @@ import {
   mdiWall
 } from "@mdi/js";
 
-import { HardwareMonitor } from "./hardwareMonitor";
-import { FirewallStatus } from "./firewallStatus";
-import { NetworokStatus } from "./networkStatus";
-import { ResourceUsgaeStatus } from "./resourceUsageStatus";
-import { ThreadManager } from "./threadManager";
-import { LoadBalanceStatus } from "./loadBalanceStatus";
+import { HardwareMonitor } from "./hardwareMonitor.tsx";
+import { FirewallStatus } from "./firewallStatus.tsx";
+import { NetworokStatus } from "./networkStatus.tsx";
+import { ResourceUsgaeStatus } from "./resourceUsageStatus.tsx";
+import { ThreadManager } from "./threadManager.tsx";
+import { LoadBalanceStatus } from "./loadBalanceStatus.tsx";
 
 function ToolbarItem({ iconPath, title, isActive, onClick }) {
   return (

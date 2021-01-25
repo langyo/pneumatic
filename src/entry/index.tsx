@@ -17,8 +17,8 @@ import {
   mdiApps
 } from "@mdi/js";
 
-import { Explorer } from "./explorer";
-import { Monitor } from "./monitor";
+import { Explorer } from "../explorer/index.tsx";
+import { Monitor } from "../monitor/index.tsx";
 
 const IconButton = ({ iconPath, onClick }) => (
   <button
