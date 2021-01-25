@@ -8,7 +8,7 @@ const app = new Koa();
 app.use(bodyParserMiddleware());
 
 (async () => {
-  console.log('Compiling');
+  console.log('Compiling the SPA part.');
   const { code } = await webpackCompiler(`
     import { render } from 'react-dom';
     render(
@@ -21,9 +21,26 @@ app.use(bodyParserMiddleware());
     ctx: Koa.BaseContext,
     next: () => Promise<unknown>
   ) => {
-    ctx.req.body = code;
-    console.log('New connection.');
-    await next();
+    console.log('New connection -', ctx.path);
+    switch (ctx.path) {
+      case '/':
+        ctx.body = `<html>
+          <head>
+            <title>Test</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+          </head>
+          <body>
+            <div id="root"></div>
+            <script src="spa.js"></script>
+            <script src="//cdn.jsdelivr.net/npm/eruda"></script>
+            <script>eruda.init();</script>
+          </body>
+        </html>`;
+        break;
+      case '/spa.js':
+        ctx.body = code;
+        break;
+    }
   });
 
   app.listen(
