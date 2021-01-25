@@ -34,14 +34,14 @@ app.use(bodyParserMiddleware());
           </head>
           <body>
             <div id="root"></div>
-            <script src="spa.js"></script>
-            <script src="//cdn.jsdelivr.net/npm/eruda"></script>
-            <script>eruda.init();</script>
+            <script>${code}</script>
+            ${
+              ctx.query.debug === '1' &&
+              `<script src="//cdn.jsdelivr.net/npm/eruda"></script>
+              <script>eruda.init();</script>`
+            }
           </body>
         </html>`;
-        break;
-      case '/spa.js':
-        ctx.body = code;
         break;
     }
   });
