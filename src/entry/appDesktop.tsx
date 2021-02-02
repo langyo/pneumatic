@@ -17,8 +17,8 @@ import {
   mdiApps
 } from "@mdi/js";
 
-import { Explorer } from "../explorer/index.tsx";
-import { Monitor } from "../monitor/index.tsx";
+import { Explorer } from "../explorer/index";
+import { Monitor } from "../monitor/index";
 
 const IconButton = ({ iconPath, onClick }) => (
   <button
@@ -261,7 +261,7 @@ export default function () {
             top: 0px;
           `}
         >
-          <IconButton iconPath={mdiViewCarouselOutline} />
+          <IconButton iconPath={mdiViewCarouselOutline} onClick />
         </div>
         <div
           className={css`
@@ -270,7 +270,7 @@ export default function () {
             top: 0px;
           `}
         >
-          <IconButton iconPath={mdiUnfoldMoreVertical} />
+          <IconButton iconPath={mdiUnfoldMoreVertical} onClick />
         </div>
       </div>
       {/* App area */}

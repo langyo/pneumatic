@@ -16,7 +16,7 @@ function vfsLoader(
   }), {});
 
   const mfs = Volume.fromJSON(vf);
-  let fs = ((new Union()) as any).use(realFs).use(mfs);
+  const fs = ((new Union()) as any).use(realFs).use(mfs);
   if (typeof fs['join'] === 'undefined') {
     fs['join'] = join;
   }
@@ -67,7 +67,7 @@ export async function webpackCompiler(
     },
     output: {
       filename: 'output.js',
-      path: '/'
+      path: process.cwd()
     },
     devtool: 'source-map',
     ...extraOpts
@@ -94,11 +94,11 @@ export async function webpackCompiler(
             errStr += e.message + '\n';
           }
         }
-        reject(new Error(errStr));
+        reject(Error(errStr));
       }
 
       else {
-        fs.readFile('/output.js', { encoding: 'utf8' },
+        fs.readFile(join(process.cwd(), '/output.js'), { encoding: 'utf8' },
           (err, code) => {
             fs.readFile('/output.js.map', { encoding: 'utf8' },
               (err, sourceMap) => {

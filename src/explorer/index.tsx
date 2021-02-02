@@ -83,8 +83,8 @@ function ContentItem({ iconPath, title }) {
   );
 }
 
-export function Explorer({}) {
-  return [
+export function Explorer({ }) {
+  return <>
     // Sidebar
     <div
       className={css`
@@ -239,5 +239,5 @@ export function Explorer({}) {
         <ContentItem iconPath={mdiFileDocumentOutline} title="README.md" />
       </div>
     </div>
-  ];
+  </>;
 }

@@ -14,12 +14,15 @@ app.use(bodyParserMiddleware());
     import { createElement } from 'react';
     render(
       createElement(
-        require('${join(__dirname, './entry/index.tsx')}').default
+        require('${
+          join(__dirname, './entry/appMobile.tsx').split('\\').join('\\\\')
+        }').default
       ),
       document.querySelector('#root')
     );
   `);
 
+  console.log('Creating the server.');
   app.use(async (
     ctx: Koa.BaseContext,
     next: () => Promise<unknown>
