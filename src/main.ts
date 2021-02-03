@@ -20,12 +20,17 @@ app.use(bodyParserMiddleware());
       ),
       document.querySelector('#root')
     );
-  `);
+  `, {
+    // watch: true,
+    // watchOptions: {
+    //   ignored: /node_modules|\.git/
+    // }
+  });
 
   console.log('Creating the server.');
   app.use(async (
     ctx: Koa.BaseContext,
-    next: () => Promise<unknown>
+    _next: () => Promise<unknown>
   ) => {
     console.log('New connection -', ctx.path);
     switch (ctx.path) {
