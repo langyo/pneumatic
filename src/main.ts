@@ -1,7 +1,11 @@
 import { join } from 'path';
 import * as Koa from 'koa';
 import * as bodyParserMiddleware from 'koa-bodyparser';
-import { webpackCompiler } from './webpackLoader';
+
+import * as webpack from 'webpack';
+import { Volume, IFs } from 'memfs';
+import { Union } from 'unionfs'
+import * as realFs from 'fs';
 
 const app = new Koa();
 
@@ -9,22 +13,84 @@ app.use(bodyParserMiddleware());
 
 (async () => {
   console.log('Compiling the SPA part.');
-  const { code } = await webpackCompiler(`
-    import { render } from 'react-dom';
-    import { createElement } from 'react';
-    render(
-      createElement(
-        require('${
-          join(__dirname, './entry/appMobile.tsx').split('\\').join('\\\\')
-        }').default
-      ),
-      document.querySelector('#root')
-    );
-  `, {
-    // watch: true,
-    // watchOptions: {
-    //   ignored: /node_modules|\.git/
-    // }
+  const fs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
+    [join(process.cwd(), './__entry.ts')]: `
+import { render } from 'react-dom';
+import { createElement } from 'react';
+render(
+  createElement(
+    require('${join(
+      __dirname, './entry/appMobile.tsx'
+    ).split('\\').join('\\\\')}').default
+  ),
+  document.querySelector('#root')
+);`
+  }));
+  fs['join'] = join;
+
+  const compiler = webpack({
+    entry: join(process.cwd(), './__entry.ts'),
+    mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
+    context: process.cwd(),
+    module: {
+      rules: [
+        {
+          test: /\.[jt]sx?$/,
+          loader: 'babel-loader',
+          exclude: /node_modules/,
+          options: {
+            presets: [
+              '@babel/preset-env',
+              '@babel/preset-react',
+              '@babel/preset-typescript'
+            ]
+          }
+        }
+      ]
+    },
+    resolve: {
+      modules: [
+        join(process.cwd(), './node_modules'),
+        'node_modules'
+      ]
+    },
+    resolveLoader: {
+      modules: [
+        join(process.cwd(), './node_modules'),
+        'node_modules'
+      ]
+    },
+    output: {
+      filename: 'output.js',
+      path: process.cwd()
+    },
+    devtool: process.env.NODE_ENV === 'production' ? 'none' : 'inline-source-map'
+  });
+  compiler.inputFileSystem = fs;
+  compiler.outputFileSystem = fs;
+
+  compiler.watch({
+    ignored: ['**/node_modules/**', '**/.git/**']
+  }, (err: Error, status) => {
+    if (err) {
+      throw err;
+    } else if (status.hasErrors()) {
+      const info = status.toJson();
+      let errStr = '';
+      if (status.hasErrors()) {
+        for (const e of info.errors) {
+          errStr += e.message + '\n';
+        }
+      }
+      if (status.hasWarnings()) {
+        for (const e of info.warnings) {
+          errStr += e.message + '\n';
+        }
+      }
+      throw Error(errStr);
+    } else {
+      console.log('Compiled the SPA part.');
+    }
   });
 
   console.log('Creating the server.');
@@ -42,12 +108,12 @@ app.use(bodyParserMiddleware());
           </head>
           <body>
             <div id="root"></div>
-            <script>${code}</script>
-            ${
-              ctx.query.debug === '1' &&
-              `<script src="//cdn.jsdelivr.net/npm/eruda"></script>
-              <script>eruda.init();</script>`
-            }
+            <script>
+            ${fs.readFileSync(join(process.cwd(), '/output.js'), 'utf8')}
+            </script>
+            ${ctx.query.debug === '1' && `
+            <script src="//cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init();</script>
+            `}
           </body>
         </html>`;
         break;
