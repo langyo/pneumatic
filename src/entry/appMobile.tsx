@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { css } from "@emotion/css";
 import Icon from "@mdi/react";
 import {
@@ -17,6 +17,7 @@ import {
   mdiApps
 } from "@mdi/js";
 
+import { Context } from "./context";
 import { Explorer } from "../explorer/index";
 import { Monitor } from "../monitor/index";
 
@@ -60,8 +61,7 @@ const tagMap = {
 };
 
 export default function () {
-  const [activeTag, setActiveTag] = useState(-1);
-  const [tags, setTags] = useState([]);
+  const { active, list } = useContext(Context);
 
   return (
     <div

@@ -20,7 +20,7 @@ import { createElement } from 'react';
 render(
   createElement(
     require('${join(
-      __dirname, './entry/appMobile.tsx'
+      __dirname, './entry/index.tsx'
     ).split('\\').join('\\\\')}').default
   ),
   document.querySelector('#root')
@@ -49,6 +49,7 @@ render(
       ]
     },
     resolve: {
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
       modules: [
         join(process.cwd(), './node_modules'),
         'node_modules'
@@ -64,7 +65,7 @@ render(
       filename: 'output.js',
       path: process.cwd()
     },
-    devtool: process.env.NODE_ENV === 'production' ? 'none' : 'inline-source-map'
+    devtool: process.env.NODE_ENV === 'production' ? 'none' : 'source-map'
   });
   compiler.inputFileSystem = fs;
   compiler.outputFileSystem = fs;
