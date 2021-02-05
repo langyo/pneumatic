@@ -2,8 +2,9 @@ import { createContext } from 'react';
 
 export const TaskManagerContext = createContext({});
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { TaskViewMobile } from './taskViewMobile';
+import { ThemeProviderContext } from './themeProvider';
 
 export interface ITask {
   id: string,   // Generate from the dependency 'shortid'.
@@ -29,9 +30,10 @@ export function TaskManager() {
     title: 'github.com',
     status: 'hidden'
   }]);
+  const { media } = useContext(ThemeProviderContext);
 
   return <TaskManagerContext.Provider value={tasks}>
-    <TaskViewMobile />
+    {media === 'mobile' && <TaskViewMobile />}
     {tasks.map(({ id, pkg, status }) => {
     })}
   </TaskManagerContext.Provider>

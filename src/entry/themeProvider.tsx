@@ -1,4 +1,5 @@
 import React, { createContext, useState } from 'react';
+import { useMediaQuery } from 'react-responsive';
 
 export const ThemeProviderContext = createContext({});
 
@@ -22,9 +23,12 @@ export const defaultAppInfo = {
 
 export function ThemeProvider(props) {
   const [appInfo, setAppInfo] = useState(defaultAppInfo);
+  const media = useMediaQuery({
+    query: '(min-width: 992px)'
+  }) ? 'desktop' : 'mobile';
 
   return <ThemeProviderContext.Provider value={{
-    appInfo
+    appInfo, media
   }}>
     {props.children}
   </ThemeProviderContext.Provider>

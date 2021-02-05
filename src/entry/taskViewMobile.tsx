@@ -107,11 +107,8 @@ export function TaskViewMobile() {
       height: 48px;
       width: 100%;
       background-color: rgba(0, 0, 0, 0.1);
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.2);
-      }
       &:active {
-        background-color: rgba(0, 0, 0, 0.4);
+        background-color: rgba(0, 0, 0, 0.2);
       }
     `}>
       <div className={css`
