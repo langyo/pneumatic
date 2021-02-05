@@ -114,7 +114,7 @@ render(
             </script>
             ${ctx.query.debug === '1' && `
             <script src="//cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init();</script>
-            `}
+            ` || ``}
           </body>
         </html>`;
         break;

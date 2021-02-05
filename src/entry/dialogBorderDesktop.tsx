@@ -1,67 +1,15 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { css } from "@emotion/css";
 import Icon from "@mdi/react";
 import {
   mdiUnfoldMoreVertical,
-  mdiClose,
-  mdiPlus,
-  mdiFolderOutline,
-  mdiMemory,
-  mdiApplication,
-  mdiViewCarouselOutline,
-  mdiWeb,
-  mdiDatabase,
-  mdiFormatListChecks,
-  mdiConsole,
-  mdiPaletteOutline,
-  mdiApps
+  mdiViewCarouselOutline
 } from "@mdi/js";
 
-import { Context } from "./context";
-import { Explorer } from "../explorer/index";
-import { Monitor } from "../monitor/index";
-
-const tagMap = {
-  guide: {
-    iconPath: mdiApplication,
-    title: "导航"
-  },
-  explorer: {
-    iconPath: mdiFolderOutline,
-    title: "资源管理"
-  },
-  monitor: {
-    iconPath: mdiMemory,
-    title: "状态监控"
-  },
-  browser: {
-    iconPath: mdiWeb,
-    title: "代理浏览器"
-  },
-  database: {
-    iconPath: mdiDatabase,
-    title: "数据库管理"
-  },
-  plan: {
-    iconPath: mdiFormatListChecks,
-    title: "计划任务"
-  },
-  console: {
-    iconPath: mdiConsole,
-    title: "命令行终端"
-  },
-  theme: {
-    iconPath: mdiPaletteOutline,
-    title: "主题配置"
-  },
-  market: {
-    iconPath: mdiApps,
-    title: "应用市场"
-  }
-};
+import { TaskManagerContext } from "./taskManager";
 
 export default function () {
-  const { active, list } = useContext(Context);
+  const { active, list } = useContext(TaskManagerContext);
 
   return (
     <div
