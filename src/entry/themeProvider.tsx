@@ -1,4 +1,4 @@
-import React, { createContext } from 'react';
+import React, { createContext, useState } from 'react';
 
 export const ThemeProviderContext = createContext({});
 
@@ -8,14 +8,24 @@ import {
   mdiConsole, mdiPaletteOutline, mdiApps
 } from "@mdi/js";
 
-export const defaultAppIconMap = {
-  guide: { iconPath: mdiApplication, title: "Guide" },
-  explorer: { iconPath: mdiFolderOutline, title: "Explorer" },
-  monitor: { iconPath: mdiMemory, title: "Monitor" },
-  browser: { iconPath: mdiWeb, title: "Proxy Web Browser" },
-  database: { iconPath: mdiDatabase, title: "Database manager" },
-  plan: { iconPath: mdiFormatListChecks, title: "Plan tasks" },
-  terminal: { iconPath: mdiConsole, title: "Terminal" },
-  theme: { iconPath: mdiPaletteOutline, title: "Theme setting" },
-  market: { iconPath: mdiApps, title: "Application market" }
+export const defaultAppInfo = {
+  'pneumatic.guide': { iconPath: mdiApplication, name: "Guide" },
+  'pneumatic.explorer': { iconPath: mdiFolderOutline, name: "Explorer" },
+  'pneumatic.monitor': { iconPath: mdiMemory, name: "Monitor" },
+  'pneumatic.browser': { iconPath: mdiWeb, name: "Proxy Web Browser" },
+  'pneumatic.database': { iconPath: mdiDatabase, name: "Database manager" },
+  'pneumatic.plan': { iconPath: mdiFormatListChecks, name: "Plan tasks" },
+  'pneumatic.terminal': { iconPath: mdiConsole, name: "Terminal" },
+  'pneumatic.theme': { iconPath: mdiPaletteOutline, name: "Theme setting" },
+  'pneumatic.market': { iconPath: mdiApps, name: "Application market" }
 };
+
+export function ThemeProvider(props) {
+  const [appInfo, setAppInfo] = useState(defaultAppInfo);
+
+  return <ThemeProviderContext.Provider value={{
+    appInfo
+  }}>
+    {props.children}
+  </ThemeProviderContext.Provider>
+}

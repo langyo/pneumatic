@@ -1,5 +1,6 @@
 import React from 'react';
-import TaskManager from './taskManager';
+import { ThemeProvider } from './themeProvider';
+import { TaskManager } from './taskManager';
 
 export default function () {
   return <>
@@ -9,6 +10,8 @@ export default function () {
         padding: 0px;
       }
     `}</style>
-    <TaskManager />
+    <ThemeProvider>
+      <TaskManager />
+    </ThemeProvider>
   </>;
 }
