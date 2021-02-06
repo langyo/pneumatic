@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { css } from "@emotion/css";
 
-export function NetworokStatus({}) {
+export function ResourceUsgaeStatus({}) {
   return (
     <div>
       <div
@@ -15,7 +15,7 @@ export function NetworokStatus({}) {
           user-select: none;
         `}
       >
-        {"网络统计"}
+        {"Resource Usage"}
       </div>
       <div
         className={css`

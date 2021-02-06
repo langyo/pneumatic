@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { css } from "@emotion/css";
 
-export function FirewallStatus({}) {
+export function LoadBalanceStatus({}) {
   return (
     <div>
       <div
@@ -15,7 +15,7 @@ export function FirewallStatus({}) {
           user-select: none;
         `}
       >
-        {"防火墙状态"}
+        {"Load Balance"}
       </div>
       <div
         className={css`

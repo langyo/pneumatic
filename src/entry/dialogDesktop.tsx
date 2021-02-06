@@ -7,7 +7,7 @@ import { mdiClose } from "@mdi/js";
 import { TaskManagerContext } from "./taskManager";
 
 export function DialogDesktop({
-  icon, title, drawerComponent, bodyComponent, defaultPos
+  icon, title, drawerComponent, contextComponent, defaultPos
 }) {
   return <Draggable
     defaultPosition={defaultPos}
@@ -109,7 +109,7 @@ export function DialogDesktop({
           border-radius: 4px;
         `}
       >
-        {bodyComponent}
+        {contextComponent}
       </div>
     </div>
   </Draggable>;

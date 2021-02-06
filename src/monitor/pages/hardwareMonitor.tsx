@@ -73,7 +73,7 @@ export function HardwareMonitor({}) {
           user-select: none;
         `}
       >
-        {"性能监视"}
+        {"Hardware Monitor"}
       </div>
       <div
         className={css`

@@ -41,7 +41,7 @@ export function TaskManager() {
         icon={appInfo[pkg].icon}
         title={`${appInfo[pkg].name}${title ? ` - ${title}` : ''}`}
         drawerComponent={<p>{'test drawer'}</p>}
-        bodyComponent={<p>{'test body'}</p>}
+        contextComponent={<p>{'test body'}</p>}
       />;
     })}
   </TaskManagerContext.Provider>

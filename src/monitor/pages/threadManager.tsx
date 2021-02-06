@@ -15,7 +15,7 @@ export function ThreadManager({}) {
           user-select: none;
         `}
       >
-        {"任务管理"}
+        {"Thread Management"}
       </div>
       <div
         className={css`
