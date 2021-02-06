@@ -5,6 +5,7 @@ export const TaskManagerContext = createContext({});
 import React, { useState, useContext } from 'react';
 import { TaskViewMobile } from './taskViewMobile';
 import { ThemeProviderContext } from './themeProvider';
+import { DialogDesktop } from './dialogDesktop';
 
 export interface ITask {
   id: string,   // Generate from the dependency 'shortid'.
@@ -30,11 +31,18 @@ export function TaskManager() {
     title: 'github.com',
     status: 'hidden'
   }]);
-  const { media } = useContext(ThemeProviderContext);
+  const { media, appInfo } = useContext(ThemeProviderContext);
 
   return <TaskManagerContext.Provider value={tasks}>
     {media === 'mobile' && <TaskViewMobile />}
-    {tasks.map(({ id, pkg, status }) => {
+    {media === 'desktop' && tasks.map(({ id, pkg, title, status }, index) => {
+      return <DialogDesktop
+        defaultPos={{ x: index * 50 + 20, y: index * 50 + 20 }}
+        icon={appInfo[pkg].icon}
+        title={`${appInfo[pkg].name}${title ? ` - ${title}` : ''}`}
+        drawerComponent={<p>{'test drawer'}</p>}
+        bodyComponent={<p>{'test body'}</p>}
+      />;
     })}
   </TaskManagerContext.Provider>
 }
