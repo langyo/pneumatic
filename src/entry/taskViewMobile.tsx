@@ -4,11 +4,11 @@ import Icon from "@mdi/react";
 import { mdiClose } from "@mdi/js";
 
 import { TaskManagerContext, ITask } from "./taskManager";
-import { ThemeProviderContext } from './themeProvider';
+import { ApplicationProviderContext, IApp } from './applicationProvider';
 
 export function TaskViewMobile() {
   const tasks: ITask[] = useContext(TaskManagerContext);
-  const { appInfo } = useContext(ThemeProviderContext);
+  const apps: IApp[] = useContext(ApplicationProviderContext);
 
   return <div
     className={css`
@@ -70,7 +70,7 @@ export function TaskViewMobile() {
             font-size: ${title ? 16 : 24}px;
             color: #fff;
           `}>
-            {appInfo[pkg].name}
+            {apps[pkg].name}
           </div>
           {title && <div className={css`
             position: absolute;

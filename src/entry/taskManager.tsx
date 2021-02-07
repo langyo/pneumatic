@@ -4,8 +4,10 @@ export const TaskManagerContext = createContext({});
 
 import React, { useState, useContext } from 'react';
 import { TaskViewMobile } from './taskViewMobile';
-import { ThemeProviderContext } from './themeProvider';
 import { DialogDesktop } from './dialogDesktop';
+
+import { ThemeProviderContext } from './themeProvider';
+import { ApplicationProviderContext } from './applicationProvider';
 
 export interface ITask {
   id: string,   // Generate from the dependency 'shortid'.
@@ -16,6 +18,7 @@ export interface ITask {
 };
 
 export function TaskManager() {
+  const apps = useContext(ApplicationProviderContext);
   const [tasks, setTasks]: [ITask[], (tasks: ITask[]) => void] = useState([{
     id: '1',
     pkg: 'pneumatic.explorer',
@@ -31,15 +34,15 @@ export function TaskManager() {
     title: 'github.com',
     status: 'hidden'
   }]);
-  const { media, appInfo } = useContext(ThemeProviderContext);
+  const { media } = useContext(ThemeProviderContext);
 
   return <TaskManagerContext.Provider value={tasks}>
     {media === 'mobile' && <TaskViewMobile />}
     {media === 'desktop' && tasks.map(({ id, pkg, title, status }, index) => {
       return <DialogDesktop
         defaultPos={{ x: index * 50 + 20, y: index * 50 + 20 }}
-        icon={appInfo[pkg].icon}
-        title={`${appInfo[pkg].name}${title ? ` - ${title}` : ''}`}
+        icon={apps[pkg].icon}
+        title={`${apps[pkg].name}${title ? ` - ${title}` : ''}`}
         drawerComponent={<p>{'test drawer'}</p>}
         contextComponent={<p>{'test body'}</p>}
       />;

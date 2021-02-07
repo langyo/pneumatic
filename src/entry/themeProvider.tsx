@@ -3,32 +3,13 @@ import { useMediaQuery } from 'react-responsive';
 
 export const ThemeProviderContext = createContext({});
 
-import {
-  mdiFolderOutline, mdiMemory, mdiApplication,
-  mdiWeb, mdiDatabase, mdiFormatListChecks,
-  mdiConsole, mdiPaletteOutline, mdiApps
-} from "@mdi/js";
-
-export const defaultAppInfo = {
-  'pneumatic.guide': { icon: mdiApplication, name: "Guide" },
-  'pneumatic.explorer': { icon: mdiFolderOutline, name: "Explorer" },
-  'pneumatic.monitor': { icon: mdiMemory, name: "Monitor" },
-  'pneumatic.browser': { icon: mdiWeb, name: "Proxy Web Browser" },
-  'pneumatic.database': { icon: mdiDatabase, name: "Database manager" },
-  'pneumatic.plan': { icon: mdiFormatListChecks, name: "Plan tasks" },
-  'pneumatic.terminal': { icon: mdiConsole, name: "Terminal" },
-  'pneumatic.theme': { icon: mdiPaletteOutline, name: "Theme setting" },
-  'pneumatic.market': { icon: mdiApps, name: "Application market" }
-};
-
 export function ThemeProvider(props) {
-  const [appInfo, setAppInfo] = useState(defaultAppInfo);
   const media = useMediaQuery({
     query: '(min-width: 992px)'
   }) ? 'desktop' : 'mobile';
 
   return <ThemeProviderContext.Provider value={{
-    appInfo, media
+    media
   }}>
     {props.children}
   </ThemeProviderContext.Provider>
