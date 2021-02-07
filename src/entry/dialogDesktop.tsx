@@ -87,7 +87,7 @@ export function DialogDesktop({
       </div>
       <div
         className={css`
-          width: 150px;
+          width: 200px;
           height: calc(100% - 34px);
           position: absolute;
           bottom: 0px;
@@ -100,7 +100,7 @@ export function DialogDesktop({
       </div>
       <div
         className={css`
-          width: calc(100% - 152px);
+          width: calc(100% - 202px);
           height: calc(100% - 34px);
           position: absolute;
           bottom: 0px;

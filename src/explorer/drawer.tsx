@@ -48,9 +48,8 @@ export function ExplorerDrawer({ }) {
     className={css`
       margin: 0px;
       padding-top: 8px;
-      height: 100%;
+      height: calc(100% - 8px);
       width: 100%;
-      background: rgba(0.5, 0.5, 0.5, 0.2);
       display: flex;
       flex-direction: column;
       justify-content: top;

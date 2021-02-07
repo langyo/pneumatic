@@ -9,7 +9,7 @@ import { ThreadManager } from "./pages/threadManager";
 import { LoadBalanceStatus } from "./pages/loadBalanceStatus";
 
 
-export function ExplorerContent({ id }) {
+export function MonitorContent({ id }: { id: number }) {
   return <div
     className={css`
       margin: 0px;

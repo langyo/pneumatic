@@ -43,8 +43,8 @@ export function TaskManager() {
         defaultPos={{ x: index * 50 + 20, y: index * 50 + 20 }}
         icon={apps[pkg].icon}
         title={`${apps[pkg].name}${title ? ` - ${title}` : ''}`}
-        drawerComponent={<p>{'test drawer'}</p>}
-        contextComponent={<p>{'test body'}</p>}
+        contextComponent={apps[pkg].contentComponent({})}
+        drawerComponent={apps[pkg].drawerComponent({})}
       />;
     })}
   </TaskManagerContext.Provider>

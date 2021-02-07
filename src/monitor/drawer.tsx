@@ -6,11 +6,11 @@ import {
 } from "@mdi/js";
 
 const tagMap = [
-  { iconPath: mdiMemory, title: "Hardware Monitor" },
-  { iconPath: mdiWall, title: "Firewall Status" },
-  { iconPath: mdiRouterNetwork, title: "Network Status" },
-  { iconPath: mdiDatabase, title: "Resource Usage" },
-  { iconPath: mdiMenu, title: "Thread Management" },
+  { iconPath: mdiMemory, title: "Hardware" },
+  { iconPath: mdiWall, title: "Firewall" },
+  { iconPath: mdiRouterNetwork, title: "Network" },
+  { iconPath: mdiDatabase, title: "Resource" },
+  { iconPath: mdiMenu, title: "Task manager" },
   { iconPath: mdiServer, title: "Load Balance" }
 ];
 
@@ -53,16 +53,15 @@ function ToolbarItem({ iconPath, title, isActive, onClick }) {
   );
 }
 
-export function ExplorerDrawer({ }) {
+export function MonitorDrawer({ }) {
   const [id, setId] = useState(0);
 
   return <div
     className={css`
       margin: 0px;
       padding-top: 8px;
-      height: 100%;
+      height: calc(100% - 8px);
       width: 100%;
-      background: rgba(0.5, 0.5, 0.5, 0.2);
       display: flex;
       flex-direction: column;
       justify-content: top;

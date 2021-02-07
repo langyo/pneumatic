@@ -8,7 +8,7 @@ import { ApplicationProviderContext, IApp } from './applicationProvider';
 
 export function TaskViewMobile() {
   const tasks: ITask[] = useContext(TaskManagerContext);
-  const apps: IApp[] = useContext(ApplicationProviderContext);
+  const apps: { [pkg: string]: IApp } = useContext(ApplicationProviderContext);
 
   return <div
     className={css`
