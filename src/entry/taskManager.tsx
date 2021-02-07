@@ -4,6 +4,7 @@ export const TaskManagerContext = createContext({});
 
 import React, { useState, useContext } from 'react';
 import { TaskViewMobile } from './taskViewMobile';
+import { DialogMobile } from './dialogMobile';
 import { DialogDesktop } from './dialogDesktop';
 
 import { ThemeProviderContext } from './themeProvider';
@@ -37,9 +38,20 @@ export function TaskManager() {
   const { media } = useContext(ThemeProviderContext);
 
   return <TaskManagerContext.Provider value={tasks}>
-    {media === 'mobile' && <TaskViewMobile />}
+    {media === 'mobile' && tasks.map(({ id, pkg, title, status }, index) => {
+      if (status === 'active') {
+        return <DialogMobile
+          key={id}
+          icon={apps[pkg].icon}
+          title={`${apps[pkg].name}${title ? ` - ${title}` : ''}`}
+          contextComponent={apps[pkg].contentComponent({})}
+          drawerComponent={apps[pkg].drawerComponent({})}
+        />;
+      }
+    })}
     {media === 'desktop' && tasks.map(({ id, pkg, title, status }, index) => {
       return <DialogDesktop
+        key={id}
         defaultPos={{ x: index * 50 + 20, y: index * 50 + 20 }}
         icon={apps[pkg].icon}
         title={`${apps[pkg].name}${title ? ` - ${title}` : ''}`}
