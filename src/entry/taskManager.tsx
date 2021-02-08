@@ -5,7 +5,6 @@ export const TaskManagerContext = createContext({});
 import React, { useState, useContext } from 'react';
 import { TaskViewMobile } from './taskViewMobile';
 import { TaskViewDesktop } from './taskViewDesktop';
-import { DialogMobile } from './dialogMobile';
 import { DialogDesktop } from './dialogDesktop';
 
 import { ThemeProviderContext } from './themeProvider';
@@ -37,21 +36,13 @@ export function TaskManager() {
     status: 'hidden'
   }]);
   const { media } = useContext(ThemeProviderContext);
-
-  // TODO - Cpmbine the dialog render into the task view components.
+  const [isManageMode, setManageMode] = useState(false);
 
   return <TaskManagerContext.Provider value={tasks}>
-    {media === 'mobile' && tasks.map(({ id, pkg, title, status }, index) => {
-      if (status === 'active') {
-        return <DialogMobile
-          key={id}
-          icon={apps[pkg].icon}
-          title={`${apps[pkg].name}${title ? ` - ${title}` : ''}`}
-          contextComponent={apps[pkg].contentComponent({})}
-          drawerComponent={apps[pkg].drawerComponent({})}
-        />;
-      }
-    })}
+    <TaskViewMobile
+      isManageMode={isManageMode}
+      setManageMode={setManageMode}
+    />
     {media === 'desktop' && tasks.map(({ id, pkg, title, status }, index) => {
       return <DialogDesktop
         key={id}
