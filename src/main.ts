@@ -109,12 +109,12 @@ render(
           </head>
           <body>
             <div id="root"></div>
-            <script>
-            ${fs.readFileSync(join(process.cwd(), '/output.js'), 'utf8')}
-            </script>
             ${ctx.query.debug === '1' && `
             <script src="//cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init();</script>
             ` || ``}
+            <script>
+            ${fs.readFileSync(join(process.cwd(), '/output.js'), 'utf8')}
+            </script>
           </body>
         </html>`;
         break;

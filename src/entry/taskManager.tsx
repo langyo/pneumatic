@@ -4,6 +4,7 @@ export const TaskManagerContext = createContext({});
 
 import React, { useState, useContext } from 'react';
 import { TaskViewMobile } from './taskViewMobile';
+import { TaskViewDesktop } from './taskViewDesktop';
 import { DialogMobile } from './dialogMobile';
 import { DialogDesktop } from './dialogDesktop';
 
@@ -36,6 +37,8 @@ export function TaskManager() {
     status: 'hidden'
   }]);
   const { media } = useContext(ThemeProviderContext);
+
+  // TODO - Cpmbine the dialog render into the task view components.
 
   return <TaskManagerContext.Provider value={tasks}>
     {media === 'mobile' && tasks.map(({ id, pkg, title, status }, index) => {
