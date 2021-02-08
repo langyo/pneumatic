@@ -14,7 +14,7 @@ const tagMap = [
   { iconPath: mdiServer, title: "Load Balance" }
 ];
 
-function ToolbarItem({ iconPath, title, isActive, onClick }) {
+function ToolbarItem({ iconPath, title }) {
   return (
     <div
       className={css`
@@ -23,7 +23,7 @@ function ToolbarItem({ iconPath, title, isActive, onClick }) {
         margin: 2px;
         padding: 4px;
         display: flex;
-        ${isActive && "background: rgba(0.5, 0.5, 0.5, 0.1);"}
+        border-radius: 4px;
         &:hover {
           background: rgba(0.5, 0.5, 0.5, 0.1);
         }
@@ -31,14 +31,13 @@ function ToolbarItem({ iconPath, title, isActive, onClick }) {
           background: rgba(0.5, 0.5, 0.5, 0.2);
         }
       `}
-      onClick={onClick}
     >
       <div
         className={css`
           margin: 4px;
         `}
       >
-        <Icon path={iconPath} size={1} />
+        <Icon path={iconPath} size={1} color='#fff' />
       </div>
       <div
         className={css`
@@ -54,8 +53,6 @@ function ToolbarItem({ iconPath, title, isActive, onClick }) {
 }
 
 export function MonitorDrawer({ }) {
-  const [id, setId] = useState(0);
-
   return <div
     className={css`
       margin: 0px;
@@ -67,14 +64,13 @@ export function MonitorDrawer({ }) {
       justify-content: top;
       align-items: center;
       align-content: flex-start;
+      color: #fff;
     `}
   >
     {tagMap.map(({ iconPath, title }, index) => (
       <ToolbarItem
         iconPath={iconPath}
         title={title}
-        isActive={id === index}
-        onClick={() => setId(index)}
       />
     ))}
   </div>;

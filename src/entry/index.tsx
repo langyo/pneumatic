@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
-import { ThemeProvider } from './themeProvider';
+import { TaskViewMobile } from './taskViewMobile';
+import { TaskViewDesktop } from './taskViewDesktop';
+
+import { ThemeProvider, ThemeProviderContext } from './themeProvider';
 import { TaskManager } from './taskManager';
 import { ApplicationProvider } from './applicationProvider';
 
@@ -9,7 +12,14 @@ export default function () {
     <style>{`html, body { margin: 0px; padding: 0px; }`}</style>
     <ThemeProvider>
       <ApplicationProvider>
-        <TaskManager />
+        <TaskManager>
+          <ThemeProviderContext.Consumer>
+            {({ media }) => <>
+              {media === 'mobile' && <TaskViewMobile />}
+              {media === 'desktop' && <TaskViewDesktop />}
+            </>}
+          </ThemeProviderContext.Consumer>
+        </TaskManager>
       </ApplicationProvider>
     </ThemeProvider>
   </>;

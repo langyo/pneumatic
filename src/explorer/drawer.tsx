@@ -15,6 +15,7 @@ function ToolbarItem({ iconPath, title }) {
         margin: 2px;
         padding: 4px;
         display: flex;
+        border-radius: 4px;
         &:hover {
           background: rgba(0.5, 0.5, 0.5, 0.1);
         }
@@ -55,6 +56,7 @@ export function ExplorerDrawer({ }) {
       justify-content: top;
       align-items: center;
       align-content: flex-start;
+      color: #fff;
     `}
   >
     <div

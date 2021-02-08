@@ -20,12 +20,13 @@ function ContentItem({ iconPath, title }) {
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      border-radius: 4px;
       &:hover {
         background: rgba(0.5, 0.5, 0.5, 0.2);
       }
     `}
   >
-    <Icon path={iconPath} size={2} />
+    <Icon path={iconPath} size={2} color='#fff' />
     <p
       className={css`
         margin: 0px;
@@ -50,6 +51,7 @@ export function ExplorerContent({ }) {
       height: 100%;
       width: 100%;
       background: rgba(0.5, 0.5, 0.5, 0.1);
+      color: #fff;
     `}
   >
     <div
@@ -64,6 +66,7 @@ export function ExplorerContent({ }) {
         }
         display: inline-block;
         user-select: none;
+        border-radius: 4px;
       `}
     >
       {"nickelcat"}
@@ -89,6 +92,7 @@ export function ExplorerContent({ }) {
                 background: rgba(0.5, 0.5, 0.5, 0.2);
               }
               user-select: none;
+              border-radius: 4px;
             `}
           >
             {n}
@@ -103,12 +107,13 @@ export function ExplorerContent({ }) {
                 height: 20px;
                 margin: 6px 0px;
                 padding: 2px;
+                border-radius: 4px;
                 &:hover {
                   background: rgba(0.5, 0.5, 0.5, 0.2);
                 }
               `}
             >
-              <Icon path={mdiMenuRight} size={0.8} />
+              <Icon path={mdiMenuRight} size={0.8} color='#fff' />
             </div>
           ],
           [
@@ -117,12 +122,13 @@ export function ExplorerContent({ }) {
                 height: 20px;
                 margin: 6px 0px;
                 padding: 2px;
+                border-radius: 4px;
                 &:hover {
                   background: rgba(0.5, 0.5, 0.5, 0.2);
                 }
               `}
             >
-              <Icon path={mdiMenuDown} size={0.8} />
+              <Icon path={mdiMenuDown} size={0.8} color='#fff' />
             </div>
           ]
         )
