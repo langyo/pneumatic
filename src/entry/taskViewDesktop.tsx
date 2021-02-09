@@ -31,7 +31,8 @@ export function TaskViewDesktop() {
           position: fixed;
           background-color: rgba(0, 0, 0, 0.1);
           border-radius: 4px;
-          ${activeTasks.indexOf(index) >= 0 ? `backdrop-filter: blur(4px); z-index: 10000;` : ''}
+          backdrop-filter: blur(2px);
+          ${activeTasks.indexOf(index) >= 0 ? `z-index: 10000;` : ''}
         `}
       >
         <div

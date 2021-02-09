@@ -13,7 +13,7 @@ const fadeIn = `animation: ${keyframes`
 const fadeOut = `animation: ${keyframes`
   from { opacity: 1; }
   to { opacity: 0; }
-`} 0.5s ease 1`;
+`} 0.55s ease 1`;
 
 export function TaskViewMobile() {
   const {
@@ -190,7 +190,7 @@ export function TaskViewMobile() {
           onClick={() => (
             setActiveTasks([index]),
             setDrawerOpen(false), setTimeout(() => setDrawerExist(false), 500),
-            setTaskManagerOpen(false), setTimeout(() => setTaskManagerExist(false))
+            setTaskManagerOpen(false), setTimeout(() => setTaskManagerExist(false), 500)
           )}
         >
           <div className={css`
