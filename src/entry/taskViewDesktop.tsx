@@ -32,7 +32,6 @@ export function TaskViewDesktop() {
           background-color: rgba(0, 0, 0, 0.1);
           border-radius: 4px;
           ${activeTasks.indexOf(index) >= 0 ? `backdrop-filter: blur(4px); z-index: 10000;` : ''}
-          ${activeTasks.indexOf(index) < 0 ? 'opacity: 0.8;' : ''}
         `}
       >
         <div
@@ -41,9 +40,11 @@ export function TaskViewDesktop() {
             height: 32px;
             position: absolute;
             top: 0px;
-            background-color: rgba(0, 0, 0, 0.1);
+            ${activeTasks.indexOf(index) >= 0 ?
+              'background-color: rgba(0, 0, 0, 0.2);' :
+              'background-color: rgba(0, 0, 0, 0.1);'};
             user-select: none;
-            border-radius: 4px;
+            border-radius: 4px 4px 0px 0px;
           `}
           onMouseDown={() => setActiveTasks([index])}
         >
@@ -115,7 +116,7 @@ export function TaskViewDesktop() {
               width: 100%;
               height: 100%;
               position: absolute;
-              border-radius: 4px;
+              border-radius: 0px 0px 0px 4px;
               background-color: rgba(0, 0, 0, 0.1);
             `}
           />
@@ -144,7 +145,7 @@ export function TaskViewDesktop() {
               width: 100%;
               height: 100%;
               position: absolute;
-              border-radius: 4px;
+              border-radius: 0px 0px 4px 0px;
               background-color: rgba(0, 0, 0, 0.1);
             `}
           />
