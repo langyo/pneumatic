@@ -29,12 +29,10 @@ export function TaskManager(props) {
     left: 150, top: 150, width: 400, height: 300
   }]);
   const [activeTasks, setActiveTasks] = useState([0]);
-  const [isManageMode, setManageMode] = useState(false);
 
   return <TaskManagerContext.Provider value={{
     tasks, setTasks,
-    activeTasks, setActiveTasks,
-    isManageMode, setManageMode
+    activeTasks, setActiveTasks
   }}>
     {props.children}
   </TaskManagerContext.Provider>

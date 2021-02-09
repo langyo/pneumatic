@@ -49,7 +49,6 @@ export function ExplorerDrawer({ }) {
     className={css`
       margin: 0px;
       padding-top: 8px;
-      height: calc(100% - 8px);
       width: 100%;
       display: flex;
       flex-direction: column;

@@ -1,28 +1,33 @@
 import React, { useState, useContext } from "react";
-import { css } from "@emotion/css";
+import { css, keyframes } from "@emotion/css";
 import Icon from "@mdi/react";
 import { mdiClose, mdiFullscreen, mdiFullscreenExit } from "@mdi/js";
 
 import { TaskManagerContext, ITask } from "./taskManager";
 import { ApplicationProviderContext, IApp } from './applicationProvider';
 
+const fadeIn = `animation: ${keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`} 0.5s ease 1`;
+const fadeOut = `animation: ${keyframes`
+  from { opacity: 1; }
+  to { opacity: 0; }
+`} 0.5s ease 1`;
+
 export function TaskViewMobile() {
   const {
     tasks, setTasks,
-    activeTasks, setActiveTasks,
-    isManageMode, setManageMode
+    activeTasks, setActiveTasks
   }: {
     tasks: ITask[], setTasks: (tasks: ITask[]) => void,
-    activeTasks: number[], setActiveTasks: (ids: number[]) => void,
-    isManageMode: boolean, setManageMode: (mode: boolean) => void
+    activeTasks: number[], setActiveTasks: (ids: number[]) => void
   } = useContext(TaskManagerContext);
   const apps: { [pkg: string]: IApp } = useContext(ApplicationProviderContext);
-  const [isDrawerOpen, setDrawerStatus] = useState(false);
-
-  const icon = apps[tasks[activeTasks[0]].pkg].icon;
-  const title = tasks[activeTasks[0]].title || apps[tasks[activeTasks[0]].pkg].name;
-  const drawerComponent = apps[tasks[activeTasks[0]].pkg].drawerComponent;
-  const contentComponent = apps[tasks[activeTasks[0]].pkg].contentComponent;
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [isDrawerExist, setDrawerExist] = useState(false);
+  const [isTaskManagerOpen, setTaskManagerOpen] = useState(false);
+  const [isTaskManagerExist, setTaskManagerExist] = useState(false);
 
   return <div
     className={css`
@@ -55,22 +60,36 @@ export function TaskViewMobile() {
             background-color: rgba(0, 0, 0, 0.2);
           }
         `}
-        onClick={() => setDrawerStatus(!isDrawerOpen)}
+        onClick={() => (
+          setDrawerOpen(!isDrawerOpen),
+          isDrawerOpen ? setTimeout(() => setDrawerExist(false), 500) : setDrawerExist(true)
+        )}
       >
-        <Icon path={icon} size={1} color='#fff' />
+        <Icon path={apps[tasks[activeTasks[0]].pkg].icon} size={1} color='#fff' />
       </div>
       <div className={css`
         position: absolute;
-        top: 0px;
+        top: 4px;
         left: 52px;
-        height: 48px;
-        line-height: 48px;
-        font-size: 24px;
+        height: ${tasks[activeTasks[0]].title ? 20 : 32}px;
+        line-height: ${tasks[activeTasks[0]].title ? 20 : 32}px;
+        font-size: ${tasks[activeTasks[0]].title ? 16 : 24}px;
         color: #fff;
       `}>
-        {isDrawerOpen ? apps[tasks[activeTasks[0]].pkg].name : title}
+        {apps[tasks[activeTasks[0]].pkg].name}
       </div>
-      {!isManageMode && <div
+      {tasks[activeTasks[0]].title && <div className={css`
+        position: absolute;
+        bottom: 4px;
+        left: 52px;
+        height: 16px;
+        line-height: 16px;
+        font-size: 12px;
+        color: #fff;
+      `}>
+        {tasks[activeTasks[0]].title}
+      </div>}
+      {!isTaskManagerOpen && <div
         className={css`
           position: absolute;
           top: 0px;
@@ -85,16 +104,20 @@ export function TaskViewMobile() {
             background-color: rgba(0, 0, 0, 0.2);
           }
         `}
-        onClick={() => (setManageMode(true), setDrawerStatus(false))}
+        onClick={() => (
+          setTaskManagerOpen(true), setTaskManagerExist(true),
+          setDrawerOpen(false), setTimeout(() => setDrawerExist(false), 500)
+        )}
       >
         <Icon path={mdiFullscreenExit} size={1} color='#fff' />
       </div>}
-      {isManageMode && <div className={css`
+      {isTaskManagerExist && <div className={css`
         position: absolute;
         height: 100%;
         width: 100%;
         z-index: 10000;
         backdrop-filter: blur(4px);
+        ${isTaskManagerOpen ? fadeIn : fadeOut};
       `}>
         <div className={css`
           position: absolute;
@@ -123,7 +146,9 @@ export function TaskViewMobile() {
               background-color: rgba(0, 0, 0, 0.2);
             }
           `}
-          onClick={() => setManageMode(false)}
+          onClick={() => (
+            setTaskManagerOpen(false), setTimeout(() => setTaskManagerExist(false), 500)
+          )}
         >
           <Icon path={mdiFullscreen} size={1} color='#fff' />
         </div>
@@ -136,7 +161,7 @@ export function TaskViewMobile() {
       width: 100%;
       background-color: rgba(0, 0, 0, 0.1);
     `}>
-      {isManageMode && <div
+      {isTaskManagerExist && <div
         className={css`
           position: absolute;
           height: 100%;
@@ -147,6 +172,7 @@ export function TaskViewMobile() {
           align-items: center;
           z-index: 10000;
           backdrop-filter: blur(4px);
+          ${isTaskManagerOpen ? fadeIn : fadeOut}
         `}>
         {tasks.map(({ pkg, status, title }, index) => <div
           className={css`
@@ -159,8 +185,13 @@ export function TaskViewMobile() {
             border-radius: 4px;
             background-color: rgba(0, 0, 0, 0.1);
             position: relative;
+            ${fadeIn}
           `}
-          onClick={() => (setActiveTasks([index]), setDrawerStatus(false))}
+          onClick={() => (
+            setActiveTasks([index]),
+            setDrawerOpen(false), setTimeout(() => setDrawerExist(false), 500),
+            setTaskManagerOpen(false), setTimeout(() => setTaskManagerExist(false))
+          )}
         >
           <div className={css`
             position: absolute;
@@ -201,15 +232,16 @@ export function TaskViewMobile() {
           </div>
         </div>)}
       </div>}
-      {contentComponent({})}
+      {apps[tasks[activeTasks[0]].pkg].contentComponent({})}
     </div>
-    {isDrawerOpen && <div className={css`
+    {isDrawerExist && <div className={css`
       position: absolute;
       top: 50px;
       height: 100%;
       width: 100%;
       z-index: 5000;
       backdrop-filter: blur(4px);
+      ${isDrawerOpen ? fadeIn : fadeOut}
     `}>
       <div className={css`
         position: absolute;
@@ -220,7 +252,7 @@ export function TaskViewMobile() {
         background-color: rgba(0, 0, 0, 0.2);
         border-radius: 0px 4px 4px 0px;
       `}>
-        {drawerComponent({})}
+        {apps[tasks[activeTasks[0]].pkg].drawerComponent({})}
       </div>
       <div
         className={css`
@@ -231,7 +263,7 @@ export function TaskViewMobile() {
           width: 40%;
           background-color: rgba(0, 0, 0, 0.1);
         `}
-        onClick={() => setDrawerStatus(false)}
+        onClick={() => (setDrawerOpen(false), setTimeout(() => setDrawerExist(false), 500))}
       />
     </div>}
   </div>;

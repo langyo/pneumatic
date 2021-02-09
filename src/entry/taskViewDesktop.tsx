@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import Draggable from 'react-draggable';
 import { css, cx } from "@emotion/css";
 import Icon from "@mdi/react";
 import { mdiClose } from "@mdi/js";
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import { TaskManagerContext, ITask } from "./taskManager";
 import { ApplicationProviderContext, IApp } from './applicationProvider';
@@ -10,14 +11,13 @@ import { ApplicationProviderContext, IApp } from './applicationProvider';
 export function TaskViewDesktop() {
   const {
     tasks, setTasks,
-    activeTasks, setActiveTasks,
-    isManageMode, setManageMode
+    activeTasks, setActiveTasks
   }: {
     tasks: ITask[], setTasks: (tasks: ITask[]) => void,
-    activeTasks: number[], setActiveTasks: (ids: number[]) => void,
-    isManageMode: boolean, setManageMode: (mode: boolean) => void
+    activeTasks: number[], setActiveTasks: (ids: number[]) => void
   } = useContext(TaskManagerContext);
   const apps: { [pkg: string]: IApp } = useContext(ApplicationProviderContext);
+  const [isManageMode, setManageMode] = useState(false);
 
   return <>
     {tasks.map(({ pkg, title, status, left, top, width, height }, index) => <Draggable
@@ -102,31 +102,61 @@ export function TaskViewDesktop() {
         </div>
         <div
           className={css`
-            width: 200px;
+            width: calc(40% - 2px);
             height: calc(100% - 34px);
             position: absolute;
             bottom: 0px;
             left: 0px;
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
           `}
           onMouseDown={() => setActiveTasks([index])}
         >
-          {apps[pkg].drawerComponent({})}
+          <div
+            className={css`
+              width: 100%;
+              height: 100%;
+              position: absolute;
+              border-radius: 4px;
+              background-color: rgba(0, 0, 0, 0.1);
+            `}
+          />
+          <Scrollbars
+            className={css`
+              width: 100%;
+              height: 100%;
+              position: absolute;
+            `}
+          >
+            {apps[pkg].drawerComponent({})}
+          </Scrollbars>
         </div>
         <div
           className={css`
-            width: calc(100% - 202px);
+            width: 60%;
             height: calc(100% - 34px);
             position: absolute;
             bottom: 0px;
             right: 0px;
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
           `}
           onMouseDown={() => setActiveTasks([index])}
         >
-          {apps[pkg].contentComponent({})}
+          <div
+            className={css`
+              width: 100%;
+              height: 100%;
+              position: absolute;
+              border-radius: 4px;
+              background-color: rgba(0, 0, 0, 0.1);
+            `}
+          />
+          <Scrollbars
+            className={css`
+              width: 100%;
+              height: 100%;
+              position: absolute;
+            `}
+          >
+            {apps[pkg].contentComponent({})}
+          </Scrollbars>
         </div>
       </div>
     </Draggable>)}

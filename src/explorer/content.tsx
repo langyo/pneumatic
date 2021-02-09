@@ -47,10 +47,6 @@ function ContentItem({ iconPath, title }) {
 export function ExplorerContent({ }) {
   return <div
     className={css`
-      margin: 0px;
-      height: 100%;
-      width: 100%;
-      background: rgba(0.5, 0.5, 0.5, 0.1);
       color: #fff;
     `}
   >
