@@ -69,10 +69,10 @@ export function TaskViewMobile() {
       </div>
       <div className={css`
         position: absolute;
-        top: 4px;
+        top: 0px;
         left: 52px;
-        height: ${tasks[activeTasks[0]].title ? 20 : 32}px;
-        line-height: ${tasks[activeTasks[0]].title ? 20 : 32}px;
+        height: ${tasks[activeTasks[0]].title ? 28 : 48}px;
+        line-height: ${tasks[activeTasks[0]].title ? 28 : 48}px;
         font-size: ${tasks[activeTasks[0]].title ? 16 : 24}px;
         color: #fff;
       `}>
