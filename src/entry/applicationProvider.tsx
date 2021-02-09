@@ -9,6 +9,18 @@ import { ExplorerContent } from '../explorer/content';
 import { ExplorerDrawer } from '../explorer/drawer';
 import { MonitorContent } from '../monitor/content';
 import { MonitorDrawer } from '../monitor/drawer';
+import { BrowserContent } from '../browser/content';
+import { BrowserDrawer } from '../browser/drawer';
+import { DatabaseContent } from '../database/content';
+import { DatabaseDrawer } from '../database/drawer';
+import { PlanContent } from '../plan/content';
+import { PlanDrawer } from '../plan/drawer';
+import { TerminalContent } from '../terminal/content';
+import { TerminalDrawer } from '../terminal/drawer';
+import { ThemeContent } from '../theme/content';
+import { ThemeDrawer } from '../theme/drawer';
+import { MarketContent } from '../market/content';
+import { MarketDrawer } from '../market/drawer';
 
 export interface IApp {
   icon: string,   // SVG path.
@@ -28,27 +40,27 @@ export const defaultApp: { [pkg: string]: IApp } = {
   },
   'pneumatic.browser': {
     icon: mdiWeb, name: "Proxy Web Browser",
-    contentComponent: () => <p>{'test content'}</p>, drawerComponent: () => <p>{'test drawer'}</p>
+    contentComponent: BrowserContent, drawerComponent: BrowserDrawer
   },
   'pneumatic.database': {
     icon: mdiDatabase, name: "Database manager",
-    contentComponent: () => <p>{'test content'}</p>, drawerComponent: () => <p>{'test drawer'}</p>
+    contentComponent: DatabaseContent, drawerComponent: DatabaseDrawer
   },
   'pneumatic.plan': {
     icon: mdiFormatListChecks, name: "Plan tasks",
-    contentComponent: () => <p>{'test content'}</p>, drawerComponent: () => <p>{'test drawer'}</p>
+    contentComponent: PlanContent, drawerComponent: PlanDrawer
   },
   'pneumatic.terminal': {
     icon: mdiConsole, name: "Terminal",
-    contentComponent: () => <p>{'test content'}</p>, drawerComponent: () => <p>{'test drawer'}</p>
+    contentComponent: TerminalContent, drawerComponent: TerminalDrawer
   },
   'pneumatic.theme': {
     icon: mdiPaletteOutline, name: "Theme setting",
-    contentComponent: () => <p>{'test content'}</p>, drawerComponent: () => <p>{'test drawer'}</p>
+    contentComponent: ThemeContent, drawerComponent: ThemeDrawer
   },
   'pneumatic.market': {
     icon: mdiApps, name: "Application market",
-    contentComponent: () => <p>{'test content'}</p>, drawerComponent: () => <p>{'test drawer'}</p>
+    contentComponent: MarketContent, drawerComponent: MarketDrawer
   }
 };
 

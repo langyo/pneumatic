@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { css } from "@emotion/css";
 import Icon from "@mdi/react";
 import {
-  mdiServerNetwork,
-  mdiFolderOutline
+  mdiTimelineClock
 } from "@mdi/js";
 
 function ToolbarItem({ iconPath, title }) {
@@ -44,7 +43,7 @@ function ToolbarItem({ iconPath, title }) {
   );
 }
 
-export function ExplorerDrawer({ }) {
+export function PlanDrawer({ }) {
   return <div
     className={css`
       margin: 0px;
@@ -66,9 +65,9 @@ export function ExplorerDrawer({ }) {
         margin: 4px 0px;
       `}
     >
-      {"设备"}
+      {"Fast forward"}
     </div>
-    <ToolbarItem iconPath={mdiServerNetwork} title="硬盘 0 (sda)" />
+    <ToolbarItem iconPath={mdiTimelineClock} title="All" />
     <div
       className={css`
         width: 90%;
@@ -84,10 +83,8 @@ export function ExplorerDrawer({ }) {
         margin: 4px 0px;
       `}
     >
-      {"快速访问"}
+      {"Recent"}
     </div>
-    <ToolbarItem iconPath={mdiFolderOutline} title="~" />
-    <ToolbarItem iconPath={mdiFolderOutline} title="nickelcat" />
-    <ToolbarItem iconPath={mdiFolderOutline} title="pneumatic" />
+    <ToolbarItem iconPath={mdiTimelineClock} title="All" />
   </div>;
 }
