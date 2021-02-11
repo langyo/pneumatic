@@ -4,8 +4,13 @@ import { css, cx } from "@emotion/css";
 import Icon from "@mdi/react";
 import { mdiClose } from "@mdi/js";
 import { Scrollbars } from 'react-custom-scrollbars';
+import { generate } from 'shortid';
 
-import { TaskManagerContext, ITask } from "./taskManager";
+import {
+  TaskManagerContext, IWindowInfo,
+  ITasksState, ITaskSetState,
+  IActiveTasksState, IActiveTasksSetState
+} from "./taskManager";
 import { ApplicationProviderContext, IApp } from './applicationProvider';
 
 export function TaskViewDesktop() {
@@ -13,19 +18,68 @@ export function TaskViewDesktop() {
     tasks, setTasks,
     activeTasks, setActiveTasks
   }: {
-    tasks: ITask[], setTasks: (tasks: ITask[]) => void,
-    activeTasks: number[], setActiveTasks: (ids: number[]) => void
+    tasks: ITasksState, setTasks: ITaskSetState,
+    activeTasks: IActiveTasksState, setActiveTasks: IActiveTasksSetState
   } = useContext(TaskManagerContext);
   const apps: { [pkg: string]: IApp } = useContext(ApplicationProviderContext);
-  const [isManageMode, setManageMode] = useState(false);
+
+  function propsGenerator(
+    key: string, pkg: string, page: string, args: { [key: string]: string }
+  ) {
+    return {
+      args,
+      setTitle: (title: string) => {
+        setTasks({
+          ...tasks,
+          [key]: {
+            ...tasks[key],
+            windowInfo: {
+              ...tasks[key].windowInfo,
+              title
+            }
+          }
+        });
+      },
+      setPage: (page: string) => {
+        setTasks({
+          ...tasks,
+          [key]: {
+            ...tasks[key],
+            page
+          }
+        });
+      },
+      createApplication: ({ pkg, page, args }: {
+        pkg: string, page: string, args: { [key: string]: string }
+      }) => {
+        const key = generate();
+        setTasks({
+          ...tasks,
+          [key]: {
+            pkg, page, args,
+            windowInfo: {
+              top: 50, left: 50, height: 400, width: 600,
+              ...(apps[pkg].defaultWindowInfo || {})
+            }
+          }
+        });
+      }
+    };
+  }
 
   return <>
-    {tasks.map(({
-      pkg, page, args, windowInfo: { title, left, top, width, height }
-    }, index) => <Draggable
-      defaultPosition={{ x: left, y: top }}
-      handle='.drag-handle-tag'
-    >
+    {activeTasks.map((key: string) => {
+      const pkg = tasks[key].pkg;
+      const page = tasks[key].page;
+      const args = tasks[key].args;
+      const {
+        left, top, width, height, title
+      }: IWindowInfo = tasks[key].windowInfo;
+
+      return <Draggable
+        defaultPosition={{ x: left, y: top }}
+        handle='.drag-handle-tag'
+      >
         <div
           className={css`
             width: ${width}px;
@@ -34,7 +88,7 @@ export function TaskViewDesktop() {
             background-color: rgba(0, 0, 0, 0.1);
             border-radius: 4px;
             backdrop-filter: blur(2px);
-            ${activeTasks.indexOf(index) >= 0 ? `z-index: 10000;` : ''}
+            ${activeTasks.indexOf(key) >= 0 ? `z-index: 10000;` : ''}
           `}
         >
           <div
@@ -43,13 +97,13 @@ export function TaskViewDesktop() {
               height: 32px;
               position: absolute;
               top: 0px;
-              ${activeTasks.indexOf(index) >= 0 ?
+              ${activeTasks.indexOf(key) >= 0 ?
                 'background-color: rgba(0, 0, 0, 0.2);' :
                 'background-color: rgba(0, 0, 0, 0.1);'};
               user-select: none;
               border-radius: 4px 4px 0px 0px;
             `}
-            onMouseDown={() => setActiveTasks([index])}
+            onMouseDown={() => setActiveTasks([key])}
           >
             <div
               className={css`
@@ -112,7 +166,7 @@ export function TaskViewDesktop() {
               bottom: 0px;
               left: 0px;
           `}
-            onMouseDown={() => setActiveTasks([index])}
+            onMouseDown={() => setActiveTasks([key])}
           >
             <div
               className={css`
@@ -131,8 +185,8 @@ export function TaskViewDesktop() {
               `}
             >
               {apps[pkg].drawerComponent[page] ?
-                apps[pkg].drawerComponent[page](args) :
-                apps[pkg].drawerComponent.default(args)}
+                apps[pkg].drawerComponent[page](propsGenerator(key, pkg, page, args)) :
+                apps[pkg].drawerComponent.default(propsGenerator(key, pkg, page, args))}
             </Scrollbars>
           </div>
           <div
@@ -143,7 +197,7 @@ export function TaskViewDesktop() {
               bottom: 0px;
               right: 0px;
           `}
-            onMouseDown={() => setActiveTasks([index])}
+            onMouseDown={() => setActiveTasks([key])}
           >
             <div
               className={css`
@@ -162,11 +216,12 @@ export function TaskViewDesktop() {
               `}
             >
               {apps[pkg].contentComponent[page] ?
-                apps[pkg].contentComponent[page](args) :
-                apps[pkg].contentComponent.default(args)}
+                apps[pkg].contentComponent[page](propsGenerator(key, pkg, page, args)) :
+                apps[pkg].contentComponent.default(propsGenerator(key, pkg, page, args))}
             </Scrollbars>
           </div>
         </div>
-      </Draggable>)}
+      </Draggable>;
+    })}
   </>;
 }

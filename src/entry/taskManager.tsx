@@ -7,45 +7,28 @@ export interface ITask {
   args: {
     [key: string]: string
   }
-  windowInfo: {
-    title: string,
-    left: number,
-    top: number,
-    width: number,
-    height: number
-    // TODO - Supports maximization and window merging.
-  }
+  windowInfo: IWindowInfo
 };
 
+export interface IWindowInfo {
+  title: string,
+  left: number,
+  top: number,
+  width: number,
+  height: number
+  // TODO - Supports maximization and window merging.
+};
+
+export type ITasksState = { [key: string]: ITask };
+export type ITaskSetState = (tasks: { [key: string]: ITask }) => void;
+export type IActiveTasksState = string[];
+export type IActiveTasksSetState = (tasks: string[]) => void;
+
 export function TaskManager(props) {
-  const [tasks, setTasks]: [ITask[], (tasks: ITask[]) => void] = useState([{
-    pkg: 'pneumatic.explorer',
-    page: 'default',
-    args: {},
-    windowInfo: {
-      title: '/',
-      left: 50, top: 50, width: 600, height: 400
-    }
-  }, {
-    pkg: 'pneumatic.monitor',
-    page: 'hardware',
-    args: {},
-    windowInfo: {
-      title: 'hardware',
-      left: 100, top: 100, width: 600, height: 400
-    }
-  }, {
-    pkg: 'pneumatic.browser',
-    page: 'default',
-    args: {
-      url: 'https://github.com/langyo'
-    },
-    windowInfo: {
-      title: 'github.com',
-      left: 150, top: 150, width: 400, height: 300
-    }
-  }]);
-  const [activeTasks, setActiveTasks] = useState([0]);
+  const [tasks, setTasks]: [ITasksState, ITaskSetState]  = useState({});
+  const [activeTasks, setActiveTasks]: [
+    IActiveTasksState, IActiveTasksSetState
+  ] = useState([]);
 
   return <TaskManagerContext.Provider value={{
     tasks, setTasks,

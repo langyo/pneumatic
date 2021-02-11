@@ -26,7 +26,13 @@ export interface IApp {
   icon: string,   // SVG path.
   name: string,
   contentComponent: { [key: string]: (props: any) => React.Component },
-  drawerComponent: { [key: string]: (props: any) => React.Component }
+  drawerComponent: { [key: string]: (props: any) => React.Component },
+  defaultWindowInfo?: {
+    top?: number,
+    left?: number,
+    width?: number,
+    height?: number
+  }
 }
 
 export const defaultApp: { [pkg: string]: IApp } = {

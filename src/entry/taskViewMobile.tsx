@@ -2,8 +2,13 @@ import React, { useState, useContext } from "react";
 import { css, keyframes } from "@emotion/css";
 import Icon from "@mdi/react";
 import { mdiClose, mdiFullscreen, mdiFullscreenExit } from "@mdi/js";
+import { generate } from 'shortid';
 
-import { TaskManagerContext, ITask } from "./taskManager";
+import {
+  TaskManagerContext, IWindowInfo,
+  ITasksState, ITaskSetState,
+  IActiveTasksState, IActiveTasksSetState
+} from "./taskManager";
 import { ApplicationProviderContext, IApp } from './applicationProvider';
 
 const fadeIn = `animation: ${keyframes`
@@ -20,14 +25,58 @@ export function TaskViewMobile() {
     tasks, setTasks,
     activeTasks, setActiveTasks
   }: {
-    tasks: ITask[], setTasks: (tasks: ITask[]) => void,
-    activeTasks: number[], setActiveTasks: (ids: number[]) => void
+    tasks: ITasksState, setTasks: ITaskSetState,
+    activeTasks: IActiveTasksState, setActiveTasks: IActiveTasksSetState
   } = useContext(TaskManagerContext);
   const apps: { [pkg: string]: IApp } = useContext(ApplicationProviderContext);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [isDrawerExist, setDrawerExist] = useState(false);
   const [isTaskManagerOpen, setTaskManagerOpen] = useState(false);
   const [isTaskManagerExist, setTaskManagerExist] = useState(false);
+
+  function propsGenerator(
+    key: string, pkg: string, page: string, args: { [key: string]: string }
+  ) {
+    return {
+      args,
+      setTitle: (title: string) => {
+        setTasks({
+          ...tasks,
+          [key]: {
+            ...tasks[key],
+            windowInfo: {
+              ...tasks[key].windowInfo,
+              title
+            }
+          }
+        });
+      },
+      setPage: (page: string) => {
+        setTasks({
+          ...tasks,
+          [key]: {
+            ...tasks[key],
+            page
+          }
+        });
+      },
+      createApplication: ({ pkg, page, args }: {
+        pkg: string, page: string, args: { [key: string]: string }
+      }) => {
+        const key = generate();
+        setTasks({
+          ...tasks,
+          [key]: {
+            pkg, page, args,
+            windowInfo: {
+              top: 50, left: 50, height: 400, width: 600,
+              ...(apps[pkg].defaultWindowInfo || {})
+            }
+          }
+        });
+      }
+    };
+  }
 
   return <div
     className={css`
@@ -174,70 +223,86 @@ export function TaskViewMobile() {
           backdrop-filter: blur(4px);
           ${isTaskManagerOpen ? fadeIn : fadeOut}
         `}>
-        {tasks.map(({ pkg, page, args, windowInfo: { title } }, index) => <div
-          className={css`
-            margin-top: 4px;
-            height: 48px;
-            width: calc(90% - 12px);
-            border-left: 12px solid ${activeTasks.indexOf(index) >= 0 ?
-              'rgba(51, 153, 160, 0.8)' :
-              'rgba(0, 0, 0, 0.1)'};
-            border-radius: 4px;
-            background-color: rgba(0, 0, 0, 0.1);
-            position: relative;
-            ${fadeIn}
-          `}
-          onClick={() => (
-            setActiveTasks([index]),
-            setDrawerOpen(false), setTimeout(() => setDrawerExist(false), 500),
-            setTaskManagerOpen(false), setTimeout(() => setTaskManagerExist(false), 500)
-          )}
-        >
-          <div className={css`
-            position: absolute;
-            top: 0px;
-            left: 16px;
-            height: ${title ? 28 : 48}px;
-            line-height: ${title ? 28 : 48}px;
-            font-size: ${title ? 16 : 24}px;
-            color: #fff;
-          `}>
-            {apps[pkg].name}
-          </div>
-          {title && <div className={css`
-            position: absolute;
-            bottom: 4px;
-            left: 16px;
-            height: 16px;
-            line-height: 16px;
-            font-size: 12px;
-            color: #fff;
-          `}>
-            {title}
-          </div>}
-          <div className={css`
-            position: absolute;
-            top: 8px;
-            right: 4px;
-            margin: 4px;
-            border-radius: 4px;
-            &:hover {
+        {activeTasks.map((key: string) => {
+          const pkg = tasks[key].pkg;
+          const { title }: IWindowInfo = tasks[key].windowInfo;
+
+          return <div
+            className={css`
+              margin-top: 4px;
+              height: 48px;
+              width: calc(90% - 12px);
+              border-left: 12px solid ${activeTasks.indexOf(key) >= 0 ?
+                'rgba(51, 153, 160, 0.8)' :
+                'rgba(0, 0, 0, 0.1)'};
+              border-radius: 4px;
               background-color: rgba(0, 0, 0, 0.1);
-            }
-            &:active {
-              background-color: rgba(0, 0, 0, 0.2);
-            }
-          `}>
-            <Icon path={mdiClose} size={1} color="#fff" />
-          </div>
-        </div>)}
+              position: relative;
+              ${fadeIn}
+            `}
+            onClick={() => (
+              setActiveTasks([key]),
+              setDrawerOpen(false), setTimeout(() => setDrawerExist(false), 500),
+              setTaskManagerOpen(false), setTimeout(() => setTaskManagerExist(false), 500)
+            )}
+          >
+            <div className={css`
+              position: absolute;
+              top: 0px;
+              left: 16px;
+              height: ${title ? 28 : 48}px;
+              line-height: ${title ? 28 : 48}px;
+              font-size: ${title ? 16 : 24}px;
+              color: #fff;
+            `}>
+              {apps[pkg].name}
+            </div>
+            {title && <div className={css`
+              position: absolute;
+              bottom: 4px;
+              left: 16px;
+              height: 16px;
+              line-height: 16px;
+              font-size: 12px;
+              color: #fff;
+            `}>
+              {title}
+            </div>}
+            <div className={css`
+              position: absolute;
+              top: 8px;
+              right: 4px;
+              margin: 4px;
+              border-radius: 4px;
+              &:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+              }
+              &:active {
+                background-color: rgba(0, 0, 0, 0.2);
+              }
+            `}>
+              <Icon path={mdiClose} size={1} color="#fff" />
+            </div>
+          </div>;
+        })}
       </div>}
       {apps[tasks[activeTasks[0]].pkg]
-          .contentComponent[tasks[activeTasks[0]].page] ?
-          apps[tasks[activeTasks[0]].pkg]
-            .contentComponent[tasks[activeTasks[0]].page](tasks[activeTasks[0]].args) :
-          apps[tasks[activeTasks[0]].pkg]
-            .contentComponent.default(tasks[activeTasks[0]].args)}
+        .contentComponent[tasks[activeTasks[0]].page] ?
+        apps[tasks[activeTasks[0]].pkg]
+          .contentComponent[tasks[activeTasks[0]].page](
+            propsGenerator(
+              activeTasks[0],
+              tasks[activeTasks[0]].pkg,
+              tasks[activeTasks[0]].page,
+              tasks[activeTasks[0]].args
+            )) :
+        apps[tasks[activeTasks[0]].pkg]
+          .contentComponent.default(propsGenerator(
+            activeTasks[0],
+            tasks[activeTasks[0]].pkg,
+            tasks[activeTasks[0]].page,
+            tasks[activeTasks[0]].args
+          ))}
     </div>
     {isDrawerExist && <div className={css`
       position: absolute;
@@ -260,9 +325,19 @@ export function TaskViewMobile() {
         {apps[tasks[activeTasks[0]].pkg]
           .drawerComponent[tasks[activeTasks[0]].page] ?
           apps[tasks[activeTasks[0]].pkg]
-            .drawerComponent[tasks[activeTasks[0]].page](tasks[activeTasks[0]].args) :
+            .drawerComponent[tasks[activeTasks[0]].page](propsGenerator(
+              activeTasks[0],
+              tasks[activeTasks[0]].pkg,
+              tasks[activeTasks[0]].page,
+              tasks[activeTasks[0]].args
+            )) :
           apps[tasks[activeTasks[0]].pkg]
-            .drawerComponent.default(tasks[activeTasks[0]].args)}
+            .drawerComponent.default(propsGenerator(
+              activeTasks[0],
+              tasks[activeTasks[0]].pkg,
+              tasks[activeTasks[0]].page,
+              tasks[activeTasks[0]].args
+            ))}
       </div>
       <div
         className={css`
