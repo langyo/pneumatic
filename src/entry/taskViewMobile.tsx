@@ -71,14 +71,14 @@ export function TaskViewMobile() {
         position: absolute;
         top: 0px;
         left: 52px;
-        height: ${tasks[activeTasks[0]].title ? 28 : 48}px;
-        line-height: ${tasks[activeTasks[0]].title ? 28 : 48}px;
-        font-size: ${tasks[activeTasks[0]].title ? 16 : 24}px;
+        height: ${tasks[activeTasks[0]].windowInfo.title ? 28 : 48}px;
+        line-height: ${tasks[activeTasks[0]].windowInfo.title ? 28 : 48}px;
+        font-size: ${tasks[activeTasks[0]].windowInfo.title ? 16 : 24}px;
         color: #fff;
       `}>
         {apps[tasks[activeTasks[0]].pkg].name}
       </div>
-      {tasks[activeTasks[0]].title && <div className={css`
+      {tasks[activeTasks[0]].windowInfo.title && <div className={css`
         position: absolute;
         bottom: 4px;
         left: 52px;
@@ -87,7 +87,7 @@ export function TaskViewMobile() {
         font-size: 12px;
         color: #fff;
       `}>
-        {tasks[activeTasks[0]].title}
+        {tasks[activeTasks[0]].windowInfo.title}
       </div>}
       {!isTaskManagerOpen && <div
         className={css`
@@ -174,7 +174,7 @@ export function TaskViewMobile() {
           backdrop-filter: blur(4px);
           ${isTaskManagerOpen ? fadeIn : fadeOut}
         `}>
-        {tasks.map(({ pkg, status, title }, index) => <div
+        {tasks.map(({ pkg, page, args, windowInfo: { title } }, index) => <div
           className={css`
             margin-top: 4px;
             height: 48px;
@@ -232,7 +232,12 @@ export function TaskViewMobile() {
           </div>
         </div>)}
       </div>}
-      {apps[tasks[activeTasks[0]].pkg].contentComponent({})}
+      {apps[tasks[activeTasks[0]].pkg]
+          .contentComponent[tasks[activeTasks[0]].page] ?
+          apps[tasks[activeTasks[0]].pkg]
+            .contentComponent[tasks[activeTasks[0]].page](tasks[activeTasks[0]].args) :
+          apps[tasks[activeTasks[0]].pkg]
+            .contentComponent.default(tasks[activeTasks[0]].args)}
     </div>
     {isDrawerExist && <div className={css`
       position: absolute;
@@ -252,7 +257,12 @@ export function TaskViewMobile() {
         background-color: rgba(0, 0, 0, 0.2);
         border-radius: 0px 4px 4px 0px;
       `}>
-        {apps[tasks[activeTasks[0]].pkg].drawerComponent({})}
+        {apps[tasks[activeTasks[0]].pkg]
+          .drawerComponent[tasks[activeTasks[0]].page] ?
+          apps[tasks[activeTasks[0]].pkg]
+            .drawerComponent[tasks[activeTasks[0]].page](tasks[activeTasks[0]].args) :
+          apps[tasks[activeTasks[0]].pkg]
+            .drawerComponent.default(tasks[activeTasks[0]].args)}
       </div>
       <div
         className={css`

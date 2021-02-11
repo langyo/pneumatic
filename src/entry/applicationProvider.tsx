@@ -7,7 +7,7 @@ import {
 
 import { ExplorerContent } from '../explorer/content';
 import { ExplorerDrawer } from '../explorer/drawer';
-import { MonitorContent } from '../monitor/content';
+import { MonitorContentMap } from '../monitor/content';
 import { MonitorDrawer } from '../monitor/drawer';
 import { BrowserContent } from '../browser/content';
 import { BrowserDrawer } from '../browser/drawer';
@@ -25,42 +25,52 @@ import { MarketDrawer } from '../market/drawer';
 export interface IApp {
   icon: string,   // SVG path.
   name: string,
-  contentComponent: (props: any) => React.Component,
-  drawerComponent: (props: any) => React.Component
+  contentComponent: { [key: string]: (props: any) => React.Component },
+  drawerComponent: { [key: string]: (props: any) => React.Component }
 }
 
 export const defaultApp: { [pkg: string]: IApp } = {
   'pneumatic.explorer': {
     icon: mdiFolderOutline, name: "Explorer",
-    contentComponent: ExplorerContent, drawerComponent: ExplorerDrawer
+    contentComponent: { default: ExplorerContent },
+    drawerComponent: { default: ExplorerDrawer }
   },
   'pneumatic.monitor': {
     icon: mdiMemory, name: "Monitor",
-    contentComponent: MonitorContent, drawerComponent: MonitorDrawer
+    contentComponent: MonitorContentMap,
+    drawerComponent: {
+      default: MonitorDrawer
+    }
   },
   'pneumatic.browser': {
     icon: mdiWeb, name: "Proxy Web Browser",
-    contentComponent: BrowserContent, drawerComponent: BrowserDrawer
+    contentComponent: { default: BrowserContent },
+    drawerComponent: { default: BrowserDrawer }
   },
   'pneumatic.database': {
     icon: mdiDatabase, name: "Database manager",
-    contentComponent: DatabaseContent, drawerComponent: DatabaseDrawer
+    contentComponent: { default: DatabaseContent },
+    drawerComponent: { default: DatabaseDrawer }
   },
   'pneumatic.plan': {
     icon: mdiFormatListChecks, name: "Plan tasks",
-    contentComponent: PlanContent, drawerComponent: PlanDrawer
+    contentComponent: { default: PlanContent },
+    drawerComponent: { default: PlanDrawer }
   },
   'pneumatic.terminal': {
     icon: mdiConsole, name: "Terminal",
-    contentComponent: TerminalContent, drawerComponent: TerminalDrawer
+    contentComponent: { default: TerminalContent },
+    drawerComponent: { default: TerminalDrawer }
   },
   'pneumatic.theme': {
     icon: mdiPaletteOutline, name: "Theme setting",
-    contentComponent: ThemeContent, drawerComponent: ThemeDrawer
+    contentComponent: { default: ThemeContent },
+    drawerComponent: { default: ThemeDrawer }
   },
   'pneumatic.market': {
     icon: mdiApps, name: "Application market",
-    contentComponent: MarketContent, drawerComponent: MarketDrawer
+    contentComponent: { default: MarketContent },
+    drawerComponent: { default: MarketDrawer }
   }
 };
 
