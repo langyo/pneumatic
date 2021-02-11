@@ -94,50 +94,55 @@ export function TaskViewMobile() {
       width: 100%;
       background-color: rgba(0, 0, 0, 0.1);
     `}>
-      <div
-        className={css`
-          position: absolute;
-          top: 0px;
-          left: 4px;
-          margin: 4px;
-          padding: 8px;
-          border-radius: 4px;
-          &:hover {
-            background-color: rgba(0, 0, 0, 0.1);
-          }
-          &:active {
-            background-color: rgba(0, 0, 0, 0.2);
-          }
-        `}
-        onClick={() => (
-          setDrawerOpen(!isDrawerOpen),
-          isDrawerOpen ? setTimeout(() => setDrawerExist(false), 500) : setDrawerExist(true)
-        )}
-      >
-        <Icon path={apps[tasks[activeTasks[0]].pkg].icon} size={1} color='#fff' />
-      </div>
-      <div className={css`
-        position: absolute;
-        top: 0px;
-        left: 52px;
-        height: ${tasks[activeTasks[0]].windowInfo.title ? 28 : 48}px;
-        line-height: ${tasks[activeTasks[0]].windowInfo.title ? 28 : 48}px;
-        font-size: ${tasks[activeTasks[0]].windowInfo.title ? 16 : 24}px;
-        color: #fff;
-      `}>
-        {apps[tasks[activeTasks[0]].pkg].name}
-      </div>
-      {tasks[activeTasks[0]].windowInfo.title && <div className={css`
-        position: absolute;
-        bottom: 4px;
-        left: 52px;
-        height: 16px;
-        line-height: 16px;
-        font-size: 12px;
-        color: #fff;
-      `}>
-        {tasks[activeTasks[0]].windowInfo.title}
-      </div>}
+      {activeTasks.length > 0 &&
+        <div
+          className={css`
+            position: absolute;
+            top: 0px;
+            left: 4px;
+            margin: 4px;
+            padding: 8px;
+            border-radius: 4px;
+            &:hover {
+              background-color: rgba(0, 0, 0, 0.1);
+            }
+            &:active {
+              background-color: rgba(0, 0, 0, 0.2);
+            }
+          `}
+          onClick={() => (
+            setDrawerOpen(!isDrawerOpen),
+            isDrawerOpen ? setTimeout(() => setDrawerExist(false), 500) : setDrawerExist(true)
+          )}
+        >
+          <Icon path={apps[tasks[activeTasks[0]].pkg].icon} size={1} color='#fff' />
+        </div>
+      }
+      {activeTasks.length > 0 &&
+        <>
+          <div className={css`
+            position: absolute;
+            top: 0px;
+            left: 52px;
+            height: ${tasks[activeTasks[0]].windowInfo.title ? 28 : 48}px;
+            line-height: ${tasks[activeTasks[0]].windowInfo.title ? 28 : 48}px;
+            font-size: ${tasks[activeTasks[0]].windowInfo.title ? 16 : 24}px;
+            color: #fff;
+          `}>
+            {apps[tasks[activeTasks[0]].pkg].name}
+          </div>
+          {tasks[activeTasks[0]].windowInfo.title && <div className={css`
+            position: absolute;
+            bottom: 4px;
+            left: 52px;
+            height: 16px;
+            line-height: 16px;
+            font-size: 12px;
+            color: #fff;
+          `}>
+            {tasks[activeTasks[0]].windowInfo.title}
+          </div>}
+        </>}
       {!isTaskManagerOpen && <div
         className={css`
           position: absolute;
@@ -286,23 +291,24 @@ export function TaskViewMobile() {
           </div>;
         })}
       </div>}
-      {apps[tasks[activeTasks[0]].pkg]
-        .contentComponent[tasks[activeTasks[0]].page] ?
+      {activeTasks.length > 0 && (
         apps[tasks[activeTasks[0]].pkg]
-          .contentComponent[tasks[activeTasks[0]].page](
-            propsGenerator(
+          .contentComponent[tasks[activeTasks[0]].page] ?
+          apps[tasks[activeTasks[0]].pkg]
+            .contentComponent[tasks[activeTasks[0]].page](
+              propsGenerator(
+                activeTasks[0],
+                tasks[activeTasks[0]].pkg,
+                tasks[activeTasks[0]].page,
+                tasks[activeTasks[0]].args
+              )) :
+          apps[tasks[activeTasks[0]].pkg]
+            .contentComponent.default(propsGenerator(
               activeTasks[0],
               tasks[activeTasks[0]].pkg,
               tasks[activeTasks[0]].page,
               tasks[activeTasks[0]].args
-            )) :
-        apps[tasks[activeTasks[0]].pkg]
-          .contentComponent.default(propsGenerator(
-            activeTasks[0],
-            tasks[activeTasks[0]].pkg,
-            tasks[activeTasks[0]].page,
-            tasks[activeTasks[0]].args
-          ))}
+            )))}
     </div>
     {isDrawerExist && <div className={css`
       position: absolute;
@@ -322,22 +328,23 @@ export function TaskViewMobile() {
         background-color: rgba(0, 0, 0, 0.2);
         border-radius: 0px 4px 4px 0px;
       `}>
-        {apps[tasks[activeTasks[0]].pkg]
-          .drawerComponent[tasks[activeTasks[0]].page] ?
+        {activeTasks.length > 0 && (
           apps[tasks[activeTasks[0]].pkg]
-            .drawerComponent[tasks[activeTasks[0]].page](propsGenerator(
-              activeTasks[0],
-              tasks[activeTasks[0]].pkg,
-              tasks[activeTasks[0]].page,
-              tasks[activeTasks[0]].args
-            )) :
-          apps[tasks[activeTasks[0]].pkg]
-            .drawerComponent.default(propsGenerator(
-              activeTasks[0],
-              tasks[activeTasks[0]].pkg,
-              tasks[activeTasks[0]].page,
-              tasks[activeTasks[0]].args
-            ))}
+            .drawerComponent[tasks[activeTasks[0]].page] ?
+            apps[tasks[activeTasks[0]].pkg]
+              .drawerComponent[tasks[activeTasks[0]].page](propsGenerator(
+                activeTasks[0],
+                tasks[activeTasks[0]].pkg,
+                tasks[activeTasks[0]].page,
+                tasks[activeTasks[0]].args
+              )) :
+            apps[tasks[activeTasks[0]].pkg]
+              .drawerComponent.default(propsGenerator(
+                activeTasks[0],
+                tasks[activeTasks[0]].pkg,
+                tasks[activeTasks[0]].page,
+                tasks[activeTasks[0]].args
+              )))}
       </div>
       <div
         className={css`
