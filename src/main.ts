@@ -101,6 +101,12 @@ render(
   ) => {
     console.log('New connection -', ctx.path);
     switch (ctx.path) {
+      case '/output.js':
+        ctx.body = fs.readFileSync(join(process.cwd(), '/output.js'), 'utf8');
+        break;
+      case '/output.js.map':
+        ctx.body = fs.readFileSync(join(process.cwd(), '/output.js.map'), 'utf8');
+        break;
       case '/':
         ctx.body = `<html>
           <head>
@@ -112,9 +118,7 @@ render(
             ${ctx.query.debug === '1' && `
             <script src="//cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init();</script>
             ` || ``}
-            <script>
-            ${fs.readFileSync(join(process.cwd(), '/output.js'), 'utf8')}
-            </script>
+            <script src="/output.js"></script>
           </body>
         </html>`;
         break;
