@@ -5,26 +5,22 @@ export function NetworokStatus({ }) {
   return <div className={css`
     color: #fff;
   `}>
-    <div
-      className={css`
-        font-size: 32px;
-        margin: 8px 16px;
-        height: 36px;
-        line-height: 36px;
-        padding: 4px;
-        display: inline-block;
-        user-select: none;
-      `}
-    >
+    <div className={css`
+      font-size: 32px;
+      margin: 8px 16px;
+      height: 36px;
+      line-height: 36px;
+      padding: 4px;
+      display: inline-block;
+      user-select: none;
+    `}>
       {'Network Status'}
     </div>
-    <div
-      className={css`
-        width: calc(100% - 16px);
-        margin: 8px;
-        display: flex;
-        flex-wrap: wrap;
-      `}
-    ></div>
+    <div className={css`
+      width: calc(100% - 16px);
+      margin: 8px;
+      display: flex;
+      flex-wrap: wrap;
+    `}></div>
   </div>;
 }

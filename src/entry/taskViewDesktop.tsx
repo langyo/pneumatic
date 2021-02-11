@@ -80,141 +80,120 @@ export function TaskViewDesktop() {
         defaultPosition={{ x: left, y: top }}
         handle='.drag-handle-tag'
       >
-        <div
-          className={css`
-            width: ${width}px;
-            height: ${height}px;
-            position: fixed;
-            background-color: rgba(0, 0, 0, 0.1);
-            border-radius: 4px;
-            backdrop-filter: blur(2px);
-            ${activeTasks.indexOf(key) >= 0 ? `z-index: 10000;` : ''}
+        <div className={css`
+          width: ${width}px;
+          height: ${height}px;
+          position: fixed;
+          background-color: rgba(0, 0, 0, 0.1);
+          border-radius: 4px;
+          backdrop-filter: blur(2px);
+          ${activeTasks.indexOf(key) >= 0 ? `z-index: 10000;` : ''}
+        `}>
+          <div className={css`
+            width: 100%;
+            height: 32px;
+            position: absolute;
+            top: 0px;
+            ${activeTasks.indexOf(key) >= 0 ?
+              'background-color: rgba(0, 0, 0, 0.2);' :
+              'background-color: rgba(0, 0, 0, 0.1);'};
+            user-select: none;
+            border-radius: 4px 4px 0px 0px;
           `}
-        >
-          <div
-            className={css`
-              width: 100%;
-              height: 32px;
-              position: absolute;
-              top: 0px;
-              ${activeTasks.indexOf(key) >= 0 ?
-                'background-color: rgba(0, 0, 0, 0.2);' :
-                'background-color: rgba(0, 0, 0, 0.1);'};
-              user-select: none;
-              border-radius: 4px 4px 0px 0px;
-            `}
             onMouseDown={() => setActiveTasks([key])}
           >
-            <div
-              className={css`
-                position: absolute;
-                top: 0px;
-                left: 4px;
-                margin: 4px;
-                height: 24px;
-                color: #fff;
-              `}
-            >
+            <div className={css`
+              position: absolute;
+              top: 0px;
+              left: 4px;
+              margin: 4px;
+              height: 24px;
+              color: #fff;
+            `}>
               <Icon path={apps[pkg].icon} size={1} color='#fff' />
             </div>
-            <div
-              className={css`
-                position: absolute;
-                top: 0px;
-                left: 48px;
-                height: 32px;
-                line-height: 32px;
-                font-size: 16px;
-                color: #fff;
-              `}
-            >
+            <div className={css`
+              position: absolute;
+              top: 0px;
+              left: 48px;
+              height: 32px;
+              line-height: 32px;
+              font-size: 16px;
+              color: #fff;
+            `}>
               {`${apps[pkg].name}${title ? ` - ${title}` : ''}`}
             </div>
-            <div
-              className={cx(css`
-                position: absolute;
-                top: 0px;
-                left: 0px;
-                width: calc(100% - 32px);
-                height: 32px;
-              `, 'drag-handle-tag')}
-            />
-            <div
-              className={css`
-                position: absolute;
-                top: 0px;
-                right: 0px;
-                height: 24px;
-                margin: 4px;
-                color: #fff;
-                border-radius: 4px;
-                &:hover {
-                  background-color: rgba(0, 0, 0, 0.1);
-                }
-                &:active {
-                  background-color: rgba(0, 0, 0, 0.2);
-              `}
-            >
+            <div className={cx(css`
+              position: absolute;
+              top: 0px;
+              left: 0px;
+              width: calc(100% - 32px);
+              height: 32px;
+            `, 'drag-handle-tag')} />
+            <div className={css`
+              position: absolute;
+              top: 0px;
+              right: 0px;
+              height: 24px;
+              margin: 4px;
+              color: #fff;
+              border-radius: 4px;
+              &:hover {
+                background-color: rgba(0, 0, 0, 0.1);
+              }
+              &:active {
+                background-color: rgba(0, 0, 0, 0.2);
+            `}>
               <Icon path={mdiClose} size={1} color='#fff' />
             </div>
           </div>
-          <div
-            className={css`
-              width: calc(40% - 2px);
-              height: calc(100% - 34px);
-              position: absolute;
-              bottom: 0px;
-              left: 0px;
+          <div className={css`
+            width: calc(40% - 2px);
+            height: calc(100% - 34px);
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
           `}
             onMouseDown={() => setActiveTasks([key])}
           >
-            <div
-              className={css`
-                width: 100%;
-                height: 100%;
-                position: absolute;
-                border-radius: 0px 0px 0px 4px;
-                background-color: rgba(0, 0, 0, 0.1);
-              `}
-            />
-            <Scrollbars
-              className={css`
-                width: 100%;
-                height: 100%;
-                position: absolute;
-              `}
-            >
+            <div className={css`
+              width: 100%;
+              height: 100%;
+              position: absolute;
+              border-radius: 0px 0px 0px 4px;
+              background-color: rgba(0, 0, 0, 0.1);
+            `} />
+            <Scrollbars className={css`
+              width: 100%;
+              height: 100%;
+              position: absolute;
+            `}>
               {apps[pkg].drawerComponent[page] ?
                 apps[pkg].drawerComponent[page](propsGenerator(key, pkg, page, args)) :
                 apps[pkg].drawerComponent.default(propsGenerator(key, pkg, page, args))}
             </Scrollbars>
           </div>
-          <div
-            className={css`
-              width: 60%;
-              height: calc(100% - 34px);
-              position: absolute;
-              bottom: 0px;
-              right: 0px;
+          <div className={css`
+            width: 60%;
+            height: calc(100% - 34px);
+            position: absolute;
+            bottom: 0px;
+            right: 0px;
           `}
             onMouseDown={() => setActiveTasks([key])}
           >
-            <div
-              className={css`
-                width: 100%;
-                height: 100%;
-                position: absolute;
-                border-radius: 0px 0px 4px 0px;
-                background-color: rgba(0, 0, 0, 0.1);
-              `}
-            />
-            <Scrollbars
-              className={css`
-                width: 100%;
-                height: 100%;
-                position: absolute;
-              `}
-            >
+            <div className={css`
+              width: 100%;
+              height: 100%;
+              position: absolute;
+              border-radius: 0px 0px 4px 0px;
+              background-color: rgba(0, 0, 0, 0.1);
+            `} />
+            <Scrollbars className={css`
+              width: 100%;
+              height: 100%;
+              position: absolute;
+            `}>
               {apps[pkg].contentComponent[page] ?
                 apps[pkg].contentComponent[page](propsGenerator(key, pkg, page, args)) :
                 apps[pkg].contentComponent.default(propsGenerator(key, pkg, page, args))}
