@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { css } from "@emotion/css";
+import React, { useState } from 'react';
+import { css } from '@emotion/css';
 
 export function FirewallStatus({ }) {
   return <div className={css`
@@ -16,7 +16,7 @@ export function FirewallStatus({ }) {
         user-select: none;
       `}
     >
-      {"Firewall Status"}
+      {'Firewall Status'}
     </div>
     <div
       className={css`

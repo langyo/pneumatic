@@ -1,8 +1,8 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext } from 'react';
 import Draggable from 'react-draggable';
-import { css, cx } from "@emotion/css";
-import Icon from "@mdi/react";
-import { mdiClose } from "@mdi/js";
+import { css, cx } from '@emotion/css';
+import Icon from '@mdi/react';
+import { mdiClose } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { generate } from 'shortid';
 
@@ -10,7 +10,7 @@ import {
   TaskManagerContext, IWindowInfo,
   ITasksState, ITaskSetState,
   IActiveTasksState, IActiveTasksSetState
-} from "./taskManager";
+} from './taskManager';
 import { ApplicationProviderContext, IApp } from './applicationProvider';
 
 export function TaskViewDesktop() {

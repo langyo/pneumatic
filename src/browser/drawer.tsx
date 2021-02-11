@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { css } from "@emotion/css";
-import Icon from "@mdi/react";
+import React, { useState } from 'react';
+import { css } from '@emotion/css';
+import Icon from '@mdi/react';
 import {
   mdiEarth
-} from "@mdi/js";
+} from '@mdi/js';
 
 function ToolbarItem({ iconPath, title }) {
   return (
@@ -65,9 +65,9 @@ export function BrowserDrawer({ }) {
         margin: 4px 0px;
       `}
     >
-      {"Fast forward"}
+      {'Fast forward'}
     </div>
-    <ToolbarItem iconPath={mdiEarth} title="All" />
+    <ToolbarItem iconPath={mdiEarth} title='All' />
     <div
       className={css`
         width: 90%;
@@ -83,8 +83,8 @@ export function BrowserDrawer({ }) {
         margin: 4px 0px;
       `}
     >
-      {"Recent"}
+      {'Recent'}
     </div>
-    <ToolbarItem iconPath={mdiEarth} title="All" />
+    <ToolbarItem iconPath={mdiEarth} title='All' />
   </div>;
 }

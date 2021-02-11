@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { css } from "@emotion/css";
+import React, { useState } from 'react';
+import { css } from '@emotion/css';
 
 export function MarketContent({ }) {
   return <div
@@ -22,7 +22,7 @@ export function MarketContent({ }) {
         border-radius: 4px;
       `}
     >
-      {"WIP"}
+      {'WIP'}
     </div>
   </div>;
 }

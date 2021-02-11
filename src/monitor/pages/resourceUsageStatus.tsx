@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { css } from "@emotion/css";
+import React, { useState } from 'react';
+import { css } from '@emotion/css';
 
 export function ResourceUsgaeStatus({ }) {
   return <div className={css`
@@ -16,7 +16,7 @@ export function ResourceUsgaeStatus({ }) {
         user-select: none;
       `}
     >
-      {"Resource Usage"}
+      {'Resource Usage'}
     </div>
     <div
       className={css`

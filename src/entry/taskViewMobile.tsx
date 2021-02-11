@@ -1,14 +1,14 @@
-import React, { useState, useContext } from "react";
-import { css, keyframes } from "@emotion/css";
-import Icon from "@mdi/react";
-import { mdiClose, mdiFullscreen, mdiFullscreenExit } from "@mdi/js";
+import React, { useState, useContext } from 'react';
+import { css, keyframes } from '@emotion/css';
+import Icon from '@mdi/react';
+import { mdiClose, mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 import { generate } from 'shortid';
 
 import {
   TaskManagerContext, IWindowInfo,
   ITasksState, ITaskSetState,
   IActiveTasksState, IActiveTasksSetState
-} from "./taskManager";
+} from './taskManager';
 import { ApplicationProviderContext, IApp } from './applicationProvider';
 
 const fadeIn = `animation: ${keyframes`
@@ -286,7 +286,7 @@ export function TaskViewMobile() {
                 background-color: rgba(0, 0, 0, 0.2);
               }
             `}>
-              <Icon path={mdiClose} size={1} color="#fff" />
+              <Icon path={mdiClose} size={1} color='#fff' />
             </div>
           </div>;
         })}

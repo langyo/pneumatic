@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { css } from "@emotion/css";
+import React, { useState } from 'react';
+import { css } from '@emotion/css';
 
 export function LoadBalanceStatus({ }) {
   return <div className={css`
@@ -16,7 +16,7 @@ export function LoadBalanceStatus({ }) {
         user-select: none;
       `}
     >
-      {"Load Balance"}
+      {'Load Balance'}
     </div>
     <div
       className={css`

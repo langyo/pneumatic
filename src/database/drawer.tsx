@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { css } from "@emotion/css";
-import Icon from "@mdi/react";
+import React, { useState } from 'react';
+import { css } from '@emotion/css';
+import Icon from '@mdi/react';
 import {
   mdiDatabase
-} from "@mdi/js";
+} from '@mdi/js';
 
 function ToolbarItem({ iconPath, title }) {
   return (
@@ -65,9 +65,9 @@ export function DatabaseDrawer({ }) {
         margin: 4px 0px;
       `}
     >
-      {"Fast forward"}
+      {'Fast forward'}
     </div>
-    <ToolbarItem iconPath={mdiDatabase} title="All" />
+    <ToolbarItem iconPath={mdiDatabase} title='All' />
     <div
       className={css`
         width: 90%;
@@ -83,8 +83,8 @@ export function DatabaseDrawer({ }) {
         margin: 4px 0px;
       `}
     >
-      {"Recent"}
+      {'Recent'}
     </div>
-    <ToolbarItem iconPath={mdiDatabase} title="All" />
+    <ToolbarItem iconPath={mdiDatabase} title='All' />
   </div>;
 }

@@ -1,10 +1,10 @@
-import React, { useState } from "react";
-import { css } from "@emotion/css";
-import Icon from "@mdi/react";
+import React, { useState } from 'react';
+import { css } from '@emotion/css';
+import Icon from '@mdi/react';
 import {
   mdiServerNetwork,
   mdiFolderOutline
-} from "@mdi/js";
+} from '@mdi/js';
 
 function ToolbarItem({ iconPath, title }) {
   return (
@@ -66,9 +66,9 @@ export function ExplorerDrawer({ }) {
         margin: 4px 0px;
       `}
     >
-      {"设备"}
+      {'设备'}
     </div>
-    <ToolbarItem iconPath={mdiServerNetwork} title="硬盘 0 (sda)" />
+    <ToolbarItem iconPath={mdiServerNetwork} title='硬盘 0 (sda)' />
     <div
       className={css`
         width: 90%;
@@ -84,10 +84,10 @@ export function ExplorerDrawer({ }) {
         margin: 4px 0px;
       `}
     >
-      {"快速访问"}
+      {'快速访问'}
     </div>
-    <ToolbarItem iconPath={mdiFolderOutline} title="~" />
-    <ToolbarItem iconPath={mdiFolderOutline} title="nickelcat" />
-    <ToolbarItem iconPath={mdiFolderOutline} title="pneumatic" />
+    <ToolbarItem iconPath={mdiFolderOutline} title='~' />
+    <ToolbarItem iconPath={mdiFolderOutline} title='nickelcat' />
+    <ToolbarItem iconPath={mdiFolderOutline} title='pneumatic' />
   </div>;
 }

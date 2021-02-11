@@ -111,14 +111,14 @@ render(
         ctx.body = `<html>
           <head>
             <title>Test</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+            <meta name='viewport' content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no'>
           </head>
           <body>
-            <div id="root"></div>
+            <div id='root'></div>
             ${ctx.query.debug === '1' && `
-            <script src="//cdn.jsdelivr.net/npm/eruda"></script><script>eruda.init();</script>
+            <script src='//cdn.jsdelivr.net/npm/eruda'></script><script>eruda.init();</script>
             ` || ``}
-            <script src="/output.js"></script>
+            <script src='/output.js'></script>
           </body>
         </html>`;
         break;

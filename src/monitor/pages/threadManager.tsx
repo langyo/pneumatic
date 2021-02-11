@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { css } from "@emotion/css";
+import React, { useState } from 'react';
+import { css } from '@emotion/css';
 
 export function ThreadManager({ }) {
   return <div className={css`
@@ -16,7 +16,7 @@ export function ThreadManager({ }) {
         user-select: none;
       `}
     >
-      {"Thread Management"}
+      {'Thread Management'}
     </div>
     <div
       className={css`

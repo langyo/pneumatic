@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { css } from "@emotion/css";
-import Icon from "@mdi/react";
+import React, { useState } from 'react';
+import { css } from '@emotion/css';
+import Icon from '@mdi/react';
 import {
   mdiFolderOutline,
   mdiMenuRight,
   mdiMenuDown,
   mdiFileOutline,
   mdiFileDocumentOutline
-} from "@mdi/js";
+} from '@mdi/js';
 
 function ContentItem({ iconPath, title }) {
   return <div
@@ -65,7 +65,7 @@ export function ExplorerContent({ }) {
         border-radius: 4px;
       `}
     >
-      {"nickelcat"}
+      {'nickelcat'}
     </div>
     <div
       className={css`
@@ -76,7 +76,7 @@ export function ExplorerContent({ }) {
         flex-direction: row;
       `}
     >
-      {["~", "git", "nickelcat"]
+      {['~', 'git', 'nickelcat']
         .map((n) => (
           <div
             className={css`
@@ -139,12 +139,12 @@ export function ExplorerContent({ }) {
         flex-wrap: wrap;
       `}
     >
-      <ContentItem iconPath={mdiFolderOutline} title=".git" />
-      <ContentItem iconPath={mdiFolderOutline} title="node_modules" />
-      <ContentItem iconPath={mdiFolderOutline} title="packages" />
-      <ContentItem iconPath={mdiFileOutline} title=".gitignore" />
-      <ContentItem iconPath={mdiFileDocumentOutline} title="package.json" />
-      <ContentItem iconPath={mdiFileDocumentOutline} title="README.md" />
+      <ContentItem iconPath={mdiFolderOutline} title='.git' />
+      <ContentItem iconPath={mdiFolderOutline} title='node_modules' />
+      <ContentItem iconPath={mdiFolderOutline} title='packages' />
+      <ContentItem iconPath={mdiFileOutline} title='.gitignore' />
+      <ContentItem iconPath={mdiFileDocumentOutline} title='package.json' />
+      <ContentItem iconPath={mdiFileDocumentOutline} title='README.md' />
     </div>
   </div>;
 }

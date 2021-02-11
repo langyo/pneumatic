@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { css } from "@emotion/css";
+import React, { useState } from 'react';
+import { css } from '@emotion/css';
 
 function UsageBarItem({ title, progress }) {
   return (
@@ -36,7 +36,7 @@ function UsageBarItem({ title, progress }) {
             user-select: none;
           `}
         >
-          {progress * 100 + "%"}
+          {progress * 100 + '%'}
         </p>
       </div>
       <div
@@ -74,7 +74,7 @@ export function HardwareMonitor({ }) {
         user-select: none;
       `}
     >
-      {"Hardware Monitor"}
+      {'Hardware Monitor'}
     </div>
     <div
       className={css`
@@ -84,9 +84,9 @@ export function HardwareMonitor({ }) {
         flex-wrap: wrap;
       `}
     >
-      <UsageBarItem title="CPU #0" progress={0.36} />
-      <UsageBarItem title="RAM #0" progress={0.67} />
-      <UsageBarItem title="RAM #1" progress={0.16} />
+      <UsageBarItem title='CPU #0' progress={0.36} />
+      <UsageBarItem title='RAM #0' progress={0.67} />
+      <UsageBarItem title='RAM #1' progress={0.16} />
     </div>
   </div>;
 }
