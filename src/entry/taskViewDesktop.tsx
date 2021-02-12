@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import Draggable from 'react-draggable';
-import { css, cx } from '@emotion/css';
+import { css, cx, keyframes } from '@emotion/css';
 import Icon from '@mdi/react';
 import { mdiClose, mdiMenu } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -13,6 +13,15 @@ import {
 } from './taskManager';
 import { ApplicationProviderContext, IApp } from './applicationProvider';
 
+const fadeIn = `animation: ${keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`} 0.5s ease 1`;
+const fadeOut = `animation: ${keyframes`
+  from { opacity: 1; }
+  to { opacity: 0; }
+`} 0.55s ease 1`;
+
 export function TaskViewDesktop() {
   const {
     tasks, setTasks,
@@ -22,6 +31,8 @@ export function TaskViewDesktop() {
     activeTasks: IActiveTasksState, setActiveTasks: IActiveTasksSetState
   } = useContext(TaskManagerContext);
   const apps: { [pkg: string]: IApp } = useContext(ApplicationProviderContext);
+  const [isLauncherShow, setLauncherShow] = useState(false);
+  const [isLauncherExist, setLauncherExist] = useState(false);
 
   function propsGenerator(
     key: string, pkg: string, page: string, args: { [key: string]: string }
@@ -100,7 +111,7 @@ export function TaskViewDesktop() {
           background: rgba(0, 0, 0, 0.2);
           border-radius: 4px;
           backdrop-filter: blur(2px);
-          ${activeTasks.indexOf(key) >= 0 ? `z-index: 10000;` : ''}
+          ${activeTasks.indexOf(key) >= 0 ? `z-index: 5000;` : ''}
         `}>
           <div className={css`
             width: 100%;
@@ -219,9 +230,10 @@ export function TaskViewDesktop() {
       position: fixed;
       top: 10%;
       left: 0px;
-      height: calc(80% - 16px);
+      height: calc(80% - 8px);
       width: 48px;
       padding: 4px;
+      z-index: 10000;
       background: rgba(0, 0, 0, 0.2);
       border-radius: 0px 4px 4px 0px;
       backdrop-filter: blur(2px);
@@ -267,10 +279,97 @@ export function TaskViewDesktop() {
           background: rgba(0, 0, 0, 0.4);
         }
       `}
-          onClick={() => void 0}
-        >
-          <Icon path={mdiMenu} size={1} color='#fff' />
-        </div>
+        onClick={() => (isLauncherShow ?
+          (setLauncherShow(false), setTimeout(() => setLauncherExist(false), 500)) :
+          (setLauncherShow(true), setLauncherExist(true)))}
+      >
+        <Icon path={mdiMenu} size={1} color='#fff' />
+      </div>
     </div>
+    {isLauncherExist && <div className={css`
+      position: fixed;
+      left: 100px;
+      top: 10%;
+      width: calc(50% - 100px);
+      height: 80%;
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 4px;
+      z-index: 10000;
+      ${isLauncherShow ? fadeIn : fadeOut}
+    `}>
+      <div className={css`
+        margin: 8px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        align-items: flex-start;
+        user-select: none;
+      `}>
+        {Object.keys(apps).map(key => {
+          const {
+            icon, name,
+            defaultPage, defaultArgs, defaultWindowInfo
+          } = apps[key];
+          return <div className={css`
+            width: 120px;
+            height: 100px;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            font-size: 16px;
+            line-height: 20px;
+            text-align: center;
+            color: #fff;
+            border-radius: 4px;
+            &:hover {
+              background: rgba(0, 0, 0, 0.2);
+            }
+            &:active {
+              background: rgba(0, 0, 0, 0.4);
+            }
+          `}
+            onClick={() => {
+              setLauncherShow(false);
+              setTimeout(() => setLauncherExist(false), 500);
+
+              const id = generate();
+              setTasks({
+                ...tasks,
+                [id]: {
+                  pkg: key,
+                  page: defaultPage || 'default',
+                  args: defaultArgs || {},
+                  windowInfo: defaultWindowInfo ? {
+                    left: 100,
+                    top: 50,
+                    width: 600,
+                    height: 400,
+                    title: '',
+                    ...defaultWindowInfo
+                  } : {
+                      left: 100,
+                      top: 50,
+                      width: 600,
+                      height: 400,
+                      title: ''
+                    }
+                }
+              });
+              setActiveTasks([id]);
+            }}
+          >
+            <div className={css`
+              height: 48px;
+              width: 48px;
+              margin: 4px 36px;
+            `}>
+              <Icon path={icon} size={2} color='#fff' />
+            </div>
+            {name}
+          </div>;
+        })}
+      </div>
+    </div>}
   </div>;
 }

@@ -15,7 +15,7 @@ const tagMap = [
 
 import { ToolbarItem } from '../utils/toolbarItem';
 
-export function MonitorDrawer({ setPage, setDrawerStatus }) {
+export function MonitorDrawer({ setPage, setDrawerShow }) {
   return <div className={css`
     margin: 0px;
     padding-top: 8px;
@@ -30,7 +30,7 @@ export function MonitorDrawer({ setPage, setDrawerStatus }) {
     {tagMap.map(({ iconPath, title, page }) => <ToolbarItem
       iconPath={iconPath}
       title={title}
-      onClick={() => (setPage(page), setDrawerStatus(false))}
+      onClick={() => (setPage(page), setDrawerShow(false))}
     />)}
   </div>;
 }
