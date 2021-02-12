@@ -4,9 +4,7 @@ export const TaskManagerContext = createContext({});
 export interface ITask {
   pkg: string,    // The embedded package format is 'pneumatic.*'.
   page: string,   // The default page is 'default'.
-  args: {
-    [key: string]: string
-  }
+  args: { [key: string]: string }
   windowInfo: IWindowInfo
 };
 
@@ -25,7 +23,7 @@ export type IActiveTasksState = string[];
 export type IActiveTasksSetState = (tasks: string[]) => void;
 
 export function TaskManager(props) {
-  const [tasks, setTasks]: [ITasksState, ITaskSetState]  = useState({});
+  const [tasks, setTasks]: [ITasksState, ITaskSetState] = useState({});
   const [activeTasks, setActiveTasks]: [
     IActiveTasksState, IActiveTasksSetState
   ] = useState([]);

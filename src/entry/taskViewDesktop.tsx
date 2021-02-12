@@ -28,6 +28,8 @@ export function TaskViewDesktop() {
   ) {
     return {
       args,
+      mediaMode: 'desktop',
+      title: tasks[key].windowInfo.title,
       setTitle: (title: string) => {
         setTasks({
           ...tasks,
@@ -40,7 +42,11 @@ export function TaskViewDesktop() {
           }
         });
       },
+      page,
       setPage: (page: string) => {
+        if (Object.keys(apps[pkg].contentComponent).indexOf(page) < 0) {
+          throw Error(`Unknown page '${page}' at the package '${pkg}'.`);
+        }
         setTasks({
           ...tasks,
           [key]: {
@@ -68,7 +74,7 @@ export function TaskViewDesktop() {
   }
 
   return <>
-    {activeTasks.map((key: string) => {
+    {Object.keys(tasks).map((key: string) => {
       const pkg = tasks[key].pkg;
       const page = tasks[key].page;
       const args = tasks[key].args;
@@ -202,5 +208,44 @@ export function TaskViewDesktop() {
         </div>
       </Draggable>;
     })}
+    <div className={css`
+      position: fixed;
+      top: 10%;
+      left: 0px;
+      height: calc(80% - 16px);
+      width: 48px;
+      padding: 4px;
+      background-color: rgba(0, 0, 0, 0.1);
+      border-radius: 0px 4px 4px 0px;
+      backdrop-filter: blur(2px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      user-select: none;
+      color: #fff;
+    `}>
+      {Object.keys(tasks).map(key => {
+        const { icon } = apps[tasks[key].pkg];
+        const isActive = activeTasks.indexOf(key) >= 0;
+
+        return <div className={css`
+          margin: 4px;
+          padding: 8px;
+          border-radius: 4px;
+          ${isActive && 'background: rgba(0, 0, 0, 0.1);'}
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+          }
+          &:active {
+            background-color: rgba(0, 0, 0, 0.2);
+          }
+        `}
+          onClick={() => setActiveTasks([key])}
+        >
+          <Icon path={icon} size={1} color='#fff' />
+        </div>
+      })}
+    </div>
   </>;
 }

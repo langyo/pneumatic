@@ -27,11 +27,14 @@ export interface IApp {
   name: string,
   contentComponent: { [key: string]: (props: any) => React.Component },
   drawerComponent: { [key: string]: (props: any) => React.Component },
+  defaultPage?: string,
+  defaultArgs?: { [key: string]: string }
   defaultWindowInfo?: {
     top?: number,
     left?: number,
     width?: number,
-    height?: number
+    height?: number,
+    title?: string
   }
 }
 
@@ -39,17 +42,18 @@ export const defaultApp: { [pkg: string]: IApp } = {
   'pneumatic.explorer': {
     icon: mdiFolderOutline, name: 'Explorer',
     contentComponent: { default: ExplorerContent },
-    drawerComponent: { default: ExplorerDrawer }
+    drawerComponent: { default: ExplorerDrawer },
+    defaultArgs: { path: '/' },
+    defaultWindowInfo: { title: '/' }
   },
   'pneumatic.monitor': {
     icon: mdiMemory, name: 'Monitor',
     contentComponent: MonitorContentMap,
-    drawerComponent: {
-      default: MonitorDrawer
-    }
+    drawerComponent: { default: MonitorDrawer },
+    defaultPage: 'hardware'
   },
   'pneumatic.browser': {
-    icon: mdiWeb, name: 'Proxy Web Browser',
+    icon: mdiWeb, name: 'Proxy browser',
     contentComponent: { default: BrowserContent },
     drawerComponent: { default: BrowserDrawer }
   },
