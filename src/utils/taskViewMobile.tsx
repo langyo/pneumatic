@@ -33,7 +33,7 @@ export function TaskViewMobile() {
   const [isDrawerExist, setDrawerExist] = useState(false);
   const [isTaskManagerShow, setTaskManagerShow] = useState(false);
   const [isTaskManagerExist, setTaskManagerExist] = useState(false);
-  const [isLauncherShow, setLauncherShow] = useState(true);
+  const [isLauncherShow, setLauncherShow] = useState(activeTasks.length === 0);
 
   function propsGenerator(
     key: string, pkg: string, page: string, args: { [key: string]: string }
@@ -264,7 +264,8 @@ export function TaskViewMobile() {
             onClick={() => (
               setActiveTasks([key]),
               setDrawerShow(false), setTimeout(() => setDrawerExist(false), 500),
-              setTaskManagerShow(false), setTimeout(() => setTaskManagerExist(false), 500)
+              setTaskManagerShow(false), setTimeout(() => setTaskManagerExist(false), 500),
+              setLauncherShow(false)
             )}
           >
             <div className={css`
