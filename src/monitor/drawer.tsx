@@ -9,13 +9,13 @@ const tagMap = [
   { iconPath: mdiWall, title: 'Firewall', page: 'firewall' },
   { iconPath: mdiRouterNetwork, title: 'Network', page: 'network' },
   { iconPath: mdiDatabase, title: 'Resource', page: 'resource' },
-  { iconPath: mdiMenu, title: 'Thread manager', page: 'thread' },
+  { iconPath: mdiMenu, title: 'Thread', page: 'thread' },
   { iconPath: mdiServer, title: 'Load Balance', page: 'loadBalance' }
 ];
 
 import { ToolbarItem } from '../utils/toolbarItem';
 
-export function MonitorDrawer({ setPage }) {
+export function MonitorDrawer({ setPage, setDrawerStatus }) {
   return <div className={css`
     margin: 0px;
     padding-top: 8px;
@@ -30,7 +30,7 @@ export function MonitorDrawer({ setPage }) {
     {tagMap.map(({ iconPath, title, page }) => <ToolbarItem
       iconPath={iconPath}
       title={title}
-      onClick={() => setPage(page)}
+      onClick={() => (setPage(page), setDrawerStatus(false))}
     />)}
   </div>;
 }

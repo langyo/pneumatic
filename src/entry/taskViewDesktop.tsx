@@ -2,7 +2,7 @@ import React, { useState, useContext } from 'react';
 import Draggable from 'react-draggable';
 import { css, cx } from '@emotion/css';
 import Icon from '@mdi/react';
-import { mdiClose } from '@mdi/js';
+import { mdiClose, mdiMenu } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { generate } from 'shortid';
 
@@ -55,6 +55,8 @@ export function TaskViewDesktop() {
           }
         });
       },
+      isDrawerOpen: false,
+      setDrawerStatus(_status: boolean) { },
       createApplication: ({ pkg, page, args }: {
         pkg: string, page: string, args: { [key: string]: string }
       }) => {
@@ -73,7 +75,12 @@ export function TaskViewDesktop() {
     };
   }
 
-  return <>
+  return <div className={css`
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.2);
+  `}>
     {Object.keys(tasks).map((key: string) => {
       const pkg = tasks[key].pkg;
       const page = tasks[key].page;
@@ -90,7 +97,7 @@ export function TaskViewDesktop() {
           width: ${width}px;
           height: ${height}px;
           position: fixed;
-          background-color: rgba(0, 0, 0, 0.1);
+          background: rgba(0, 0, 0, 0.2);
           border-radius: 4px;
           backdrop-filter: blur(2px);
           ${activeTasks.indexOf(key) >= 0 ? `z-index: 10000;` : ''}
@@ -101,8 +108,8 @@ export function TaskViewDesktop() {
             position: absolute;
             top: 0px;
             ${activeTasks.indexOf(key) >= 0 ?
-              'background-color: rgba(0, 0, 0, 0.2);' :
-              'background-color: rgba(0, 0, 0, 0.1);'};
+              'background: rgba(0, 0, 0, 0.4);' :
+              'background: rgba(0, 0, 0, 0.2);'};
             user-select: none;
             border-radius: 4px 4px 0px 0px;
           `}
@@ -145,10 +152,10 @@ export function TaskViewDesktop() {
               color: #fff;
               border-radius: 4px;
               &:hover {
-                background-color: rgba(0, 0, 0, 0.1);
+                background: rgba(0, 0, 0, 0.2);
               }
               &:active {
-                background-color: rgba(0, 0, 0, 0.2);
+                background: rgba(0, 0, 0, 0.4);
             `}>
               <Icon path={mdiClose} size={1} color='#fff' />
             </div>
@@ -167,7 +174,7 @@ export function TaskViewDesktop() {
               height: 100%;
               position: absolute;
               border-radius: 0px 0px 0px 4px;
-              background-color: rgba(0, 0, 0, 0.1);
+              background: rgba(0, 0, 0, 0.2);
             `} />
             <Scrollbars className={css`
               width: 100%;
@@ -193,7 +200,7 @@ export function TaskViewDesktop() {
               height: 100%;
               position: absolute;
               border-radius: 0px 0px 4px 0px;
-              background-color: rgba(0, 0, 0, 0.1);
+              background: rgba(0, 0, 0, 0.2);
             `} />
             <Scrollbars className={css`
               width: 100%;
@@ -215,7 +222,7 @@ export function TaskViewDesktop() {
       height: calc(80% - 16px);
       width: 48px;
       padding: 4px;
-      background-color: rgba(0, 0, 0, 0.1);
+      background: rgba(0, 0, 0, 0.2);
       border-radius: 0px 4px 4px 0px;
       backdrop-filter: blur(2px);
       display: flex;
@@ -233,12 +240,12 @@ export function TaskViewDesktop() {
           margin: 4px;
           padding: 8px;
           border-radius: 4px;
-          ${isActive && 'background: rgba(0, 0, 0, 0.1);'}
+          ${isActive && 'background: rgba(0, 0, 0, 0.2);'}
           &:hover {
-            background-color: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.2);
           }
           &:active {
-            background-color: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.4);
           }
         `}
           onClick={() => setActiveTasks([key])}
@@ -246,6 +253,24 @@ export function TaskViewDesktop() {
           <Icon path={icon} size={1} color='#fff' />
         </div>
       })}
+      <div className={css`
+        position: absolute;
+        left: 4px;
+        bottom: 8px;
+        margin: 4px;
+        padding: 8px;
+        border-radius: 4px;
+        &:hover {
+          background: rgba(0, 0, 0, 0.2);
+        }
+        &:active {
+          background: rgba(0, 0, 0, 0.4);
+        }
+      `}
+          onClick={() => void 0}
+        >
+          <Icon path={mdiMenu} size={1} color='#fff' />
+        </div>
     </div>
-  </>;
+  </div>;
 }

@@ -67,6 +67,13 @@ export function TaskViewMobile() {
           }
         });
       },
+      isDrawerOpen,
+      setDrawerStatus(status: boolean) {
+        setDrawerOpen(status);
+        if (!status) {
+          setTimeout(() => setDrawerExist(false), 500);
+        }
+      },
       createApplication: ({ pkg, page, args }: {
         pkg: string, page: string, args: { [key: string]: string }
       }) => {
@@ -96,7 +103,7 @@ export function TaskViewMobile() {
       top: 0px;
       height: 48px;
       width: 100%;
-      background-color: rgba(0, 0, 0, 0.1);
+      background: rgba(0, 0, 0, 0.2);
     `}>
       {!isLauncherMode && activeTasks.length > 0 && <>
         <div className={css`
@@ -107,10 +114,10 @@ export function TaskViewMobile() {
           padding: 8px;
           border-radius: 4px;
           &:hover {
-            background-color: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.2);
           }
           &:active {
-            background-color: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.4);
           }
         `}
           onClick={() => (
@@ -164,10 +171,10 @@ export function TaskViewMobile() {
           padding: 8px;
           border-radius: 4px;
           &:hover {
-            background-color: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.2);
           }
           &:active {
-            background-color: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.4);
           }
         `}
           onClick={() => (
@@ -206,10 +213,10 @@ export function TaskViewMobile() {
           padding: 8px;
           border-radius: 4px;
           &:hover {
-            background-color: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.2);
           }
           &:active {
-            background-color: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.4);
           }
         `}
           onClick={() => (
@@ -224,7 +231,7 @@ export function TaskViewMobile() {
       top: 50px;
       height: calc(100% - 50px);
       width: 100%;
-      background-color: rgba(0, 0, 0, 0.1);
+      background: rgba(0, 0, 0, 0.2);
     `}>
       {isTaskManagerExist && <div className={css`
         position: absolute;
@@ -247,10 +254,10 @@ export function TaskViewMobile() {
             height: 48px;
             width: calc(90% - 12px);
             border-left: 12px solid ${activeTasks.indexOf(key) >= 0 ?
-              'rgba(51, 153, 160, 0.8)' :
-              'rgba(0, 0, 0, 0.1)'};
+              'rgba(0, 0, 0, 0.6)' :
+              'rgba(0, 0, 0, 0.2)'};
             border-radius: 4px;
-            background-color: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.2);
             position: relative;
             ${fadeIn}
           `}
@@ -289,10 +296,10 @@ export function TaskViewMobile() {
               margin: 4px;
               border-radius: 4px;
               &:hover {
-                background-color: rgba(0, 0, 0, 0.1);
+                background: rgba(0, 0, 0, 0.2);
               }
               &:active {
-                background-color: rgba(0, 0, 0, 0.2);
+                background: rgba(0, 0, 0, 0.4);
               }
             `}>
               <Icon path={mdiClose} size={1} color='#fff' />
@@ -309,10 +316,10 @@ export function TaskViewMobile() {
           color: #fff;
           line-height: 48px;
           &:hover {
-            background-color: rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.2);
           }
           &:active {
-            background-color: rgba(0, 0, 0, 0.2);
+            background: rgba(0, 0, 0, 0.4);
           }
         `}
           onClick={() => (
@@ -370,10 +377,10 @@ export function TaskViewMobile() {
               color: #fff;
               border-radius: 4px;
               &:hover {
-                background: rgba(0, 0, 0, 0.1);
+                background: rgba(0, 0, 0, 0.2);
               }
               &:active {
-                background: rgba(0, 0, 0, 0.2);
+                background: rgba(0, 0, 0, 0.4);
               }
             `}
               onClick={() => {
@@ -434,7 +441,7 @@ export function TaskViewMobile() {
         top: 0px;
         height: 100%;
         width: 60%;
-        background-color: rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.4);
         border-radius: 0px 4px 4px 0px;
       `}>
           {activeTasks.length > 0 && (
@@ -461,7 +468,7 @@ export function TaskViewMobile() {
           top: 0px;
           height: 100%;
           width: 40%;
-          background-color: rgba(0, 0, 0, 0.1);
+          background: rgba(0, 0, 0, 0.2);
         `}
           onClick={() => (setDrawerOpen(false), setTimeout(() => setDrawerExist(false), 500))}
         />
