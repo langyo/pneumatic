@@ -1,13 +1,14 @@
-import React, { useContext } from 'react';
+import React from 'react';
 
-import { TaskViewMobile } from './taskViewMobile';
-import { TaskViewDesktop } from './taskViewDesktop';
+import { TaskViewMobile } from './utils/taskViewMobile';
+import { TaskViewDesktop } from './utils/taskViewDesktop';
 
-import { ThemeProvider, ThemeProviderContext } from './themeProviderContext';
-import { TaskManager } from './taskManagerContext';
-import { ApplicationProvider } from './appProviderContext';
-import { AuthProvider } from './authProviderContext';
-import { DataProvider } from './dataProviderContext';
+import { ThemeProvider, ThemeProviderContext } from './utils/themeProviderContext';
+import { TaskManager } from './utils/taskManagerContext';
+import { ApplicationProvider } from './utils/appProviderContext';
+import { AuthProvider, AuthProviderContext } from './utils/authProviderContext';
+import { DataProvider } from './utils/dataProviderContext';
+import { LoginView } from './utils/loginView';
 
 export default function () {
   return <>
@@ -17,12 +18,20 @@ export default function () {
         <ThemeProvider>
           <ApplicationProvider>
             <TaskManager>
-              <ThemeProviderContext.Consumer>
-                {({ media }) => <>
-                  {media === 'mobile' && <TaskViewMobile />}
-                  {media === 'desktop' && <TaskViewDesktop />}
-                </>}
-              </ThemeProviderContext.Consumer>
+              <AuthProviderContext.Consumer>
+                {({ accessToken }) => {
+                  if (accessToken !== '') {
+                    return <ThemeProviderContext.Consumer>
+                      {({ media }) => <>
+                        {media === 'mobile' && <TaskViewMobile />}
+                        {media === 'desktop' && <TaskViewDesktop />}
+                      </>}
+                    </ThemeProviderContext.Consumer>;
+                  } else {
+                    return <LoginView />
+                  }
+                }}
+              </AuthProviderContext.Consumer>
             </TaskManager>
           </ApplicationProvider>
         </ThemeProvider>

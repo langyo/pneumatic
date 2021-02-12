@@ -1,134 +1,42 @@
-import { join } from 'path';
 import * as Koa from 'koa';
 import * as bodyParserMiddleware from 'koa-bodyparser';
+import { loadBackendApp } from './serverEntry';
 
-import * as webpack from 'webpack';
-import { Volume, IFs } from 'memfs';
-import { Union } from 'unionfs'
-import * as realFs from 'fs';
+import { explorerRoute } from './apps/explorer/routes/service';
+import { monitorRoute } from './apps/monitor/routes/service';
+import { browserRoute } from './apps/browser/routes/service';
+import { databaseRoute } from './apps/database/routes/service';
+import { planRoute } from './apps/plan/routes/service';
+import { terminalRoute } from './apps/terminal/routes/service';
+import { themeRoute } from './apps/theme/routes/service';
+import { marketRoute } from './apps/market/routes/service';
 
 const app = new Koa();
 
 app.use(bodyParserMiddleware());
 
-(async () => {
-  console.log('Compiling the SPA part.');
-  const fs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
-    [join(process.cwd(), './__entry.ts')]: `
-import { render } from 'react-dom';
-import { createElement } from 'react';
-render(
-  createElement(
-    require('${join(
-      __dirname, './clientEntry.tsx'
-    ).split('\\').join('\\\\')}').default
-  ),
-  document.querySelector('#root')
-);`
-  }));
-  fs['join'] = join;
+app.use(async (
+  ctx: Koa.BaseContext,
+  next: () => Promise<unknown>
+) => {
+  console.log('New connection -', ctx.path);
+  await next();
+});
 
-  const compiler = webpack({
-    entry: join(process.cwd(), './__entry.ts'),
-    mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
-    context: process.cwd(),
-    module: {
-      rules: [
-        {
-          test: /\.[jt]sx?$/,
-          loader: 'babel-loader',
-          exclude: /node_modules/,
-          options: {
-            presets: [
-              '@babel/preset-env',
-              '@babel/preset-react',
-              '@babel/preset-typescript'
-            ]
-          }
-        }
-      ]
-    },
-    resolve: {
-      extensions: ['.js', '.jsx', '.ts', '.tsx'],
-      modules: [
-        join(process.cwd(), './node_modules'),
-        'node_modules'
-      ]
-    },
-    resolveLoader: {
-      modules: [
-        join(process.cwd(), './node_modules'),
-        'node_modules'
-      ]
-    },
-    output: {
-      filename: 'output.js',
-      path: process.cwd()
-    },
-    devtool: process.env.NODE_ENV === 'production' ? 'none' : 'source-map'
-  });
-  compiler.inputFileSystem = fs;
-  compiler.outputFileSystem = fs;
+app.use(explorerRoute);
+app.use(monitorRoute);
+app.use(browserRoute);
+app.use(databaseRoute);
+app.use(planRoute);
+app.use(terminalRoute);
+app.use(themeRoute);
+app.use(marketRoute);
 
-  compiler.watch({
-    ignored: ['**/node_modules/**', '**/.git/**']
-  }, (err: Error, status) => {
-    if (err) {
-      throw err;
-    } else if (status.hasErrors()) {
-      const info = status.toJson();
-      let errStr = '';
-      if (status.hasErrors()) {
-        for (const e of info.errors) {
-          errStr += e.message + '\n';
-        }
-      }
-      if (status.hasWarnings()) {
-        for (const e of info.warnings) {
-          errStr += e.message + '\n';
-        }
-      }
-      throw Error(errStr);
-    } else {
-      console.log('Compiled the SPA part.');
-    }
-  });
+app.use(loadBackendApp);
 
-  console.log('Creating the server.');
-  app.use(async (
-    ctx: Koa.BaseContext,
-    _next: () => Promise<unknown>
-  ) => {
-    console.log('New connection -', ctx.path);
-    switch (ctx.path) {
-      case '/output.js':
-        ctx.body = fs.readFileSync(join(process.cwd(), '/output.js'), 'utf8');
-        break;
-      case '/output.js.map':
-        ctx.body = fs.readFileSync(join(process.cwd(), '/output.js.map'), 'utf8');
-        break;
-      case '/':
-        ctx.body = `<html>
-          <head>
-            <title>Pneumatic</title>
-            <meta name='viewport' content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no'>
-          </head>
-          <body>
-            <div id='root'></div>
-            ${ctx.query.debug === '1' && `
-            <script src='//cdn.jsdelivr.net/npm/eruda'></script><script>eruda.init();</script>
-            ` || ``}
-            <script src='/output.js'></script>
-          </body>
-        </html>`;
-        break;
-    }
-  });
+app.listen(
+  process.env.PORT && +process.env.PORT || 80,
+  process.env.HOST || undefined
+);
 
-  app.listen(
-    process.env.PORT && +process.env.PORT || 80,
-    process.env.HOST || undefined
-  );
-
-  console.log('The pneumatic server is ready.');
-})();
+console.log('Server is ready.');
