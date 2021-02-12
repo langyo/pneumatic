@@ -245,7 +245,8 @@ export function TaskViewDesktop() {
       color: #fff;
     `}>
       {Object.keys(tasks).map(key => {
-        const { icon } = apps[tasks[key].pkg];
+        const { icon, name } = apps[tasks[key].pkg];
+        const { title } = tasks[key].windowInfo;
         const isActive = activeTasks.indexOf(key) >= 0;
 
         return <div className={css`
@@ -255,6 +256,20 @@ export function TaskViewDesktop() {
           ${isActive && 'background: rgba(0, 0, 0, 0.2);'}
           &:hover {
             background: rgba(0, 0, 0, 0.2);
+          }
+          &:hover::after {
+            position: absolute;
+            line-height: 48px;
+            font-size: 16px;
+            content: "${`${name}${title.trim() !== '' ? ` - ${title}` : ''}`}";
+            white-space: nowrap;
+            left: 72px;
+            height: 48px;
+            margin: -12px;
+            padding: 0px 4px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.4);
+            ${fadeIn}
           }
           &:active {
             background: rgba(0, 0, 0, 0.4);
