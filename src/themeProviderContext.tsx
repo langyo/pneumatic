@@ -24,5 +24,5 @@ export function ThemeProvider(props) {
       background-size: cover;
     `} />
     {props.children}
-  </ThemeProviderContext.Provider>
+  </ThemeProviderContext.Provider>;
 }

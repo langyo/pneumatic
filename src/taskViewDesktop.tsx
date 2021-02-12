@@ -10,8 +10,8 @@ import {
   TaskManagerContext, IWindowInfo,
   ITasksState, ITaskSetState,
   IActiveTasksState, IActiveTasksSetState
-} from './taskManager';
-import { ApplicationProviderContext, IApp } from './applicationProvider';
+} from './taskManagerContext';
+import { ApplicationProviderContext, IApp } from './appProviderContext';
 
 const fadeIn = `animation: ${keyframes`
   from { opacity: 0; }

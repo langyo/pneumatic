@@ -33,5 +33,5 @@ export function TaskManager(props) {
     activeTasks, setActiveTasks
   }}>
     {props.children}
-  </TaskManagerContext.Provider>
+  </TaskManagerContext.Provider>;
 }

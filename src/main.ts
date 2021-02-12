@@ -20,7 +20,7 @@ import { createElement } from 'react';
 render(
   createElement(
     require('${join(
-      __dirname, './entry/index.tsx'
+      __dirname, './clientEntry.tsx'
     ).split('\\').join('\\\\')}').default
   ),
   document.querySelector('#root')
@@ -110,7 +110,7 @@ render(
       case '/':
         ctx.body = `<html>
           <head>
-            <title>Test</title>
+            <title>Pneumatic</title>
             <meta name='viewport' content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no'>
           </head>
           <body>
