@@ -43,8 +43,8 @@ export function TaskViewDesktop() {
       setPage(page: string) { setPage(key, page); },
       state,
       setState(state: IState) { setState(key, state); },
-      isDrawerOpen: false,
-      setDrawerStatus(_status: boolean) { },
+      isDrawerShow: false,
+      setDrawerShow(_status: boolean) { },
       generateTask,
       destoryTask
     };
