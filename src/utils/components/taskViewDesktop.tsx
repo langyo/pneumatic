@@ -274,63 +274,88 @@ export function TaskViewDesktop() {
         <Icon path={mdiMenu} size={1} color='#fff' />
       </div>
     </div>
-    {isLauncherExist && <div className={css`
-      position: fixed;
-      left: 100px;
-      top: 10%;
-      width: calc(50% - 100px);
-      height: 80%;
-      background: rgba(0, 0, 0, 0.4);
-      border-radius: 4px;
-      z-index: 10000;
-      ${isLauncherShow ? fadeIn : fadeOut}
-    `}>
+    {isLauncherExist && <>
       <div className={css`
-        margin: 8px;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        align-items: flex-start;
-        user-select: none;
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.2);
+        z-index: 9999;
+        ${isLauncherShow ? fadeIn : fadeOut}
+      `}
+        onClick={() => (setLauncherShow(false), setTimeout(() => setLauncherExist(false), 500))}
+      />
+      <div className={css`
+        position: fixed;
+        left: 100px;
+        top: 10%;
+        width: calc(50% - 100px);
+        height: 80%;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 4px;
+        z-index: 10000;
+        ${isLauncherShow ? fadeIn : fadeOut}
       `}>
-        {Object.keys(apps).map(pkg => {
-          const { icon, name } = apps[pkg];
-          return <div className={css`
-            width: 120px;
-            height: 100px;
-            padding: 4px;
-            display: flex;
-            flex-direction: column;
-            font-size: 16px;
-            line-height: 20px;
-            text-align: center;
+        <div className={css`
+          margin: 8px;
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          align-items: flex-start;
+          user-select: none;
+        `}>
+          <div className={css`
+            padding: 8px 16px;
+            width: calc(100% - 32px);
+            height: 36px;
+            line-height: 36px;
+            font-size: 32px;
+            text-align: left;
             color: #fff;
-            border-radius: 4px;
-            &:hover {
-              background: rgba(0, 0, 0, 0.2);
-            }
-            &:active {
-              background: rgba(0, 0, 0, 0.4);
-            }
-          `}
-            onClick={() => {
-              setLauncherShow(false);
-              setTimeout(() => setLauncherExist(false), 500);
-              generateTask(pkg);
-            }}
-          >
-            <div className={css`
-              height: 48px;
-              width: 48px;
-              margin: 4px 36px;
-            `}>
-              <Icon path={icon} size={2} color='#fff' />
-            </div>
-            {name}
-          </div>;
-        })}
+          `}>
+            {'Launcher'}
+          </div>
+          {Object.keys(apps).map(pkg => {
+            const { icon, name } = apps[pkg];
+            return <div className={css`
+              width: 120px;
+              height: 100px;
+              padding: 4px;
+              display: flex;
+              flex-direction: column;
+              font-size: 16px;
+              line-height: 20px;
+              text-align: center;
+              color: #fff;
+              border-radius: 4px;
+              &:hover {
+                background: rgba(0, 0, 0, 0.2);
+              }
+              &:active {
+                background: rgba(0, 0, 0, 0.4);
+              }
+            `}
+              onClick={() => {
+                setLauncherShow(false);
+                setTimeout(() => setLauncherExist(false), 500);
+                generateTask(pkg);
+              }}
+            >
+              <div className={css`
+                height: 48px;
+                width: 48px;
+                margin: 4px 36px;
+              `}>
+                <Icon path={icon} size={2} color='#fff' />
+              </div>
+              {name}
+            </div>;
+          })}
+        </div>
       </div>
-    </div>}
+    </>}
   </div>;
 }
