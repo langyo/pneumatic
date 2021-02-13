@@ -5,9 +5,9 @@ import { mdiClose, mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 import { generate } from 'shortid';
 
 import {
-  TaskManagerContext, IWindowInfo,
-  ITasksState, ITaskSetState,
-  IActiveTasksState, IActiveTasksSetState
+  TaskManagerContext, IWindowInfo, IState,
+  ITaskInfo, IGenerateTask, IDestoryTask,
+  ISetPage, ISetState, ISetWindowInfo, ISetActiveTask
 } from './taskManagerContext';
 import { ApplicationProviderContext, IApp } from './appProviderContext';
 
@@ -22,51 +22,35 @@ const fadeOut = `animation: ${keyframes`
 
 export function TaskViewMobile() {
   const {
-    tasks, setTasks,
-    activeTasks, setActiveTasks
+    tasks, generateTask, destoryTask,
+    setPage, setState, setWindowInfo, setActiveTask
   }: {
-    tasks: ITasksState, setTasks: ITaskSetState,
-    activeTasks: IActiveTasksState, setActiveTasks: IActiveTasksSetState
+    tasks: ITaskInfo, generateTask: IGenerateTask, destoryTask: IDestoryTask,
+    setPage: ISetPage, setState: ISetState,
+    setWindowInfo: ISetWindowInfo, setActiveTask: ISetActiveTask
   } = useContext(TaskManagerContext);
   const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
   const [isDrawerShow, setDrawerShow] = useState(false);
   const [isDrawerExist, setDrawerExist] = useState(false);
   const [isTaskManagerShow, setTaskManagerShow] = useState(false);
   const [isTaskManagerExist, setTaskManagerExist] = useState(false);
-  const [isLauncherShow, setLauncherShow] = useState(activeTasks.length === 0);
+  const [isLauncherShow, setLauncherShow] = useState(Object.keys(tasks).filter(
+    (key: string) => tasks[key].windowInfo.status !== 'active'
+  ).length === 0);
 
-  function propsGenerator(
-    key: string, pkg: string, page: string, args: { [key: string]: string }
-  ) {
+  const activeTaskId = Object.keys(tasks).find(
+    (id: string) => tasks[id].windowInfo.status === 'active' ? id : undefined
+  );
+
+  function propsGenerator(key: string, page: string, state: IState) {
     return {
-      args,
       mediaMode: 'mobile',
-      title: tasks[key].windowInfo.title,
-      setTitle(title: string) {
-        setTasks({
-          ...tasks,
-          [key]: {
-            ...tasks[key],
-            windowInfo: {
-              ...tasks[key].windowInfo,
-              title
-            }
-          }
-        });
-      },
+      windowInfo: tasks[key].windowInfo,
+      setWindowInfo(info: IWindowInfo) { setWindowInfo(key, info); },
       page,
-      setPage(page: string) {
-        if (Object.keys(apps[pkg].contentComponent).indexOf(page) < 0) {
-          throw Error(`Unknown page '${page}' at the package '${pkg}'.`);
-        }
-        setTasks({
-          ...tasks,
-          [key]: {
-            ...tasks[key],
-            page
-          }
-        });
-      },
+      setPage(page: string) { setPage(key, page); },
+      state,
+      setState(state: IState) { setState(key, state); },
       isDrawerShow,
       setDrawerShow(status: boolean) {
         setDrawerShow(status);
@@ -74,21 +58,8 @@ export function TaskViewMobile() {
           setTimeout(() => setDrawerExist(false), 500);
         }
       },
-      createApplication({ pkg, page, args }: {
-        pkg: string, page: string, args: { [key: string]: string }
-      }) {
-        const key = generate();
-        setTasks({
-          ...tasks,
-          [key]: {
-            pkg, page, args,
-            windowInfo: {
-              top: 50, left: 50, height: 400, width: 600,
-              ...(apps[pkg].defaultWindowInfo || {})
-            }
-          }
-        });
-      }
+      generateTask,
+      destoryTask
     };
   }
 
@@ -105,7 +76,7 @@ export function TaskViewMobile() {
       width: 100%;
       background: rgba(0, 0, 0, 0.2);
     `}>
-      {!isLauncherShow && activeTasks.length > 0 && <>
+      {!isLauncherShow && activeTaskId && <>
         <div className={css`
           position: absolute;
           top: 0px;
@@ -124,20 +95,20 @@ export function TaskViewMobile() {
             setDrawerShow(!isDrawerShow),
             isDrawerShow ? setTimeout(() => setDrawerExist(false), 500) : setDrawerExist(true)
           )}>
-          <Icon path={apps[tasks[activeTasks[0]].pkg].icon} size={1} color='#fff' />
+          <Icon path={apps[tasks[activeTaskId].pkg].icon} size={1} color='#fff' />
         </div>
         <div className={css`
           position: absolute;
           top: 0px;
           left: 52px;
-          height: ${tasks[activeTasks[0]].windowInfo.title.trim() !== '' ? 28 : 48}px;
-          line-height: ${tasks[activeTasks[0]].windowInfo.title.trim() !== '' ? 28 : 48}px;
-          font-size: ${tasks[activeTasks[0]].windowInfo.title.trim() !== '' ? 16 : 24}px;
+          height: ${tasks[activeTaskId].windowInfo.title !== '' ? 28 : 48}px;
+          line-height: ${tasks[activeTaskId].windowInfo.title !== '' ? 28 : 48}px;
+          font-size: ${tasks[activeTaskId].windowInfo.title !== '' ? 16 : 24}px;
           color: #fff;
         `}>
-          {apps[tasks[activeTasks[0]].pkg].name}
+          {apps[tasks[activeTaskId].pkg].name}
         </div>
-        {tasks[activeTasks[0]].windowInfo.title && <div className={css`
+        {tasks[activeTaskId].windowInfo.title && <div className={css`
           position: absolute;
           bottom: 4px;
           left: 52px;
@@ -146,7 +117,7 @@ export function TaskViewMobile() {
           font-size: 12px;
           color: #fff;
         `}>
-          {tasks[activeTasks[0]].windowInfo.title}
+          {tasks[activeTaskId].windowInfo.title}
         </div>}
       </>}
       {isLauncherShow &&
@@ -253,7 +224,7 @@ export function TaskViewMobile() {
             margin-top: 4px;
             height: 48px;
             width: calc(90% - 12px);
-            border-left: 12px solid ${activeTasks.indexOf(key) >= 0 ?
+            border-left: 12px solid ${activeTaskId === key ?
               'rgba(0, 0, 0, 0.6)' :
               'rgba(0, 0, 0, 0.2)'};
             border-radius: 4px;
@@ -262,9 +233,9 @@ export function TaskViewMobile() {
             ${fadeIn}
           `}
             onClick={() => (
-              setActiveTasks([key]),
-              setDrawerShow(false), setTimeout(() => setDrawerExist(false), 500),
-              setTaskManagerShow(false), setTimeout(() => setTaskManagerExist(false), 500),
+              setActiveTask(key),
+              setDrawerShow(false), setTaskManagerShow(false),
+              setTimeout(() => (setDrawerExist(false), setTaskManagerExist(false)), 500),
               setLauncherShow(false)
             )}
           >
@@ -302,7 +273,14 @@ export function TaskViewMobile() {
               &:active {
                 background: rgba(0, 0, 0, 0.4);
               }
-            `}>
+            `}
+              onClick={() => {
+                if (activeTaskId === key) {
+                  setLauncherShow((_isLauncherShow: boolean) => true);
+                }
+                destoryTask(key);
+              }}
+            >
               <Icon path={mdiClose} size={1} color='#fff' />
             </div>
           </div>;
@@ -332,23 +310,21 @@ export function TaskViewMobile() {
           {'Back to the launcher'}
         </div>
       </div>}
-      {!isLauncherShow && activeTasks.length > 0 && (
-        apps[tasks[activeTasks[0]].pkg]
-          .contentComponent[tasks[activeTasks[0]].page] ?
-          apps[tasks[activeTasks[0]].pkg]
-            .contentComponent[tasks[activeTasks[0]].page](
+      {!isLauncherShow && activeTaskId && (
+        apps[tasks[activeTaskId].pkg]
+          .contentComponent[tasks[activeTaskId].page] ?
+          apps[tasks[activeTaskId].pkg]
+            .contentComponent[tasks[activeTaskId].page](
               propsGenerator(
-                activeTasks[0],
-                tasks[activeTasks[0]].pkg,
-                tasks[activeTasks[0]].page,
-                tasks[activeTasks[0]].args
+                activeTaskId,
+                tasks[activeTaskId].page,
+                tasks[activeTaskId].state
               )) :
-          apps[tasks[activeTasks[0]].pkg]
+          apps[tasks[activeTaskId].pkg]
             .contentComponent.default(propsGenerator(
-              activeTasks[0],
-              tasks[activeTasks[0]].pkg,
-              tasks[activeTasks[0]].page,
-              tasks[activeTasks[0]].args
+              activeTaskId,
+              tasks[activeTaskId].page,
+              tasks[activeTaskId].state
             )))}
       {isLauncherShow && <div className={css`
         margin: 8px;
@@ -358,11 +334,8 @@ export function TaskViewMobile() {
         justify-content: flex-start;
         align-items: flex-start;
       `}>
-        {Object.keys(apps).map(key => {
-          const {
-            icon, name,
-            defaultPage, defaultArgs, defaultWindowInfo
-          } = apps[key];
+        {Object.keys(apps).map(pkg => {
+          const { icon, name } = apps[pkg];
           return <div className={css`
             padding: 0px calc((25% - 60px) / 2 - 4px);
           `}>
@@ -386,31 +359,7 @@ export function TaskViewMobile() {
             `}
               onClick={() => {
                 setLauncherShow(false);
-
-                const id = generate();
-                setTasks({
-                  ...tasks,
-                  [id]: {
-                    pkg: key,
-                    page: defaultPage || 'default',
-                    args: defaultArgs || {},
-                    windowInfo: defaultWindowInfo ? {
-                      left: 100,
-                      top: 50,
-                      width: 600,
-                      height: 400,
-                      title: '',
-                      ...defaultWindowInfo
-                    } : {
-                        left: 100,
-                        top: 50,
-                        width: 600,
-                        height: 400,
-                        title: ''
-                      }
-                  }
-                });
-                setActiveTasks([id]);
+                generateTask(pkg);
               }}
             >
               <div className={css`
@@ -445,22 +394,20 @@ export function TaskViewMobile() {
           background: rgba(0, 0, 0, 0.4);
           border-radius: 0px 4px 4px 0px;
         `}>
-          {activeTasks.length > 0 && (
-            apps[tasks[activeTasks[0]].pkg]
-              .drawerComponent[tasks[activeTasks[0]].page] ?
-              apps[tasks[activeTasks[0]].pkg]
-                .drawerComponent[tasks[activeTasks[0]].page](propsGenerator(
-                  activeTasks[0],
-                  tasks[activeTasks[0]].pkg,
-                  tasks[activeTasks[0]].page,
-                  tasks[activeTasks[0]].args
+          {activeTaskId && (
+            apps[tasks[activeTaskId].pkg]
+              .drawerComponent[tasks[activeTaskId].page] ?
+              apps[tasks[activeTaskId].pkg]
+                .drawerComponent[tasks[activeTaskId].page](propsGenerator(
+                  activeTaskId,
+                  tasks[activeTaskId].page,
+                  tasks[activeTaskId].state
                 )) :
-              apps[tasks[activeTasks[0]].pkg]
+              apps[tasks[activeTaskId].pkg]
                 .drawerComponent.default(propsGenerator(
-                  activeTasks[0],
-                  tasks[activeTasks[0]].pkg,
-                  tasks[activeTasks[0]].page,
-                  tasks[activeTasks[0]].args
+                  activeTaskId,
+                  tasks[activeTaskId].page,
+                  tasks[activeTaskId].state
                 )))}
         </div>
         <div className={css`

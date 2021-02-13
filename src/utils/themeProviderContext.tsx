@@ -8,9 +8,7 @@ export function ThemeProvider(props) {
   const media = useMediaQuery({
     query: '(min-width: 992px)'
   }) ? 'desktop' : 'mobile';
-  const [backgroundUrl, setBackgroundUrl] = useState(
-    'https://i.loli.net/2021/02/09/8vaVgHdnXtEwQDs.jpg'
-  );
+  const [backgroundUrl, setBackgroundUrl] = useState('');
 
   return <ThemeProviderContext.Provider value={{
     media

@@ -22,19 +22,21 @@ import { ThemeDrawer } from '../apps/theme/views/drawer';
 import { MarketContent } from '../apps/market/views/content';
 import { MarketDrawer } from '../apps/market/views/drawer';
 
+import { IState, ITaskInfo } from './taskManagerContext';
+
 export interface IApp {
   icon: string,   // SVG path.
   name: string,
   contentComponent: { [key: string]: (props: any) => React.Component },
   drawerComponent: { [key: string]: (props: any) => React.Component },
   defaultPage?: string,
-  defaultArgs?: { [key: string]: string }
+  defaultState?: { [key: string]: string }
   defaultWindowInfo?: {
-    top?: number,
-    left?: number,
-    width?: number,
-    height?: number,
-    title?: string
+    top?: (page: string, state: IState, tasks: ITaskInfo) => number,
+    left?: (page: string, state: IState, tasks: ITaskInfo) => number,
+    width?: (page: string, state: IState, tasks: ITaskInfo) => number,
+    height?: (page: string, state: IState, tasks: ITaskInfo) => number,
+    title?: (page: string, state: IState, tasks: ITaskInfo) => string
   }
 }
 
@@ -43,19 +45,22 @@ export const defaultApp: { [pkg: string]: IApp } = {
     icon: mdiFolderOutline, name: 'Explorer',
     contentComponent: { default: ExplorerContent },
     drawerComponent: { default: ExplorerDrawer },
-    defaultArgs: { path: '/' },
-    defaultWindowInfo: { title: '/' }
+    defaultState: { path: '/' },
+    defaultWindowInfo: { title: (_page, { path }) => path }
   },
   'pneumatic.monitor': {
     icon: mdiMemory, name: 'Monitor',
     contentComponent: MonitorContentMap,
     drawerComponent: { default: MonitorDrawer },
-    defaultPage: 'hardware'
+    defaultPage: 'hardware',
+    defaultWindowInfo: { title: (page, _data) => page }
   },
   'pneumatic.browser': {
     icon: mdiWeb, name: 'Proxy browser',
     contentComponent: { default: BrowserContent },
-    drawerComponent: { default: BrowserDrawer }
+    drawerComponent: { default: BrowserDrawer },
+    defaultState: { url: 'https://github.com/' },
+    defaultWindowInfo: { title: (_page, { url }) => /^https?:\/\/([^\/]+)\/.*/.exec(url)[1] }
   },
   'pneumatic.database': {
     icon: mdiDatabase, name: 'Database manager',

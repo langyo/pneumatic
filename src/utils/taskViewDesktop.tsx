@@ -1,15 +1,14 @@
 import React, { useState, useContext } from 'react';
-import Draggable from 'react-draggable';
+import Draggable, { DraggableData } from 'react-draggable';
 import { css, cx, keyframes } from '@emotion/css';
 import Icon from '@mdi/react';
 import { mdiClose, mdiMenu } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
-import { generate } from 'shortid';
 
 import {
-  TaskManagerContext, IWindowInfo,
-  ITasksState, ITaskSetState,
-  IActiveTasksState, IActiveTasksSetState
+  TaskManagerContext, IWindowInfo, IState,
+  ITaskInfo, IGenerateTask, IDestoryTask,
+  ISetPage, ISetState, ISetWindowInfo, ISetActiveTask
 } from './taskManagerContext';
 import { ApplicationProviderContext, IApp } from './appProviderContext';
 
@@ -24,67 +23,36 @@ const fadeOut = `animation: ${keyframes`
 
 export function TaskViewDesktop() {
   const {
-    tasks, setTasks,
-    activeTasks, setActiveTasks
+    tasks, generateTask, destoryTask,
+    setPage, setState, setWindowInfo, setActiveTask
   }: {
-    tasks: ITasksState, setTasks: ITaskSetState,
-    activeTasks: IActiveTasksState, setActiveTasks: IActiveTasksSetState
+    tasks: ITaskInfo, generateTask: IGenerateTask, destoryTask: IDestoryTask,
+    setPage: ISetPage, setState: ISetState,
+    setWindowInfo: ISetWindowInfo, setActiveTask: ISetActiveTask
   } = useContext(TaskManagerContext);
   const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
   const [isLauncherShow, setLauncherShow] = useState(false);
   const [isLauncherExist, setLauncherExist] = useState(false);
 
-  function propsGenerator(
-    key: string, pkg: string, page: string, args: { [key: string]: string }
-  ) {
+  function propsGenerator(key: string, page: string, state: IState) {
     return {
-      args,
       mediaMode: 'desktop',
-      title: tasks[key].windowInfo.title,
-      setTitle(title: string) {
-        setTasks({
-          ...tasks,
-          [key]: {
-            ...tasks[key],
-            windowInfo: {
-              ...tasks[key].windowInfo,
-              title
-            }
-          }
-        });
-      },
+      windowInfo: tasks[key].windowInfo,
+      setWindowInfo(info: IWindowInfo) { setWindowInfo(key, info); },
       page,
-      setPage(page: string) {
-        if (Object.keys(apps[pkg].contentComponent).indexOf(page) < 0) {
-          throw Error(`Unknown page '${page}' at the package '${pkg}'.`);
-        }
-        setTasks({
-          ...tasks,
-          [key]: {
-            ...tasks[key],
-            page
-          }
-        });
-      },
+      setPage(page: string) { setPage(key, page); },
+      state,
+      setState(state: IState) { setState(key, state); },
       isDrawerOpen: false,
       setDrawerStatus(_status: boolean) { },
-      createApplication({ pkg, page, args }: {
-        pkg: string, page: string, args: { [key: string]: string }
-      }) {
-        const key = generate();
-        setTasks({
-          ...tasks,
-          [key]: {
-            pkg, page, args,
-            windowInfo: {
-              top: 50, left: 50, height: 400, width: 600,
-              ...(apps[pkg].defaultWindowInfo || {})
-            }
-          }
-        });
-      }
+      generateTask,
+      destoryTask
     };
   }
+
+  const activeTaskId = Object.keys(tasks).find(
+    (id: string) => tasks[id].windowInfo.status === 'active' ? id : undefined
+  );
 
   return <div className={css`
     position: fixed;
@@ -93,16 +61,20 @@ export function TaskViewDesktop() {
     background: rgba(0, 0, 0, 0.2);
   `}>
     {Object.keys(tasks).map((key: string) => {
-      const pkg = tasks[key].pkg;
-      const page = tasks[key].page;
-      const args = tasks[key].args;
       const {
-        left, top, width, height, title
-      }: IWindowInfo = tasks[key].windowInfo;
+        pkg, page, state,
+        windowInfo: {
+          status, left, top, width, height, title, priority
+        }
+      } = tasks[key];
 
       return <Draggable
-        defaultPosition={{ x: left, y: top }}
+        position={{ x: left, y: top }}
         handle='.drag-handle-tag'
+        onStop={(_e: Event, state: DraggableData) => setWindowInfo(key, {
+          left: state.x,
+          top: state.y
+        })}
       >
         <div className={css`
           width: ${width}px;
@@ -111,20 +83,20 @@ export function TaskViewDesktop() {
           background: rgba(0, 0, 0, 0.2);
           border-radius: 4px;
           backdrop-filter: blur(2px);
-          ${activeTasks.indexOf(key) >= 0 ? `z-index: 5000;` : ''}
+          z-index: ${5000 + priority};
         `}>
           <div className={css`
             width: 100%;
             height: 32px;
             position: absolute;
             top: 0px;
-            ${activeTasks.indexOf(key) >= 0 ?
+            ${status === 'active' ?
               'background: rgba(0, 0, 0, 0.4);' :
               'background: rgba(0, 0, 0, 0.2);'};
             user-select: none;
             border-radius: 4px 4px 0px 0px;
           `}
-            onMouseDown={() => setActiveTasks([key])}
+            onMouseDown={() => setActiveTask(key)}
           >
             <div className={css`
               position: absolute;
@@ -167,7 +139,9 @@ export function TaskViewDesktop() {
               }
               &:active {
                 background: rgba(0, 0, 0, 0.4);
-            `}>
+            `}
+              onClick={() => destoryTask(key)}
+            >
               <Icon path={mdiClose} size={1} color='#fff' />
             </div>
           </div>
@@ -178,7 +152,7 @@ export function TaskViewDesktop() {
             bottom: 0px;
             left: 0px;
           `}
-            onMouseDown={() => setActiveTasks([key])}
+            onMouseDown={() => setActiveTask(key)}
           >
             <div className={css`
               width: 100%;
@@ -193,8 +167,8 @@ export function TaskViewDesktop() {
               position: absolute;
             `}>
               {apps[pkg].drawerComponent[page] ?
-                apps[pkg].drawerComponent[page](propsGenerator(key, pkg, page, args)) :
-                apps[pkg].drawerComponent.default(propsGenerator(key, pkg, page, args))}
+                apps[pkg].drawerComponent[page](propsGenerator(key, page, state)) :
+                apps[pkg].drawerComponent.default(propsGenerator(key, page, state))}
             </Scrollbars>
           </div>
           <div className={css`
@@ -204,7 +178,7 @@ export function TaskViewDesktop() {
             bottom: 0px;
             right: 0px;
           `}
-            onMouseDown={() => setActiveTasks([key])}
+            onMouseDown={() => setActiveTask(key)}
           >
             <div className={css`
               width: 100%;
@@ -219,8 +193,8 @@ export function TaskViewDesktop() {
               position: absolute;
             `}>
               {apps[pkg].contentComponent[page] ?
-                apps[pkg].contentComponent[page](propsGenerator(key, pkg, page, args)) :
-                apps[pkg].contentComponent.default(propsGenerator(key, pkg, page, args))}
+                apps[pkg].contentComponent[page](propsGenerator(key, page, state)) :
+                apps[pkg].contentComponent.default(propsGenerator(key, page, state))}
             </Scrollbars>
           </div>
         </div>
@@ -247,13 +221,12 @@ export function TaskViewDesktop() {
       {Object.keys(tasks).map(key => {
         const { icon, name } = apps[tasks[key].pkg];
         const { title } = tasks[key].windowInfo;
-        const isActive = activeTasks.indexOf(key) >= 0;
 
         return <div className={css`
           margin: 4px;
           padding: 8px;
           border-radius: 4px;
-          ${isActive && 'background: rgba(0, 0, 0, 0.2);'}
+          ${key === activeTaskId && 'background: rgba(0, 0, 0, 0.2);'}
           &:hover {
             background: rgba(0, 0, 0, 0.2);
           }
@@ -261,7 +234,7 @@ export function TaskViewDesktop() {
             position: absolute;
             line-height: 48px;
             font-size: 16px;
-            content: "${`${name}${title.trim() !== '' ? ` - ${title}` : ''}`}";
+            content: "${`${name}${title !== '' ? ` - ${title}` : ''}`}";
             white-space: nowrap;
             left: 72px;
             height: 48px;
@@ -275,7 +248,7 @@ export function TaskViewDesktop() {
             background: rgba(0, 0, 0, 0.4);
           }
         `}
-          onClick={() => setActiveTasks([key])}
+          onClick={() => setActiveTask(key)}
         >
           <Icon path={icon} size={1} color='#fff' />
         </div>
@@ -321,11 +294,8 @@ export function TaskViewDesktop() {
         align-items: flex-start;
         user-select: none;
       `}>
-        {Object.keys(apps).map(key => {
-          const {
-            icon, name,
-            defaultPage, defaultArgs, defaultWindowInfo
-          } = apps[key];
+        {Object.keys(apps).map(pkg => {
+          const { icon, name } = apps[pkg];
           return <div className={css`
             width: 120px;
             height: 100px;
@@ -347,31 +317,7 @@ export function TaskViewDesktop() {
             onClick={() => {
               setLauncherShow(false);
               setTimeout(() => setLauncherExist(false), 500);
-
-              const id = generate();
-              setTasks({
-                ...tasks,
-                [id]: {
-                  pkg: key,
-                  page: defaultPage || 'default',
-                  args: defaultArgs || {},
-                  windowInfo: defaultWindowInfo ? {
-                    left: 100,
-                    top: 50,
-                    width: 600,
-                    height: 400,
-                    title: '',
-                    ...defaultWindowInfo
-                  } : {
-                      left: 100,
-                      top: 50,
-                      width: 600,
-                      height: 400,
-                      title: ''
-                    }
-                }
-              });
-              setActiveTasks([id]);
+              generateTask(pkg);
             }}
           >
             <div className={css`
