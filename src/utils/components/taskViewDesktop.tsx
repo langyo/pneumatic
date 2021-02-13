@@ -9,8 +9,8 @@ import {
   TaskManagerContext, IWindowInfo, IState,
   ITaskInfo, IGenerateTask, IDestoryTask,
   ISetPage, ISetState, ISetWindowInfo, ISetActiveTask
-} from './taskManagerContext';
-import { ApplicationProviderContext, IApp } from './appProviderContext';
+} from '../taskManagerContext';
+import { ApplicationProviderContext, IApp } from '../appProviderContext';
 
 const fadeIn = `animation: ${keyframes`
   from { opacity: 0; }

@@ -4,7 +4,7 @@ import {
   mdiApplication
 } from '@mdi/js';
 
-import { ToolbarItem } from '../../../utils/toolbarItem';
+import { ToolbarItem } from '../../../utils/components/toolbarItem';
 
 export function MarketDrawer({ }) {
   return <div className={css`

@@ -1,14 +1,14 @@
 import React from 'react';
 
-import { TaskViewMobile } from './utils/taskViewMobile';
-import { TaskViewDesktop } from './utils/taskViewDesktop';
+import { TaskViewMobile } from './utils/components/taskViewMobile';
+import { TaskViewDesktop } from './utils/components/taskViewDesktop';
 
 import { ThemeProvider, ThemeProviderContext } from './utils/themeProviderContext';
 import { TaskManager } from './utils/taskManagerContext';
 import { ApplicationProvider } from './utils/appProviderContext';
 import { AuthProvider, AuthProviderContext } from './utils/authProviderContext';
 import { DataProvider } from './utils/dataProviderContext';
-import { LoginView } from './utils/loginView';
+import { LoginView } from './utils/components/loginView';
 
 export default function () {
   return <>
