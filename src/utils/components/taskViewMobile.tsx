@@ -328,49 +328,46 @@ export function TaskViewMobile() {
             )))}
       {isLauncherShow && <div className={css`
         margin: 8px;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: flex-start;
-        align-items: flex-start;
+        display: grid;
+        grid-template-rows: repeat(auto-fill, 80px);
+        grid-template-columns: repeat(4, 25%);
+        gap: 8px;
+        justify-items: center;
+        justify-content: center;
       `}>
         {Object.keys(apps).map(pkg => {
           const { icon, name } = apps[pkg];
           return <div className={css`
-            padding: 0px calc((25% - 60px) / 2 - 4px);
-          `}>
+            width: 60px;
+            height: 80px;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            font-size: 12px;
+            line-height: 16px;
+            text-align: center;
+            color: #fff;
+            border-radius: 4px;
+            &:hover {
+              background: rgba(0, 0, 0, 0.2);
+            }
+            &:active {
+              background: rgba(0, 0, 0, 0.4);
+            }
+          `}
+            onClick={() => {
+              setLauncherShow(false);
+              generateTask(pkg);
+            }}
+          >
             <div className={css`
-              width: 60px;
-              height: 80px;
-              padding: 4px;
-              display: flex;
-              flex-direction: column;
-              font-size: 12px;
-              line-height: 16px;
-              text-align: center;
-              color: #fff;
-              border-radius: 4px;
-              &:hover {
-                background: rgba(0, 0, 0, 0.2);
-              }
-              &:active {
-                background: rgba(0, 0, 0, 0.4);
-              }
-            `}
-              onClick={() => {
-                setLauncherShow(false);
-                generateTask(pkg);
-              }}
-            >
-              <div className={css`
-                height: 36px;
-                width: 36px;
-                margin: 4px 12px 0px 12px;
-              `}>
-                <Icon path={icon} size={1.5} color='#fff' />
-              </div>
-              {name}
+              height: 36px;
+              width: 36px;
+              margin: 4px 12px 0px 12px;
+            `}>
+              <Icon path={icon} size={1.5} color='#fff' />
             </div>
+            {name}
           </div>;
         })}
       </div>}

@@ -297,27 +297,27 @@ export function TaskViewDesktop() {
         border-radius: 4px;
         z-index: 10000;
         ${isLauncherShow ? fadeIn : fadeOut}
+        user-select: none;
       `}>
         <div className={css`
-          margin: 8px;
-          display: flex;
-          flex-direction: row;
-          flex-wrap: wrap;
-          justify-content: flex-start;
-          align-items: flex-start;
-          user-select: none;
+          width: calc(100% - 32px);
+          padding: 16px 32px;
+          line-height: 36px;
+          font-size: 32px;
+          text-align: left;
+          color: #fff;
         `}>
-          <div className={css`
-            padding: 8px 16px;
-            width: calc(100% - 32px);
-            height: 36px;
-            line-height: 36px;
-            font-size: 32px;
-            text-align: left;
-            color: #fff;
-          `}>
-            {'Launcher'}
-          </div>
+          {'Launcher'}
+        </div>
+        <div className={css`
+          padding: 16px;
+          display: grid;
+          grid-template-rows: repeat(auto-fill, 100px);
+          grid-template-columns: repeat(4, 25%);
+          gap: 8px;
+          justify-items: center;
+          justify-content: center;
+        `}>
           {Object.keys(apps).map(pkg => {
             const { icon, name } = apps[pkg];
             return <div className={css`
