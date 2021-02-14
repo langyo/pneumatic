@@ -1,5 +1,6 @@
 import * as Koa from 'koa';
 import * as bodyParserMiddleware from 'koa-bodyparser';
+import { authLoginMiddleware, authVerify } from './utils/backend/authVerifyMiddleware';
 import { loadBackendApp } from './serverEntry';
 
 import { explorerRoute } from './apps/explorer/routes/service';
@@ -23,14 +24,14 @@ app.use(async (
   await next();
 });
 
-app.use(explorerRoute);
-app.use(monitorRoute);
-app.use(browserRoute);
-app.use(databaseRoute);
-app.use(planRoute);
-app.use(terminalRoute);
-app.use(themeRoute);
-app.use(marketRoute);
+app.use(authVerify(explorerRoute));
+app.use(authVerify(monitorRoute));
+app.use(authVerify(browserRoute));
+app.use(authVerify(databaseRoute));
+app.use(authVerify(planRoute));
+app.use(authVerify(terminalRoute));
+app.use(authVerify(themeRoute));
+app.use(authVerify(marketRoute));
 
 app.use(loadBackendApp);
 

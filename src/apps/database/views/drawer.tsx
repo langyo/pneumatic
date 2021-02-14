@@ -4,7 +4,7 @@ import {
   mdiDatabase
 } from '@mdi/js';
 
-import { ToolbarItem } from '../../../utils/components/toolbarItem';
+import { ToolbarItem } from '../../../utils/frontend/toolbarItem';
 
 export function DatabaseDrawer({ }) {
   return <div className={css`

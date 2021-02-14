@@ -4,7 +4,7 @@ import {
   mdiTimelineClock
 } from '@mdi/js';
 
-import { ToolbarItem } from '../../../utils/components/toolbarItem';
+import { ToolbarItem } from '../../../utils/frontend/toolbarItem';
 
 export function PlanDrawer({ }) {
   return <div className={css`

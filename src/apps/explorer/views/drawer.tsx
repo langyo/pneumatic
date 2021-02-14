@@ -4,7 +4,7 @@ import {
   mdiServerNetwork, mdiFolderOutline
 } from '@mdi/js';
 
-import { ToolbarItem } from '../../../utils/components/toolbarItem';
+import { ToolbarItem } from '../../../utils/frontend/toolbarItem';
 
 export function ExplorerDrawer({ }) {
   return <div className={css`

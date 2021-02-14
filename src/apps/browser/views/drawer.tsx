@@ -4,7 +4,7 @@ import {
   mdiEarth
 } from '@mdi/js';
 
-import { ToolbarItem } from '../../../utils/components/toolbarItem';
+import { ToolbarItem } from '../../../utils/frontend/toolbarItem';
 
 export function BrowserDrawer({ }) {
   return <div className={css`
