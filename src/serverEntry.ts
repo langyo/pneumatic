@@ -7,7 +7,7 @@ import { Union } from 'unionfs'
 import * as realFs from 'fs';
 
 const fs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
-  [join(process.cwd(), './__entry.ts')]: `
+  [join(process.cwd(), './main.ts')]: `
 import { render } from 'react-dom';
 import { createElement } from 'react';
 render(
@@ -22,7 +22,7 @@ document.querySelector('#root')
 fs['join'] = join;
 
 const compiler = webpack({
-  entry: join(process.cwd(), './__entry.ts'),
+  entry: join(process.cwd(), './main.ts'),
   mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
   context: process.cwd(),
   module: {
@@ -55,7 +55,7 @@ const compiler = webpack({
     ]
   },
   output: {
-    filename: 'output.js',
+    filename: '[name].js',
     path: process.cwd()
   },
   devtool: process.env.NODE_ENV === 'production' ? 'none' : 'source-map'
@@ -92,11 +92,11 @@ export async function loadBackendApp(
   next: () => Promise<unknown>
 ) {
   switch (ctx.path) {
-    case '/output.js':
-      ctx.body = fs.readFileSync(join(process.cwd(), '/output.js'), 'utf8');
+    case '/main.js':
+      ctx.body = fs.readFileSync(join(process.cwd(), '/main.js'), 'utf8');
       break;
-    case '/output.js.map':
-      ctx.body = fs.readFileSync(join(process.cwd(), '/output.js.map'), 'utf8');
+    case '/main.js.map':
+      ctx.body = fs.readFileSync(join(process.cwd(), '/main.js.map'), 'utf8');
       break;
     case '/':
       ctx.body = `<html>
@@ -109,7 +109,7 @@ export async function loadBackendApp(
           ${ctx.query.debug === '1' && `
           <script src='//cdn.jsdelivr.net/npm/eruda'></script><script>eruda.init();</script>
           ` || ``}
-          <script src='/output.js'></script>
+          <script src='/main.js'></script>
         </body>
       </html>`;
       break;

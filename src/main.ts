@@ -25,15 +25,15 @@ app.use(async (
   await next();
 });
 
-app.use(authVerify(explorerRoute));
-app.use(authVerify(monitorRoute));
-app.use(authVerify(browserRoute));
-app.use(authVerify(databaseRoute));
-app.use(authVerify(planRoute));
-app.use(authVerify(terminalRoute));
-app.use(authVerify(themeRoute));
-app.use(authVerify(marketRoute));
-app.use(authVerify(settingRoute));
+app.use(authVerify('pneumatic.explorer', explorerRoute));
+app.use(authVerify('pneumatic.monitor', monitorRoute));
+app.use(authVerify('pneumatic.browser', browserRoute));
+app.use(authVerify('pneumatic.database', databaseRoute));
+app.use(authVerify('pneumatic.plan', planRoute));
+app.use(authVerify('pneumatic.teriminal', terminalRoute));
+app.use(authVerify('pneumatic.theme', themeRoute));
+app.use(authVerify('pneumatic.market', marketRoute));
+app.use(authVerify('pneumatic.setting', settingRoute));
 
 app.use(loadBackendApp);
 

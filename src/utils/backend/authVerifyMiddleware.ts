@@ -1,35 +1,33 @@
 import * as Koa from 'koa';
 import { v4 as uuidGenerator } from 'uuid';
 
-interface IAuthToken {
-  key: string,
+interface IConnection {
   birth: Date,
-  lastUse: Date,
-  userId: number
+  lastConnect: Date,
+  user: 'guest' | number
 }
 
-let authTokenList = [];
+let connectionList: { [token: string]: IConnection } = {};
 
 export async function authLoginMiddleware(
   ctx: Koa.BaseContext,
   next: () => Promise<unknown>
 ) {
-  switch (ctx.accepts('json')) {
-    case 'json':
-      break;
-    default:
-      ctx.throw(406, 'Json only.');
-  }
+  await next();
 }
 
-export async function authVerify(middleware: (
-  ctx: Koa.BaseContext,
-  next: () => Promise<unknown>
-) => void) {
-  return (
-    ctx: Koa.BaseContext,
-    next: () => Promise<unknown>
-  ) => {
-    
+export function authVerify(
+  pkg: string,
+  middleware: (path: string, { userId }: { userId: number }) => Promise<any>
+): (ctx: Koa.BaseContext, next: () => Promise<unknown>) => Promise<void> {
+  const path = pkg.split('.').join('/');
+  return async function (ctx: Koa.BaseContext, next: () => Promise<unknown>) {
+    if (ctx.url.substr(0, path.length) === path) {
+      ctx.body = JSON.stringify(
+        await middleware(ctx.url.substr(path.length), { userId: 0 })
+      );
+    } else {
+      await next();
+    }
   }
 }

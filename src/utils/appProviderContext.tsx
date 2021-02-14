@@ -2,7 +2,7 @@ import React, { createContext, useState } from 'react';
 import {
   mdiFolderOutline, mdiMemory,
   mdiWeb, mdiDatabase, mdiFormatListChecks,
-  mdiConsole, mdiPaletteOutline, mdiApps
+  mdiConsole, mdiPaletteOutline, mdiApps, mdiCogOutline
 } from '@mdi/js';
 
 import { ExplorerContent } from '../apps/explorer/views/content';
@@ -90,7 +90,7 @@ export const defaultApp: { [pkg: string]: IApp } = {
     drawerComponent: { default: MarketDrawer }
   },
   'pneumatic.setting': {
-    icon: mdiApps, name: 'Setting',
+    icon: mdiCogOutline, name: 'Setting',
     contentComponent: { default: SettingContent },
     drawerComponent: { default: SettingDrawer }
   },
