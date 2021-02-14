@@ -19,8 +19,8 @@ export default function () {
           <ApplicationProvider>
             <TaskManager>
               <AuthProviderContext.Consumer>
-                {({ accessToken }) => {
-                  if (accessToken !== '') {
+                {({ authToken }) => {
+                  if (authToken) {
                     return <ThemeProviderContext.Consumer>
                       {({ media }) => <>
                         {media === 'mobile' && <TaskViewMobile />}
