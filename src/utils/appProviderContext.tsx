@@ -21,6 +21,8 @@ import { ThemeContent } from '../apps/theme/views/content';
 import { ThemeDrawer } from '../apps/theme/views/drawer';
 import { MarketContent } from '../apps/market/views/content';
 import { MarketDrawer } from '../apps/market/views/drawer';
+import { SettingContent } from '../apps/setting/views/content';
+import { SettingDrawer } from '../apps/setting/views/drawer';
 
 import { IState, ITaskInfo } from './taskManagerContext';
 
@@ -86,7 +88,12 @@ export const defaultApp: { [pkg: string]: IApp } = {
     icon: mdiApps, name: 'Application market',
     contentComponent: { default: MarketContent },
     drawerComponent: { default: MarketDrawer }
-  }
+  },
+  'pneumatic.setting': {
+    icon: mdiApps, name: 'Setting',
+    contentComponent: { default: SettingContent },
+    drawerComponent: { default: SettingDrawer }
+  },
 };
 
 export const ApplicationProviderContext = createContext({});

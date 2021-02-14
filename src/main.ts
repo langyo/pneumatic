@@ -11,6 +11,7 @@ import { planRoute } from './apps/plan/routes/service';
 import { terminalRoute } from './apps/terminal/routes/service';
 import { themeRoute } from './apps/theme/routes/service';
 import { marketRoute } from './apps/market/routes/service';
+import { settingRoute } from './apps/setting/routes/service';
 
 const app = new Koa();
 
@@ -32,6 +33,7 @@ app.use(authVerify(planRoute));
 app.use(authVerify(terminalRoute));
 app.use(authVerify(themeRoute));
 app.use(authVerify(marketRoute));
+app.use(authVerify(settingRoute));
 
 app.use(loadBackendApp);
 
