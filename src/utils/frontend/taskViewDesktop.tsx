@@ -281,7 +281,7 @@ export function TaskViewDesktop() {
         top: 0px;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.4);
         z-index: 9999;
         ${isLauncherShow ? fadeIn : fadeOut}
       `}
@@ -293,11 +293,9 @@ export function TaskViewDesktop() {
         top: 10%;
         width: calc(50% - 100px);
         height: 80%;
-        background: rgba(0, 0, 0, 0.4);
-        border-radius: 4px;
         z-index: 10000;
-        ${isLauncherShow ? fadeIn : fadeOut}
         user-select: none;
+        ${isLauncherShow ? fadeIn : fadeOut}
       `}>
         <div className={css`
           width: calc(100% - 32px);
