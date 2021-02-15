@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import Draggable, { DraggableData } from 'react-draggable';
-import { css, cx, keyframes } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import Icon from '@mdi/react';
 import { mdiClose, mdiMenu } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
@@ -155,7 +155,6 @@ export function TaskViewDesktop() {
             <Scrollbars className={css`
               width: 100%;
               height: 100%;
-              position: absolute;
             `}>
               {apps[pkg].drawerComponent[page] ?
                 apps[pkg].drawerComponent[page](propsGenerator(key, page, state)) :
@@ -181,7 +180,6 @@ export function TaskViewDesktop() {
             <Scrollbars className={css`
               width: 100%;
               height: 100%;
-              position: absolute;
             `}>
               {apps[pkg].contentComponent[page] ?
                 apps[pkg].contentComponent[page](propsGenerator(key, page, state)) :
@@ -198,7 +196,7 @@ export function TaskViewDesktop() {
       height: calc(80% - 8px);
       width: 48px;
       padding: 4px;
-      z-index: 10000;
+      z-index: 9000;
       background: rgba(0, 0, 0, 0.2);
       border-radius: 0px 4px 4px 0px;
       backdrop-filter: blur(2px);
@@ -281,14 +279,17 @@ export function TaskViewDesktop() {
         position: fixed;
         left: 100px;
         top: 10%;
-        width: calc(50% - 100px);
+        width: calc(100% - 200px);
         height: 80%;
         z-index: 10000;
         user-select: none;
-      `}>
+      `}
+        onClick={() => setLauncherState(false)}
+      >
         <div className={css`
-          width: calc(100% - 32px);
           padding: 16px 32px;
+          width: calc(100% - 32px);
+          height: 36px;
           line-height: 36px;
           font-size: 32px;
           text-align: left;
@@ -297,49 +298,57 @@ export function TaskViewDesktop() {
           {'Launcher'}
         </div>
         <div className={css`
-          padding: 16px;
-          display: grid;
-          grid-template-rows: repeat(auto-fill, 100px);
-          grid-template-columns: repeat(4, 25%);
-          gap: 8px;
-          justify-items: center;
-          justify-content: center;
+          width: calc(100% - 32px);
+          height: calc(100% - 36px - 16px * 2);
+          position: absolute;
         `}>
-          {Object.keys(apps).map(pkg => {
-            const { icon, name } = apps[pkg];
-            return <div className={css`
-              width: 120px;
-              height: 100px;
-              padding: 4px;
-              display: flex;
-              flex-direction: column;
-              font-size: 16px;
-              line-height: 20px;
-              text-align: center;
-              color: rgba(255, 255, 255, 1);
-              border-radius: 4px;
-              &:hover {
-                background: rgba(0, 0, 0, 0.2);
-              }
-              &:active {
-                background: rgba(0, 0, 0, 0.4);
-              }
-            `}
-              onClick={() => {
-                setLauncherState(false);
-                generateTask(pkg);
-              }}
-            >
-              <div className={css`
-                height: 48px;
-                width: 48px;
-                margin: 4px 36px;
-              `}>
-                <Icon path={icon} size={2} color='rgba(255, 255, 255, 1)' />
-              </div>
-              {name}
-            </div>;
-          })}
+          <Scrollbars className={css`
+            width: 100%;
+            height: 100%;
+          `}>
+            <div className={css`
+              padding: 16px;
+              display: grid;
+              grid-template-rows: repeat(auto-fill, 100px);
+              grid-template-columns: repeat(auto-fill, 150px);
+              gap: 8px;
+              justify-items: center;
+              justify-content: center;
+            `}>
+              {Object.keys(apps).map(pkg => {
+                const { icon, name } = apps[pkg];
+                return <div className={css`
+                  width: 120px;
+                  height: 100px;
+                  padding: 4px;
+                  display: flex;
+                  flex-direction: column;
+                  font-size: 16px;
+                  line-height: 20px;
+                  text-align: center;
+                  color: rgba(255, 255, 255, 1);
+                  border-radius: 4px;
+                  &:hover {
+                    background: rgba(0, 0, 0, 0.2);
+                  }
+                  &:active {
+                    background: rgba(0, 0, 0, 0.4);
+                  }
+                `}
+                  onClick={() => generateTask(pkg)}
+                >
+                  <div className={css`
+                    height: 48px;
+                    width: 48px;
+                    margin: 4px 36px;
+                  `}>
+                    <Icon path={icon} size={2} color='rgba(255, 255, 255, 1)' />
+                  </div>
+                  {name}
+                </div>;
+              })}
+            </div>
+          </Scrollbars>
         </div>
       </div>
     </Fade>
