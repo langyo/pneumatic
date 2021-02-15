@@ -10,7 +10,7 @@ export interface ITask {
   windowInfo: IWindowInfo
 };
 export interface IWindowInfo {
-  status: 'active' | 'notActive' | 'hidden' | 'merged',
+  status: 'active' | 'notActive' | 'hidden',
   title: string,
   left: number, top: number,
   width: number, height: number,

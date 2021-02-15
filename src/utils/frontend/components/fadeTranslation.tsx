@@ -4,11 +4,11 @@ import { css, cx, keyframes } from '@emotion/css';
 const fadeIn = `animation: ${keyframes`
   from { opacity: 0; }
   to { opacity: 1; }
-`} 0.5s ease 1`;
+`} 0.2s ease 1`;
 const fadeOut = `animation: ${keyframes`
   from { opacity: 1; }
   to { opacity: 0; }
-`} 0.55s ease 1`;
+`} 0.25s ease 1`;
 
 export function useTranslationState(
   defaultVal: boolean
@@ -20,7 +20,7 @@ export function useTranslationState(
     if (show) {
       setExist(true);
     } else {
-      setTimeout(() => setExist(false), 500);
+      setTimeout(() => setExist(false), 200);
     }
   }, [show]);
 

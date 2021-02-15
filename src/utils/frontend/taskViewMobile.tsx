@@ -63,7 +63,7 @@ export function TaskViewMobile() {
       background: rgba(0, 0, 0, 0.2);
     `}>
       <Fade translationState={{
-        exist: !launcherState.exist && !!activeTaskId,
+        exist: !launcherState.exist,
         show: !launcherState.show
       }}>
         {activeTaskId && <>
@@ -307,39 +307,35 @@ export function TaskViewMobile() {
             </div>
           </div>
         </Fade>
-        <Fade translationState={{
-          exist: !launcherState.exist,
-          show: !launcherState.show
-        }}>
-          {/* TODO - Abandon 'activeTaskId', generate fade state to every tasks. */}
-          {activeTaskId && (
-            apps[tasks[activeTaskId].pkg]
-              .contentComponent[tasks[activeTaskId].page] ?
-              apps[tasks[activeTaskId].pkg]
-                .contentComponent[tasks[activeTaskId].page](
-                  propsGenerator(
-                    activeTaskId,
-                    tasks[activeTaskId].page,
-                    tasks[activeTaskId].state
-                  )) :
-              apps[tasks[activeTaskId].pkg]
-                .contentComponent.default(propsGenerator(
-                  activeTaskId,
-                  tasks[activeTaskId].page,
-                  tasks[activeTaskId].state
-                )))}
-        </Fade>
+        {Object.keys(tasks).map((key) => {
+          const {
+            pkg, page, state,
+            windowInfo: {
+              status
+            }
+          } = tasks[key];
+
+          return <Fade translationState={{
+            exist: !launcherState.exist && status === 'active',
+            show: !launcherState.exist && status === 'active'
+          }}>
+            {apps[pkg].contentComponent[page] ?
+              apps[pkg].contentComponent[page](propsGenerator(key, page, state)) :
+              apps[pkg].contentComponent.default(propsGenerator(key, page, state))}
+          </Fade>;
+        })}
+
         <Fade translationState={launcherState}>
           <div className={css`
-            margin: 8px;
             display: grid;
+            margin-top: 8px;
             grid-template-rows: repeat(auto-fill, 80px);
-            grid-template-columns: repeat(4, 25%);
-            gap: 8px;
+            grid-template-columns: repeat(auto-fill, 100px);
+            gap: 4px;
             justify-items: center;
             justify-content: center;
           `}>
-            {Object.keys(apps).concat((new Array(99).fill('pneumatic.explorer'))).map(pkg => {
+            {Object.keys(apps).map(pkg => {
               const { icon, name } = apps[pkg];
               return <div className={css`
                 width: 60px;
