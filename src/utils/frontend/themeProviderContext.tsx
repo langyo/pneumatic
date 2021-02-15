@@ -21,6 +21,10 @@ export function ThemeProvider({ children }: { children?: any }) {
       background: url(${backgroundUrl}) no-repeat top left scroll;
       background-size: cover;
     `} />
-    {children}
+    <div className={css`
+      font-family: -apple-system,BlinkMacSystemFont,Helvetica Neue,Helvetica,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,sans-serif;
+    `}>
+      {children}
+    </div>
   </ThemeProviderContext.Provider>;
 }
