@@ -4,7 +4,7 @@ import {
   mdiConsoleLine
 } from '@mdi/js';
 
-import { ToolbarItem } from '../../../utils/frontend/toolbarItem';
+import { ToolbarItem } from '../../../utils/frontend/components/toolbarItem';
 
 export function TerminalDrawer({ }) {
   return <div className={css`

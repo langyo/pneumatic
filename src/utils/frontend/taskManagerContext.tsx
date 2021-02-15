@@ -34,7 +34,7 @@ export type ISetState = (id: string, state: IState) => void;
 export type ISetWindowInfo = (id: string, info: Partial<IWindowInfo>) => void;
 export type ISetActiveTask = (id: string) => void;
 
-export function TaskManager(props) {
+export function TaskManager({ children }: { children?: any }) {
   const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
   const [tasks, setTasks]: [ITaskInfo, (tasks: ITaskInfo) => void] = useState({});
 
@@ -150,6 +150,6 @@ export function TaskManager(props) {
       }) as ITaskInfo, {}));
     }
   }}>
-    {props.children}
+    {children}
   </TaskManagerContext.Provider>;
 }

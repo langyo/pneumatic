@@ -4,7 +4,7 @@ import {
   mdiApplication
 } from '@mdi/js';
 
-import { ToolbarItem } from '../../../utils/frontend/toolbarItem';
+import { ToolbarItem } from '../../../utils/frontend/components/toolbarItem';
 
 export function SettingDrawer({ }) {
   return <div className={css`

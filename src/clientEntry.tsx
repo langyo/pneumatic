@@ -3,11 +3,11 @@ import React from 'react';
 import { TaskViewMobile } from './utils/frontend/taskViewMobile';
 import { TaskViewDesktop } from './utils/frontend/taskViewDesktop';
 
-import { ThemeProvider, ThemeProviderContext } from './utils/themeProviderContext';
-import { TaskManager } from './utils/taskManagerContext';
-import { ApplicationProvider } from './utils/appProviderContext';
-import { AuthProvider, AuthProviderContext } from './utils/authProviderContext';
-import { DataProvider } from './utils/dataProviderContext';
+import { ThemeProvider, ThemeProviderContext } from './utils/frontend/themeProviderContext';
+import { TaskManager } from './utils/frontend/taskManagerContext';
+import { ApplicationProvider } from './utils/frontend/appProviderContext';
+import { AuthProvider, AuthProviderContext } from './utils/frontend/authProviderContext';
+import { DataProvider } from './utils/frontend/dataProviderContext';
 import { LoginView } from './utils/frontend/loginView';
 
 export default function () {

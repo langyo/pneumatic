@@ -8,8 +8,8 @@ import {
   TaskManagerContext, IWindowInfo, IState,
   ITaskInfo, IGenerateTask, IDestoryTask,
   ISetPage, ISetState, ISetWindowInfo, ISetActiveTask
-} from '../taskManagerContext';
-import { ApplicationProviderContext, IApp } from '../appProviderContext';
+} from './taskManagerContext';
+import { ApplicationProviderContext, IApp } from './appProviderContext';
 
 const fadeIn = `animation: ${keyframes`
   from { opacity: 0; }
@@ -120,7 +120,9 @@ export function TaskViewMobile() {
           {tasks[activeTaskId].windowInfo.title}
         </div>}
       </>}
-      {isLauncherShow &&
+      <div className={css`
+        ${isLauncherShow ? '' : 'display: none;'}
+      `}>
         <div className={css`
           position: absolute;
           top: 0px;
@@ -132,8 +134,10 @@ export function TaskViewMobile() {
         `}>
           {'Launcher'}
         </div>
-      }
-      {!isTaskManagerShow && Object.keys(tasks).length > 0 &&
+      </div>
+      <div className={css`
+        ${!isTaskManagerShow && Object.keys(tasks).length > 0 ? '' : 'display: none;'}
+      `}>
         <div className={css`
           position: absolute;
           top: 0px;
@@ -147,6 +151,7 @@ export function TaskViewMobile() {
           &:active {
             background: rgba(0, 0, 0, 0.4);
           }
+          ${fadeIn}
         `}
           onClick={() => (
             setTaskManagerShow(true), setTaskManagerExist(true),
@@ -155,47 +160,51 @@ export function TaskViewMobile() {
         >
           <Icon path={mdiFullscreenExit} size={1} color='#fff' />
         </div>
-      }
-      {isTaskManagerExist && <div className={css`
-        position: absolute;
-        height: 100%;
-        width: 100%;
-        z-index: 10000;
-        backdrop-filter: blur(2px);
-        ${isTaskManagerShow ? fadeIn : fadeOut};
+      </div>
+      <div className={css`
+        ${isTaskManagerExist ? '' : 'display: none;'}
       `}>
         <div className={css`
           position: absolute;
-          top: 0px;
-          left: 20px;
-          height: 48px;
-          line-height: 48px;
-          font-size: 24px;
-          color: #fff;
-          user-select: none;
+          height: 100%;
+          width: 100%;
+          z-index: 10000;
+          backdrop-filter: blur(2px);
+          ${isTaskManagerShow ? fadeIn : fadeOut};
         `}>
-          {'Task Manager'}
+          <div className={css`
+            position: absolute;
+            top: 0px;
+            left: 20px;
+            height: 48px;
+            line-height: 48px;
+            font-size: 24px;
+            color: #fff;
+            user-select: none;
+          `}>
+            {'Task Manager'}
+          </div>
+          <div className={css`
+            position: absolute;
+            top: 0px;
+            right: 4px;
+            margin: 4px;
+            padding: 8px;
+            border-radius: 4px;
+            &:hover {
+              background: rgba(0, 0, 0, 0.2);
+            }
+            &:active {
+              background: rgba(0, 0, 0, 0.4);
+            }
+          `}
+            onClick={() => (
+              setTaskManagerShow(false), setTimeout(() => setTaskManagerExist(false), 500)
+            )}>
+            <Icon path={mdiFullscreen} size={1} color='#fff' />
+          </div>
         </div>
-        <div className={css`
-          position: absolute;
-          top: 0px;
-          right: 4px;
-          margin: 4px;
-          padding: 8px;
-          border-radius: 4px;
-          &:hover {
-            background: rgba(0, 0, 0, 0.2);
-          }
-          &:active {
-            background: rgba(0, 0, 0, 0.4);
-          }
-        `}
-          onClick={() => (
-            setTaskManagerShow(false), setTimeout(() => setTaskManagerExist(false), 500)
-          )}>
-          <Icon path={mdiFullscreen} size={1} color='#fff' />
-        </div>
-      </div>}
+      </div>
     </div>
     <div className={css`
       position: absolute;
@@ -204,7 +213,10 @@ export function TaskViewMobile() {
       width: 100%;
       background: rgba(0, 0, 0, 0.2);
     `}>
-      {isTaskManagerExist && <div className={css`
+      <div className={css`
+        ${isTaskManagerExist ? '' : 'display: none;'}
+      `}>
+        <div className={css`
         position: absolute;
         height: 100%;
         width: 100%;
@@ -216,100 +228,102 @@ export function TaskViewMobile() {
         backdrop-filter: blur(2px);
         ${isTaskManagerShow ? fadeIn : fadeOut}
       `}>
-        {Object.keys(tasks).map((key: string) => {
-          const pkg = tasks[key].pkg;
-          const { title }: IWindowInfo = tasks[key].windowInfo;
+          {Object.keys(tasks).map((key: string) => {
+            const pkg = tasks[key].pkg;
+            const { title }: IWindowInfo = tasks[key].windowInfo;
 
-          return <div className={css`
-            margin-top: 4px;
+            return <div className={css`
+              margin-top: 4px;
+              height: 48px;
+              width: calc(90% - 12px);
+              border-left: 12px solid ${activeTaskId === key ?
+                'rgba(0, 0, 0, 0.6)' :
+                'rgba(0, 0, 0, 0.2)'};
+              border-radius: 4px;
+              background: rgba(0, 0, 0, 0.2);
+              position: relative;
+              ${fadeIn}
+            `}
+              onClick={() => (
+                setActiveTask(key),
+                setDrawerShow(false), setTaskManagerShow(false),
+                setTimeout(() => (setDrawerExist(false), setTaskManagerExist(false)), 500),
+                setLauncherShow(false)
+              )}
+            >
+              <div className={css`
+                position: absolute;
+                top: 0px;
+                left: 16px;
+                height: ${title ? 28 : 48}px;
+                line-height: ${title ? 28 : 48}px;
+                font-size: ${title ? 16 : 24}px;
+                color: #fff;
+              `}>
+                {apps[pkg].name}
+              </div>
+              {title && <div className={css`
+                position: absolute;
+                bottom: 4px;
+                left: 16px;
+                height: 16px;
+                line-height: 16px;
+                font-size: 12px;
+                color: #fff;
+              `}>
+                {title}
+              </div>}
+              <div className={css`
+                position: absolute;
+                top: 8px;
+                right: 4px;
+                margin: 4px;
+                border-radius: 4px;
+                &:hover {
+                  background: rgba(0, 0, 0, 0.2);
+                }
+                &:active {
+                  background: rgba(0, 0, 0, 0.4);
+                }
+              `}
+                onClick={(event: Event) => {
+                  event.stopPropagation();
+                  if (activeTaskId === key) {
+                    setLauncherShow((_isLauncherShow: boolean) => true);
+                  }
+                  destoryTask(key);
+                }}
+              >
+                <Icon path={mdiClose} size={1} color='#fff' />
+              </div>
+            </div>;
+          })}
+          <div className={css`
+            position: absolute;
             height: 48px;
-            width: calc(90% - 12px);
-            border-left: 12px solid ${activeTaskId === key ?
-              'rgba(0, 0, 0, 0.6)' :
-              'rgba(0, 0, 0, 0.2)'};
-            border-radius: 4px;
-            background: rgba(0, 0, 0, 0.2);
-            position: relative;
-            ${fadeIn}
+            width: 100%;
+            bottom: 0px;
+            text-align: center;
+            font-size: 24px;
+            color: #fff;
+            line-height: 48px;
+            &:hover {
+              background: rgba(0, 0, 0, 0.2);
+            }
+            &:active {
+              background: rgba(0, 0, 0, 0.4);
+            }
           `}
             onClick={() => (
-              setActiveTask(key),
-              setDrawerShow(false), setTaskManagerShow(false),
-              setTimeout(() => (setDrawerExist(false), setTaskManagerExist(false)), 500),
-              setLauncherShow(false)
+              setLauncherShow(true),
+              setDrawerShow(false), setTimeout(() => setDrawerExist(false), 500),
+              setTaskManagerShow(false), setTimeout(() => setTaskManagerExist(false), 500)
             )}
           >
-            <div className={css`
-              position: absolute;
-              top: 0px;
-              left: 16px;
-              height: ${title ? 28 : 48}px;
-              line-height: ${title ? 28 : 48}px;
-              font-size: ${title ? 16 : 24}px;
-              color: #fff;
-            `}>
-              {apps[pkg].name}
-            </div>
-            {title && <div className={css`
-              position: absolute;
-              bottom: 4px;
-              left: 16px;
-              height: 16px;
-              line-height: 16px;
-              font-size: 12px;
-              color: #fff;
-            `}>
-              {title}
-            </div>}
-            <div className={css`
-              position: absolute;
-              top: 8px;
-              right: 4px;
-              margin: 4px;
-              border-radius: 4px;
-              &:hover {
-                background: rgba(0, 0, 0, 0.2);
-              }
-              &:active {
-                background: rgba(0, 0, 0, 0.4);
-              }
-            `}
-              onClick={() => {
-                if (activeTaskId === key) {
-                  setLauncherShow((_isLauncherShow: boolean) => true);
-                }
-                destoryTask(key);
-              }}
-            >
-              <Icon path={mdiClose} size={1} color='#fff' />
-            </div>
-          </div>;
-        })}
-        <div className={css`
-          position: absolute;
-          height: 48px;
-          width: 100%;
-          bottom: 0px;
-          text-align: center;
-          font-size: 24px;
-          color: #fff;
-          line-height: 48px;
-          &:hover {
-            background: rgba(0, 0, 0, 0.2);
-          }
-          &:active {
-            background: rgba(0, 0, 0, 0.4);
-          }
-        `}
-          onClick={() => (
-            setLauncherShow(true),
-            setDrawerShow(false), setTimeout(() => setDrawerExist(false), 500),
-            setTaskManagerShow(false), setTimeout(() => setTaskManagerExist(false), 500)
-          )}
-        >
-          {'Back to the launcher'}
+            {'Back to the launcher'}
+          </div>
         </div>
-      </div>}
+      </div>
       {!isLauncherShow && activeTaskId && (
         apps[tasks[activeTaskId].pkg]
           .contentComponent[tasks[activeTaskId].page] ?
@@ -326,7 +340,7 @@ export function TaskViewMobile() {
               tasks[activeTaskId].page,
               tasks[activeTaskId].state
             )))}
-      {isLauncherShow && <div className={css`
+      <div className={css`
         margin: 8px;
         display: grid;
         grid-template-rows: repeat(auto-fill, 80px);
@@ -334,6 +348,7 @@ export function TaskViewMobile() {
         gap: 8px;
         justify-items: center;
         justify-content: center;
+        ${isLauncherShow ? '' : 'display: none;'}
       `}>
         {Object.keys(apps).map(pkg => {
           const { icon, name } = apps[pkg];
@@ -370,10 +385,9 @@ export function TaskViewMobile() {
             {name}
           </div>;
         })}
-      </div>}
+      </div>
     </div>
-    {
-      isDrawerExist && <div className={css`
+    {isDrawerExist && <div className={css`
         position: absolute;
         top: 50px;
         height: 100%;
@@ -382,7 +396,7 @@ export function TaskViewMobile() {
         backdrop-filter: blur(2px);
         ${isDrawerShow ? fadeIn : fadeOut}
       `}>
-        <div className={css`
+      <div className={css`
           position: absolute;
           left: 0px;
           top: 0px;
@@ -391,23 +405,23 @@ export function TaskViewMobile() {
           background: rgba(0, 0, 0, 0.4);
           border-radius: 0px 4px 4px 0px;
         `}>
-          {activeTaskId && (
+        {activeTaskId && (
+          apps[tasks[activeTaskId].pkg]
+            .drawerComponent[tasks[activeTaskId].page] ?
             apps[tasks[activeTaskId].pkg]
-              .drawerComponent[tasks[activeTaskId].page] ?
-              apps[tasks[activeTaskId].pkg]
-                .drawerComponent[tasks[activeTaskId].page](propsGenerator(
-                  activeTaskId,
-                  tasks[activeTaskId].page,
-                  tasks[activeTaskId].state
-                )) :
-              apps[tasks[activeTaskId].pkg]
-                .drawerComponent.default(propsGenerator(
-                  activeTaskId,
-                  tasks[activeTaskId].page,
-                  tasks[activeTaskId].state
-                )))}
-        </div>
-        <div className={css`
+              .drawerComponent[tasks[activeTaskId].page](propsGenerator(
+                activeTaskId,
+                tasks[activeTaskId].page,
+                tasks[activeTaskId].state
+              )) :
+            apps[tasks[activeTaskId].pkg]
+              .drawerComponent.default(propsGenerator(
+                activeTaskId,
+                tasks[activeTaskId].page,
+                tasks[activeTaskId].state
+              )))}
+      </div>
+      <div className={css`
           position: absolute;
           right: 0px;
           top: 0px;
@@ -415,9 +429,9 @@ export function TaskViewMobile() {
           width: 40%;
           background: rgba(0, 0, 0, 0.2);
         `}
-          onClick={() => (setDrawerShow(false), setTimeout(() => setDrawerExist(false), 500))}
-        />
-      </div>
+        onClick={() => (setDrawerShow(false), setTimeout(() => setDrawerExist(false), 500))}
+      />
+    </div>
     }
   </div >;
 }

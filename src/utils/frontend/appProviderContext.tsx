@@ -5,24 +5,24 @@ import {
   mdiConsole, mdiPaletteOutline, mdiApps, mdiCogOutline
 } from '@mdi/js';
 
-import { ExplorerContent } from '../apps/explorer/views/content';
-import { ExplorerDrawer } from '../apps/explorer/views/drawer';
-import { MonitorContentMap } from '../apps/monitor/views/content';
-import { MonitorDrawer } from '../apps/monitor/views/drawer';
-import { BrowserContent } from '../apps/browser/views/content';
-import { BrowserDrawer } from '../apps/browser/views/drawer';
-import { DatabaseContent } from '../apps/database/views/content';
-import { DatabaseDrawer } from '../apps/database/views/drawer';
-import { PlanContent } from '../apps/plan/views/content';
-import { PlanDrawer } from '../apps/plan/views/drawer';
-import { TerminalContent } from '../apps/terminal/views/content';
-import { TerminalDrawer } from '../apps/terminal/views/drawer';
-import { ThemeContent } from '../apps/theme/views/content';
-import { ThemeDrawer } from '../apps/theme/views/drawer';
-import { MarketContent } from '../apps/market/views/content';
-import { MarketDrawer } from '../apps/market/views/drawer';
-import { SettingContent } from '../apps/setting/views/content';
-import { SettingDrawer } from '../apps/setting/views/drawer';
+import { ExplorerContent } from '../../apps/explorer/views/content';
+import { ExplorerDrawer } from '../../apps/explorer/views/drawer';
+import { MonitorContentMap } from '../../apps/monitor/views/content';
+import { MonitorDrawer } from '../../apps/monitor/views/drawer';
+import { BrowserContent } from '../../apps/browser/views/content';
+import { BrowserDrawer } from '../../apps/browser/views/drawer';
+import { DatabaseContent } from '../../apps/database/views/content';
+import { DatabaseDrawer } from '../../apps/database/views/drawer';
+import { PlanContent } from '../../apps/plan/views/content';
+import { PlanDrawer } from '../../apps/plan/views/drawer';
+import { TerminalContent } from '../../apps/terminal/views/content';
+import { TerminalDrawer } from '../../apps/terminal/views/drawer';
+import { ThemeContent } from '../../apps/theme/views/content';
+import { ThemeDrawer } from '../../apps/theme/views/drawer';
+import { MarketContent } from '../../apps/market/views/content';
+import { MarketDrawer } from '../../apps/market/views/drawer';
+import { SettingContent } from '../../apps/setting/views/content';
+import { SettingDrawer } from '../../apps/setting/views/drawer';
 
 import { IState, ITaskInfo } from './taskManagerContext';
 
@@ -98,13 +98,13 @@ export const defaultApp: { [pkg: string]: IApp } = {
 
 export const ApplicationProviderContext = createContext({});
 
-export function ApplicationProvider(props) {
+export function ApplicationProvider({ children }: { children?: any }) {
   const [apps, setApps] = useState(defaultApp);
 
   return <ApplicationProviderContext.Provider value={{
     apps,
     pushApp(pkg: string, app: IApp) { setApps({ ...apps, [pkg]: app }); }
   }}>
-    {props.children}
+    {children}
   </ApplicationProviderContext.Provider>;
 }

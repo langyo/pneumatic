@@ -3,14 +3,14 @@ import cookies from 'js-cookie';
 
 export const AuthProviderContext = createContext({});
 
-export function AuthProvider(props) {
+export function AuthProvider({ children }: { children?: any }) {
   const [userName, setUserName] = useState('');
-  const [authToken, setAuthToken] = useState(cookies.get('token'));
+  const [authToken, setAuthToken] = useState(cookies.get('token') || 'test');
 
   return <AuthProviderContext.Provider value={{
     userName, authToken,
     login(name: string, hashedPassword: string) { }
   }}>
-    {props.children}
+    {children}
   </AuthProviderContext.Provider>;
 }

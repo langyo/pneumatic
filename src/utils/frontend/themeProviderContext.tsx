@@ -4,7 +4,7 @@ import { css } from '@emotion/css';
 
 export const ThemeProviderContext = createContext({});
 
-export function ThemeProvider(props) {
+export function ThemeProvider({ children }: { children?: any }) {
   const media = useMediaQuery({
     query: '(min-width: 992px)'
   }) ? 'desktop' : 'mobile';
@@ -21,6 +21,6 @@ export function ThemeProvider(props) {
       background: url(${backgroundUrl}) no-repeat top left scroll;
       background-size: cover;
     `} />
-    {props.children}
+    {children}
   </ThemeProviderContext.Provider>;
 }

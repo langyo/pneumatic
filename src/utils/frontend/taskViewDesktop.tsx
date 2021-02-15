@@ -9,8 +9,8 @@ import {
   TaskManagerContext, IWindowInfo, IState,
   ITaskInfo, IGenerateTask, IDestoryTask,
   ISetPage, ISetState, ISetWindowInfo, ISetActiveTask
-} from '../taskManagerContext';
-import { ApplicationProviderContext, IApp } from '../appProviderContext';
+} from './taskManagerContext';
+import { ApplicationProviderContext, IApp } from './appProviderContext';
 
 const fadeIn = `animation: ${keyframes`
   from { opacity: 0; }
@@ -274,86 +274,90 @@ export function TaskViewDesktop() {
         <Icon path={mdiMenu} size={1} color='#fff' />
       </div>
     </div>
-    {isLauncherExist && <>
+    <div className={css`
+      ${isLauncherExist ? '' : 'display: none;'}
+    `}>
       <div className={css`
-        position: fixed;
-        left: 0px;
-        top: 0px;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.4);
-        z-index: 9999;
-        ${isLauncherShow ? fadeIn : fadeOut}
-      `}
-        onClick={() => (setLauncherShow(false), setTimeout(() => setLauncherExist(false), 500))}
-      />
-      <div className={css`
-        position: fixed;
-        left: 100px;
-        top: 10%;
-        width: calc(50% - 100px);
-        height: 80%;
-        z-index: 10000;
-        user-select: none;
         ${isLauncherShow ? fadeIn : fadeOut}
       `}>
         <div className={css`
-          width: calc(100% - 32px);
-          padding: 16px 32px;
-          line-height: 36px;
-          font-size: 32px;
-          text-align: left;
-          color: #fff;
-        `}>
-          {'Launcher'}
-        </div>
+          position: fixed;
+          left: 0px;
+          top: 0px;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.4);
+          z-index: 9999;
+        `}
+          onClick={() => (setLauncherShow(false), setTimeout(() => setLauncherExist(false), 500))}
+        />
         <div className={css`
-          padding: 16px;
-          display: grid;
-          grid-template-rows: repeat(auto-fill, 100px);
-          grid-template-columns: repeat(4, 25%);
-          gap: 8px;
-          justify-items: center;
-          justify-content: center;
+          position: fixed;
+          left: 100px;
+          top: 10%;
+          width: calc(50% - 100px);
+          height: 80%;
+          z-index: 10000;
+          user-select: none;
         `}>
-          {Object.keys(apps).map(pkg => {
-            const { icon, name } = apps[pkg];
-            return <div className={css`
-              width: 120px;
-              height: 100px;
-              padding: 4px;
-              display: flex;
-              flex-direction: column;
-              font-size: 16px;
-              line-height: 20px;
-              text-align: center;
-              color: #fff;
-              border-radius: 4px;
-              &:hover {
-                background: rgba(0, 0, 0, 0.2);
-              }
-              &:active {
-                background: rgba(0, 0, 0, 0.4);
-              }
-            `}
-              onClick={() => {
-                setLauncherShow(false);
-                setTimeout(() => setLauncherExist(false), 500);
-                generateTask(pkg);
-              }}
-            >
-              <div className={css`
+          <div className={css`
+            width: calc(100% - 32px);
+            padding: 16px 32px;
+            line-height: 36px;
+            font-size: 32px;
+            text-align: left;
+            color: #fff;
+          `}>
+            {'Launcher'}
+          </div>
+          <div className={css`
+            padding: 16px;
+            display: grid;
+            grid-template-rows: repeat(auto-fill, 100px);
+            grid-template-columns: repeat(4, 25%);
+            gap: 8px;
+            justify-items: center;
+            justify-content: center;
+          `}>
+            {Object.keys(apps).map(pkg => {
+              const { icon, name } = apps[pkg];
+              return <div className={css`
+                width: 120px;
+                height: 100px;
+                padding: 4px;
+                display: flex;
+                flex-direction: column;
+                font-size: 16px;
+                line-height: 20px;
+                text-align: center;
+                color: #fff;
+                border-radius: 4px;
+                &:hover {
+                  background: rgba(0, 0, 0, 0.2);
+                }
+                &:active {
+                  background: rgba(0, 0, 0, 0.4);
+                }
+              `}
+                onClick={() => {
+                  setLauncherShow(false);
+                  setTimeout(() => setLauncherExist(false), 500);
+                  generateTask(pkg);
+                }}
+              >
+                <div className={css`
                 height: 48px;
                 width: 48px;
                 margin: 4px 36px;
               `}>
-                <Icon path={icon} size={2} color='#fff' />
-              </div>
-              {name}
-            </div>;
-          })}
+                  <Icon path={icon} size={2} color='#fff' />
+                </div>
+                {name}
+              </div>;
+            })}
+          </div>
         </div>
       </div>
-    </>}
+    </div>
   </div>;
 }

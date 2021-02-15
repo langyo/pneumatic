@@ -13,7 +13,7 @@ const tagMap = [
   { iconPath: mdiServer, title: 'Load Balance', page: 'loadBalance' }
 ];
 
-import { ToolbarItem } from '../../../utils/frontend/toolbarItem';
+import { ToolbarItem } from '../../../utils/frontend/components/toolbarItem';
 
 export function MonitorDrawer({ setPage, setDrawerShow }) {
   return <div className={css`

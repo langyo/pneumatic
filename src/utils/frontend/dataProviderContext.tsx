@@ -3,12 +3,12 @@ import { AuthProviderContext } from './authProviderContext';
 
 export const DataProviderContext = createContext({});
 
-export function DataProvider(props) {
+export function DataProvider({ children }: { children?: any }) {
   const { authToken } = useContext(AuthProviderContext);
   // TODO - Make connection by Web Socket.
 
   return <DataProviderContext.Provider value={{
   }}>
-    {props.children}
+    {children}
   </DataProviderContext.Provider>;
 }
