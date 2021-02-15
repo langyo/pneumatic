@@ -55,7 +55,7 @@ export const defaultApp: { [pkg: string]: IApp } = {
     contentComponent: MonitorContentMap,
     drawerComponent: { default: MonitorDrawer },
     defaultPage: 'hardware',
-    defaultWindowInfo: { title: (page, _data) => page }
+    defaultWindowInfo: { title: (_page, _data) => 'Hardware' }
   },
   'pneumatic.browser': {
     icon: mdiWeb, name: 'Proxy browser',

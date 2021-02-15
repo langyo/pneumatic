@@ -37,14 +37,16 @@ export type ISetActiveTask = (id: string) => void;
 
 export function TaskManager({ children }: { children?: any }) {
   const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
-  const [tasks, setTasks]: [ITaskInfo, (tasks: ITaskInfo) => void] = useState({});
+  const [tasks, setTasks]: [
+    ITaskInfo, (tasks: (tasks: ITaskInfo) => ITaskInfo) => void
+  ] = useState({});
 
   return <TaskManagerContext.Provider value={{
     tasks,
     generateTask(
       pkg: string, page?: string, initState?: IState
     ) {
-      setTasks(Object.keys(tasks).reduce((obj, id: string) => ({
+      setTasks(tasks => Object.keys(tasks).reduce((obj, id: string) => ({
         ...obj,
         [id]: {
           ...tasks[id],
@@ -86,7 +88,7 @@ export function TaskManager({ children }: { children?: any }) {
       } as ITaskInfo));
     },
     destoryTask(id: string) {
-      setTasks(Object.keys(tasks).filter(n => n !== id).reduce(
+      setTasks(tasks => Object.keys(tasks).filter(n => n !== id).reduce(
         (obj: { [key: string]: ITask }, key: string) => ({
           ...obj,
           [key]: {
@@ -106,19 +108,20 @@ export function TaskManager({ children }: { children?: any }) {
         }), {}));
     },
     setPage(id: string, page: string) {
+      console.log(id, page)
       if (Object.keys(apps[tasks[id].pkg].contentComponent).indexOf(page) < 0) {
         throw Error(`Unknown page '${page}' at '${tasks[id].pkg}[${id}]'.`);
       }
-      setTasks({
+      setTasks(tasks => ({
         ...tasks,
         [id]: {
           ...tasks[id],
           page
         }
-      });
+      }));
     },
     setState(id: string, state: IState) {
-      setTasks({
+      setTasks(tasks => ({
         ...tasks,
         [id]: {
           ...tasks[id],
@@ -127,10 +130,10 @@ export function TaskManager({ children }: { children?: any }) {
             ...state
           }
         }
-      });
+      }));
     },
     setWindowInfo(id: string, info: IWindowInfo) {
-      setTasks({
+      setTasks(tasks => ({
         ...tasks,
         [id]: {
           ...tasks[id],
@@ -139,10 +142,10 @@ export function TaskManager({ children }: { children?: any }) {
             ...info
           }
         }
-      });
+      }));
     },
     setActiveTask(id: string) {
-      setTasks(Object.keys(tasks).reduce((obj, key: string) => ({
+      setTasks(tasks => Object.keys(tasks).reduce((obj, key: string) => ({
         ...obj,
         [key]: {
           ...tasks[key],
