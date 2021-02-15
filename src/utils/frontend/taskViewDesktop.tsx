@@ -5,21 +5,13 @@ import Icon from '@mdi/react';
 import { mdiClose, mdiMenu } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
 
+import { useTranslationState, Fade } from './components/fadeTranslation';
 import {
   TaskManagerContext, IWindowInfo, IState,
   ITaskInfo, IGenerateTask, IDestoryTask,
   ISetPage, ISetState, ISetWindowInfo, ISetActiveTask
 } from './taskManagerContext';
 import { ApplicationProviderContext, IApp } from './appProviderContext';
-
-const fadeIn = `animation: ${keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
-`} 0.5s ease 1`;
-const fadeOut = `animation: ${keyframes`
-  from { opacity: 1; }
-  to { opacity: 0; }
-`} 0.55s ease 1`;
 
 export function TaskViewDesktop() {
   const {
@@ -31,8 +23,7 @@ export function TaskViewDesktop() {
     setWindowInfo: ISetWindowInfo, setActiveTask: ISetActiveTask
   } = useContext(TaskManagerContext);
   const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
-  const [isLauncherShow, setLauncherShow] = useState(false);
-  const [isLauncherExist, setLauncherExist] = useState(false);
+  const [launcherState, setLauncherState] = useTranslationState(false);
 
   function propsGenerator(key: string, page: string, state: IState) {
     return {
@@ -245,7 +236,6 @@ export function TaskViewDesktop() {
             padding: 0px 4px;
             border-radius: 4px;
             background: rgba(0, 0, 0, 0.4);
-            ${fadeIn}
           }
           &:active {
             background: rgba(0, 0, 0, 0.4);
@@ -270,97 +260,88 @@ export function TaskViewDesktop() {
           background: rgba(0, 0, 0, 0.4);
         }
       `}
-        onClick={() => (isLauncherShow ?
-          (setLauncherShow(false), setTimeout(() => setLauncherExist(false), 500)) :
-          (setLauncherShow(true), setLauncherExist(true)))}
+        onClick={() => setLauncherState(!launcherState.exist)}
       >
         <Icon path={mdiMenu} size={1} color='rgba(255, 255, 255, 1)' />
       </div>
     </div>
-    <div className={css`
-      ${isLauncherExist ? '' : 'display: none;'}
-    `}>
+    <Fade translationState={launcherState}>
       <div className={css`
-        ${isLauncherShow ? fadeIn : fadeOut}
+        position: fixed;
+        left: 0px;
+        top: 0px;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        z-index: 9999;
+      `}
+        onClick={() => setLauncherState(false)}
+      />
+      <div className={css`
+        position: fixed;
+        left: 100px;
+        top: 10%;
+        width: calc(50% - 100px);
+        height: 80%;
+        z-index: 10000;
+        user-select: none;
       `}>
         <div className={css`
-          position: fixed;
-          left: 0px;
-          top: 0px;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.4);
-          z-index: 9999;
-        `}
-          onClick={() => (setLauncherShow(false), setTimeout(() => setLauncherExist(false), 500))}
-        />
-        <div className={css`
-          position: fixed;
-          left: 100px;
-          top: 10%;
-          width: calc(50% - 100px);
-          height: 80%;
-          z-index: 10000;
-          user-select: none;
+          width: calc(100% - 32px);
+          padding: 16px 32px;
+          line-height: 36px;
+          font-size: 32px;
+          text-align: left;
+          color: rgba(255, 255, 255, 1);
         `}>
-          <div className={css`
-            width: calc(100% - 32px);
-            padding: 16px 32px;
-            line-height: 36px;
-            font-size: 32px;
-            text-align: left;
-            color: rgba(255, 255, 255, 1);
-          `}>
-            {'Launcher'}
-          </div>
-          <div className={css`
-            padding: 16px;
-            display: grid;
-            grid-template-rows: repeat(auto-fill, 100px);
-            grid-template-columns: repeat(4, 25%);
-            gap: 8px;
-            justify-items: center;
-            justify-content: center;
-          `}>
-            {Object.keys(apps).map(pkg => {
-              const { icon, name } = apps[pkg];
-              return <div className={css`
-                width: 120px;
-                height: 100px;
-                padding: 4px;
-                display: flex;
-                flex-direction: column;
-                font-size: 16px;
-                line-height: 20px;
-                text-align: center;
-                color: rgba(255, 255, 255, 1);
-                border-radius: 4px;
-                &:hover {
-                  background: rgba(0, 0, 0, 0.2);
-                }
-                &:active {
-                  background: rgba(0, 0, 0, 0.4);
-                }
-              `}
-                onClick={() => {
-                  setLauncherShow(false);
-                  setTimeout(() => setLauncherExist(false), 500);
-                  generateTask(pkg);
-                }}
-              >
-                <div className={css`
+          {'Launcher'}
+        </div>
+        <div className={css`
+          padding: 16px;
+          display: grid;
+          grid-template-rows: repeat(auto-fill, 100px);
+          grid-template-columns: repeat(4, 25%);
+          gap: 8px;
+          justify-items: center;
+          justify-content: center;
+        `}>
+          {Object.keys(apps).map(pkg => {
+            const { icon, name } = apps[pkg];
+            return <div className={css`
+              width: 120px;
+              height: 100px;
+              padding: 4px;
+              display: flex;
+              flex-direction: column;
+              font-size: 16px;
+              line-height: 20px;
+              text-align: center;
+              color: rgba(255, 255, 255, 1);
+              border-radius: 4px;
+              &:hover {
+                background: rgba(0, 0, 0, 0.2);
+              }
+              &:active {
+                background: rgba(0, 0, 0, 0.4);
+              }
+            `}
+              onClick={() => {
+                setLauncherState(false);
+                generateTask(pkg);
+              }}
+            >
+              <div className={css`
                 height: 48px;
                 width: 48px;
                 margin: 4px 36px;
               `}>
-                  <Icon path={icon} size={2} color='rgba(255, 255, 255, 1)' />
-                </div>
-                {name}
-              </div>;
-            })}
-          </div>
+                <Icon path={icon} size={2} color='rgba(255, 255, 255, 1)' />
+              </div>
+              {name}
+            </div>;
+          })}
         </div>
       </div>
-    </div>
+    </Fade>
   </div>;
 }

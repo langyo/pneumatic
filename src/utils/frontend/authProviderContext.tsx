@@ -6,7 +6,7 @@ export const AuthProviderContext = createContext({});
 
 export function AuthProvider({ children }: { children?: any }) {
   const [userName, setUserName] = useState();
-  const [authToken, setAuthToken] = useState(cookies.get('token'));
+  const [authToken, setAuthToken] = useState(cookies.get('token') || 'fuck');
 
   useEffect(() => (async () => {
     setUserName(await local.getItem('history-user-name'));
