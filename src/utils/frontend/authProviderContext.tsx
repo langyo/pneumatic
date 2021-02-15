@@ -5,7 +5,7 @@ export const AuthProviderContext = createContext({});
 
 export function AuthProvider({ children }: { children?: any }) {
   const [userName, setUserName] = useState('');
-  const [authToken, setAuthToken] = useState(cookies.get('token') || 'test');
+  const [authToken, setAuthToken] = useState(cookies.get('token'));
 
   return <AuthProviderContext.Provider value={{
     userName, authToken,

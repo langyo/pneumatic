@@ -95,7 +95,7 @@ export function TaskViewMobile() {
             setDrawerShow(!isDrawerShow),
             isDrawerShow ? setTimeout(() => setDrawerExist(false), 500) : setDrawerExist(true)
           )}>
-          <Icon path={apps[tasks[activeTaskId].pkg].icon} size={1} color='#fff' />
+          <Icon path={apps[tasks[activeTaskId].pkg].icon} size={1} color='rgba(255, 255, 255, 1)' />
         </div>
         <div className={css`
           position: absolute;
@@ -104,7 +104,7 @@ export function TaskViewMobile() {
           height: ${tasks[activeTaskId].windowInfo.title !== '' ? 28 : 48}px;
           line-height: ${tasks[activeTaskId].windowInfo.title !== '' ? 28 : 48}px;
           font-size: ${tasks[activeTaskId].windowInfo.title !== '' ? 16 : 24}px;
-          color: #fff;
+          color: rgba(255, 255, 255, 1);
         `}>
           {apps[tasks[activeTaskId].pkg].name}
         </div>
@@ -115,7 +115,7 @@ export function TaskViewMobile() {
           height: 16px;
           line-height: 16px;
           font-size: 12px;
-          color: #fff;
+          color: rgba(255, 255, 255, 1);
         `}>
           {tasks[activeTaskId].windowInfo.title}
         </div>}
@@ -130,7 +130,7 @@ export function TaskViewMobile() {
           height: 48px;
           line-height: 48px;
           font-size: 24px;
-          color: #fff;
+          color: rgba(255, 255, 255, 1);
         `}>
           {'Launcher'}
         </div>
@@ -158,7 +158,7 @@ export function TaskViewMobile() {
             setDrawerShow(false), setTimeout(() => setDrawerExist(false), 500)
           )}
         >
-          <Icon path={mdiFullscreenExit} size={1} color='#fff' />
+          <Icon path={mdiFullscreenExit} size={1} color='rgba(255, 255, 255, 1)' />
         </div>
       </div>
       <div className={css`
@@ -179,7 +179,7 @@ export function TaskViewMobile() {
             height: 48px;
             line-height: 48px;
             font-size: 24px;
-            color: #fff;
+            color: rgba(255, 255, 255, 1);
             user-select: none;
           `}>
             {'Task Manager'}
@@ -201,7 +201,7 @@ export function TaskViewMobile() {
             onClick={() => (
               setTaskManagerShow(false), setTimeout(() => setTaskManagerExist(false), 500)
             )}>
-            <Icon path={mdiFullscreen} size={1} color='#fff' />
+            <Icon path={mdiFullscreen} size={1} color='rgba(255, 255, 255, 1)' />
           </div>
         </div>
       </div>
@@ -261,7 +261,7 @@ export function TaskViewMobile() {
                 height: ${title ? 28 : 48}px;
                 line-height: ${title ? 28 : 48}px;
                 font-size: ${title ? 16 : 24}px;
-                color: #fff;
+                color: rgba(255, 255, 255, 1);
               `}>
                 {apps[pkg].name}
               </div>
@@ -272,7 +272,7 @@ export function TaskViewMobile() {
                 height: 16px;
                 line-height: 16px;
                 font-size: 12px;
-                color: #fff;
+                color: rgba(255, 255, 255, 1);
               `}>
                 {title}
               </div>}
@@ -297,7 +297,7 @@ export function TaskViewMobile() {
                   destoryTask(key);
                 }}
               >
-                <Icon path={mdiClose} size={1} color='#fff' />
+                <Icon path={mdiClose} size={1} color='rgba(255, 255, 255, 1)' />
               </div>
             </div>;
           })}
@@ -308,7 +308,7 @@ export function TaskViewMobile() {
             bottom: 0px;
             text-align: center;
             font-size: 24px;
-            color: #fff;
+            color: rgba(255, 255, 255, 1);
             line-height: 48px;
             &:hover {
               background: rgba(0, 0, 0, 0.2);
@@ -364,7 +364,7 @@ export function TaskViewMobile() {
             font-size: 12px;
             line-height: 16px;
             text-align: center;
-            color: #fff;
+            color: rgba(255, 255, 255, 1);
             border-radius: 4px;
             &:hover {
               background: rgba(0, 0, 0, 0.2);
@@ -383,7 +383,7 @@ export function TaskViewMobile() {
               width: 36px;
               margin: 4px 12px 0px 12px;
             `}>
-              <Icon path={icon} size={1.5} color='#fff' />
+              <Icon path={icon} size={1.5} color='rgba(255, 255, 255, 1)' />
             </div>
             {name}
           </div>;

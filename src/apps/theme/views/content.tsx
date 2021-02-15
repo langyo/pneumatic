@@ -3,7 +3,7 @@ import { css } from '@emotion/css';
 
 export function ThemeContent({ }) {
   return <div className={css`
-    color: #fff;
+    color: rgba(255, 255, 255, 1);
   `}>
     <div className={css`
       font-size: 32px;

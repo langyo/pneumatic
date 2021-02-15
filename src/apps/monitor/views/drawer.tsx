@@ -25,7 +25,7 @@ export function MonitorDrawer({ setPage, setDrawerShow }) {
     justify-content: flex-start;
     align-items: center;
     align-content: flex-start;
-    color: #fff;
+    color: rgba(255, 255, 255, 1);
   `}>
     {tagMap.map(({ iconPath, title, page }) => <ToolbarItem
       iconPath={iconPath}

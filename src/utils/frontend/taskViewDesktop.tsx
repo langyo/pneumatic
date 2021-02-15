@@ -104,9 +104,9 @@ export function TaskViewDesktop() {
               left: 4px;
               margin: 4px;
               height: 24px;
-              color: #fff;
+              color: rgba(255, 255, 255, 1);
             `}>
-              <Icon path={apps[pkg].icon} size={1} color='#fff' />
+              <Icon path={apps[pkg].icon} size={1} color='rgba(255, 255, 255, 1)' />
             </div>
             <div className={css`
               position: absolute;
@@ -115,7 +115,7 @@ export function TaskViewDesktop() {
               height: 32px;
               line-height: 32px;
               font-size: 16px;
-              color: #fff;
+              color: rgba(255, 255, 255, 1);
             `}>
               {`${apps[pkg].name}${title ? ` - ${title}` : ''}`}
             </div>
@@ -132,7 +132,7 @@ export function TaskViewDesktop() {
               right: 0px;
               height: 24px;
               margin: 4px;
-              color: #fff;
+              color: rgba(255, 255, 255, 1);
               border-radius: 4px;
               &:hover {
                 background: rgba(0, 0, 0, 0.2);
@@ -142,7 +142,7 @@ export function TaskViewDesktop() {
             `}
               onClick={() => destoryTask(key)}
             >
-              <Icon path={mdiClose} size={1} color='#fff' />
+              <Icon path={mdiClose} size={1} color='rgba(255, 255, 255, 1)' />
             </div>
           </div>
           <div className={css`
@@ -216,7 +216,7 @@ export function TaskViewDesktop() {
       justify-content: flex-start;
       align-items: center;
       user-select: none;
-      color: #fff;
+      color: rgba(255, 255, 255, 1);
     `}>
       {Object.keys(tasks).sort(
         (left, right) =>
@@ -253,7 +253,7 @@ export function TaskViewDesktop() {
         `}
           onClick={() => setActiveTask(key)}
         >
-          <Icon path={icon} size={1} color='#fff' />
+          <Icon path={icon} size={1} color='rgba(255, 255, 255, 1)' />
         </div>
       })}
       <div className={css`
@@ -274,7 +274,7 @@ export function TaskViewDesktop() {
           (setLauncherShow(false), setTimeout(() => setLauncherExist(false), 500)) :
           (setLauncherShow(true), setLauncherExist(true)))}
       >
-        <Icon path={mdiMenu} size={1} color='#fff' />
+        <Icon path={mdiMenu} size={1} color='rgba(255, 255, 255, 1)' />
       </div>
     </div>
     <div className={css`
@@ -309,7 +309,7 @@ export function TaskViewDesktop() {
             line-height: 36px;
             font-size: 32px;
             text-align: left;
-            color: #fff;
+            color: rgba(255, 255, 255, 1);
           `}>
             {'Launcher'}
           </div>
@@ -333,7 +333,7 @@ export function TaskViewDesktop() {
                 font-size: 16px;
                 line-height: 20px;
                 text-align: center;
-                color: #fff;
+                color: rgba(255, 255, 255, 1);
                 border-radius: 4px;
                 &:hover {
                   background: rgba(0, 0, 0, 0.2);
@@ -353,7 +353,7 @@ export function TaskViewDesktop() {
                 width: 48px;
                 margin: 4px 36px;
               `}>
-                  <Icon path={icon} size={2} color='#fff' />
+                  <Icon path={icon} size={2} color='rgba(255, 255, 255, 1)' />
                 </div>
                 {name}
               </div>;

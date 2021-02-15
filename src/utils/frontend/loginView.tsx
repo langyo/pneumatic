@@ -17,8 +17,7 @@ export function LoginView() {
     align-items: center;
   `}>
     <div className={css`
-      width: 50%;
-      min-width: 300px;
+      width: 300px;
       height: 200px;
       background: rgba(0, 0, 0, 0.2);
       border-radius: 4px;
@@ -34,38 +33,38 @@ export function LoginView() {
         padding: 16px 0px;
         line-height: 32px;
         font-size: 30px;
-        color: #fff;
+        color: rgba(255, 255, 255, 1);
         user-select: none;
       `}>
         {'Login'}
       </div>
       <input className={css`
-        width: 300px;
+        width: 200px;
         height: 32px;
-        margin: 0px calc(50% - 150px);
+        margin: 0px 50px;
         padding: 4px;
         line-height: 32px;
         font-size: 16px;
-        color: #fff;
+        color: rgba(255, 255, 255, 1);
         outline: none;
         border: none;
-        border-bottom: solid 4px rgba(0, 0, 0, 0.2);
-        &:focus {
-          border: none;
-          border-bottom:  solid 4px rgba(0, 0, 0, 0.4);
-        }
+        border-radius: 4px;
         background: rgba(0, 0, 0, 0.2);
-        border-radius: 4px 4px 0px 0px;
-      `} />
+        &:hover {
+          background: rgba(0, 0, 0, 0.4);
+        }
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.4);
+        }
+      `}
+        placeholder='Enter user name'
+      />
       <div className={css`
-        width: 100px;
-        height: 32px;
         margin: 8px;
-        padding: 4px;
-        line-height: 32px;
-        font-size: 24px;
+        padding: 4px 8px;
+        font-size: 20px;
         text-align: center;
-        color: #fff;
+        color: rgba(255, 255, 255, 1);
         border-radius: 4px;
         user-select: none;
         background: rgba(0, 0, 0, 0.2);

@@ -17,7 +17,7 @@ export function MarketDrawer({ }) {
     align-items: center;
     align-content: flex-start;
     user-select: none;
-    color: #fff;
+    color: rgba(255, 255, 255, 1);
   `}>
     <div className={css`
       width: 80%;
