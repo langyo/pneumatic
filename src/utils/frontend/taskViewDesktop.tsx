@@ -218,7 +218,10 @@ export function TaskViewDesktop() {
       user-select: none;
       color: #fff;
     `}>
-      {Object.keys(tasks).map(key => {
+      {Object.keys(tasks).sort(
+        (left, right) =>
+          tasks[left].windowInfo.taskManagerOrder - tasks[right].windowInfo.taskManagerOrder
+      ).map(key => {
         const { icon, name } = apps[tasks[key].pkg];
         const { title } = tasks[key].windowInfo;
 

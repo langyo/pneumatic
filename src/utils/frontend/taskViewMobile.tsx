@@ -228,7 +228,10 @@ export function TaskViewMobile() {
         backdrop-filter: blur(2px);
         ${isTaskManagerShow ? fadeIn : fadeOut}
       `}>
-          {Object.keys(tasks).map((key: string) => {
+          {Object.keys(tasks).sort(
+            (left, right) =>
+              tasks[left].windowInfo.taskManagerOrder - tasks[right].windowInfo.taskManagerOrder
+          ).map((key: string) => {
             const pkg = tasks[key].pkg;
             const { title }: IWindowInfo = tasks[key].windowInfo;
 

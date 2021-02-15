@@ -14,7 +14,8 @@ export interface IWindowInfo {
   title: string,
   left: number, top: number,
   width: number, height: number,
-  priority: number,     // TODO - Allows windows to be cascaded according to priority.
+  priority: number,
+  taskManagerOrder: number,
   mergeGrid: {          // TODO - Supports maximization and window merging.
     id: string,
     at: 'top' | 'bottom' | 'left' | 'right',
@@ -76,6 +77,7 @@ export function TaskManager({ children }: { children?: any }) {
                 ...(apps[pkg].defaultState || {})
               }, tasks) : '',
             priority: Object.keys(tasks).length + 1,
+            taskManagerOrder: Object.keys(tasks).length + 1,
             mergeGrid: [],
             subWindow: [],
             parentWindow: ''
@@ -91,9 +93,14 @@ export function TaskManager({ children }: { children?: any }) {
             ...tasks[key],
             windowInfo: {
               ...tasks[key].windowInfo,
-              priority: tasks[key].windowInfo.priority > tasks[id].windowInfo.priority ?
-                tasks[key].windowInfo.priority - 1 :
-                tasks[key].windowInfo.priority
+              priority:
+                tasks[key].windowInfo.priority > tasks[id].windowInfo.priority ?
+                  tasks[key].windowInfo.priority - 1 :
+                  tasks[key].windowInfo.priority,
+              taskManagerOrder:
+                tasks[key].windowInfo.taskManagerOrder > tasks[id].windowInfo.taskManagerOrder ?
+                  tasks[key].windowInfo.priority - 1 :
+                  tasks[key].windowInfo.priority
             }
           }
         }), {}));
