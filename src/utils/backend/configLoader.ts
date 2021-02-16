@@ -1,10 +1,15 @@
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { join } from 'path';
+import { signSaltPassword } from '../authVerifyTools';
 
-export const config = new Proxy({}, {
-  get(_target, key, receiver) {
-    return;
-  },
-  set(_target, key, value, receiver) {
-    return true;
-  }
-});
+if (!existsSync(join(process.cwd(), './pneumatic.config.json'))) {
+  writeFileSync(
+    join(process.cwd(), './pneumatic.config.json'),
+    JSON.stringify({
+      admin: signSaltPassword('admin', 'admin')
+    })
+  );
+}
+export const accounts = JSON.parse(
+  readFileSync(join(process.cwd(), './pneumatic.config.json'), 'utf8')
+);

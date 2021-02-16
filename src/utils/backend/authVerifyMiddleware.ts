@@ -1,10 +1,11 @@
 import * as Koa from 'koa';
-import { v4 as uuidGenerator } from 'uuid';
+import { v4 as generateUUID } from 'uuid';
+import { accounts } from './configLoader';
 
 interface IConnection {
   birth: Date,
   lastConnect: Date,
-  user: 'guest' | number
+  user: string
 }
 
 let connectionList: { [token: string]: IConnection } = {};
@@ -13,7 +14,27 @@ export async function authLoginMiddleware(
   ctx: Koa.BaseContext,
   next: () => Promise<unknown>
 ) {
-  await next();
+  if (ctx.path === '/backend/login') {
+    if (ctx.accepts('json') !== 'json') {
+      ctx.throw(406, 'Json only.');
+    } else {
+      const { userName, signedPassword } = ctx.request.body;
+      if (accounts[userName] && accounts[userName] === signedPassword) {
+        const token = generateUUID();
+        connectionList[token] = {
+          birth: new Date(),
+          lastConnect: new Date(),
+          user: userName
+        };
+        ctx.cookies.set('token', token, { signed: true, overwrite: true });
+        ctx.body = JSON.stringify({ status: 'success', token });
+      } else {
+        ctx.body = JSON.stringify({ status: 'fail' });
+      }
+    }
+  } else {
+    await next();
+  }
 }
 
 export function authVerify(

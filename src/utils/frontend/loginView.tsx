@@ -1,7 +1,7 @@
 import React, { useRef, useContext } from 'react';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
-import { mdiAccountOutline, mdiArrowRight, mdiKeyOutline } from '@mdi/js';
+import { mdiArrowRight } from '@mdi/js';
 
 import { AuthProviderContext } from './authProviderContext';
 
