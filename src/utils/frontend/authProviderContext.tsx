@@ -1,20 +1,19 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState } from 'react';
+import useLocalStorage from 'react-use-localstorage';
 import cookies from 'js-cookie';
-import local from 'localforage';
 
 export const AuthProviderContext = createContext({});
 
 export function AuthProvider({ children }: { children?: any }) {
-  const [userName, setUserName] = useState();
-  const [authToken, setAuthToken] = useState(cookies.get('token') || 'fuck');
-
-  useEffect(() => (async () => {
-    setUserName(await local.getItem('history-user-name'));
-  })(), []);
+  const [userName, setUserName] = useLocalStorage('history-user-name', '');
+  const [authToken, setAuthToken] = useState(cookies.get('token'));
 
   return <AuthProviderContext.Provider value={{
-    userName, authToken,
-    login(name: string, hashedPassword: string) { }
+    userName, setUserName,
+    authToken, setAuthToken,
+    login(name: string, hashedPassword: string) {
+      setUserName(name);
+    }
   }}>
     {children}
   </AuthProviderContext.Provider>;

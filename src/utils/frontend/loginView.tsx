@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useRef, useContext } from 'react';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
 import { mdiAccountOutline, mdiArrowRight, mdiKeyOutline } from '@mdi/js';
@@ -6,10 +6,12 @@ import { mdiAccountOutline, mdiArrowRight, mdiKeyOutline } from '@mdi/js';
 import { AuthProviderContext } from './authProviderContext';
 
 export function LoginView() {
-  const { userName }: {
-    userName?: string
+  const { userName, setUserName, login }: {
+    userName: string, setUserName: (name: string) => void,
+    login: (name: string, hashedPasswd: string) => void
   } = useContext(AuthProviderContext);
-  const mode = userName ? 'enterPassword' : 'enterName';
+  const userNameRef = useRef();
+  const passwordRef = useRef();
 
   return <div className={css`
     position: fixed;
@@ -22,8 +24,8 @@ export function LoginView() {
     align-items: center;
   `}>
     <div className={css`
-      width: 300px;
-      height: 150px;
+      width: 260px;
+      height: 200px;
       background: rgba(0, 0, 0, 0.2);
       border-radius: 4px;
     `}>
@@ -42,15 +44,18 @@ export function LoginView() {
         width: 100%;
         height: calc(100% - 64px);
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
       `}>
         <input className={css`
           width: 200px;
           height: 32px;
+          margin: 4px;
           padding: 4px;
           line-height: 32px;
           font-size: 16px;
+          text-align: center;
           color: rgba(255, 255, 255, 1);
           outline: none;
           border: none;
@@ -63,12 +68,49 @@ export function LoginView() {
             color: rgba(255, 255, 255, 0.4);
           }
         `}
-          placeholder={mode === 'enterName' ? 'Enter user name' : 'Enter password'}
+          ref={userNameRef}
+          placeholder='Enter user name'
+          onKeyDown={(event: KeyboardEvent) => {
+            if (event.code === 'Enter' || event.code === 'Tab') {
+              passwordRef.current.focus();
+            }
+          }}
+          onChange={() => setUserName(userNameRef.current.value)}
+          value={userName}
+        />
+        <input className={css`
+          width: 200px;
+          height: 32px;
+          margin: 4px;
+          padding: 4px;
+          line-height: 32px;
+          font-size: 16px;
+          text-align: center;
+          color: rgba(255, 255, 255, 1);
+          outline: none;
+          border: none;
+          border-radius: 4px;
+          background: rgba(0, 0, 0, 0.2);
+          &:hover {
+            background: rgba(0, 0, 0, 0.4);
+          }
+          &::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+          }
+        `}
+          ref={passwordRef}
+          placeholder='Enter password'
+          type='password'
+          onKeyDown={(event: KeyboardEvent) => {
+            if (event.code === 'Enter') {
+              login(userNameRef.current.value, passwordRef.current.value);
+            }
+          }}
         />
         <div className={css`
           height: 24px;
           width: 24px;
-          margin-left: 4px;
+          margin: 4px;
           padding: 4px;
           color: rgba(255, 255, 255, 1);
           border-radius: 4px;
@@ -80,7 +122,9 @@ export function LoginView() {
           &:active {
             background: rgba(0, 0, 0, 0.6);
           }
-        `}>
+        `}
+          onClick={() => login(userNameRef.current.value, passwordRef.current.value)}
+        >
           <Icon path={mdiArrowRight} size={1} color='rgba(255, 255, 255, 1)' />
         </div>
       </div>
