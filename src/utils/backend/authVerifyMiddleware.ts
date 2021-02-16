@@ -26,7 +26,7 @@ export async function authLoginMiddleware(
           lastConnect: new Date(),
           user: userName
         };
-        ctx.cookies.set('token', token, { signed: true, overwrite: true });
+        ctx.cookies.set('token', token, { overwrite: true });
         ctx.body = JSON.stringify({ status: 'success', token });
       } else {
         ctx.body = JSON.stringify({ status: 'fail' });

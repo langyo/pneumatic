@@ -14,6 +14,7 @@ fs['join'] = join;
 const compiler = webpack({
   entry: join(__dirname, './serverEntry.ts'),
   mode: 'development',
+  target: 'node',
   context: process.cwd(),
   module: {
     rules: [

@@ -32,3 +32,6 @@ yarn.lock
 
 /dist
 /public
+
+# Config file from pneumatic own.
+pneumatic.config.json
