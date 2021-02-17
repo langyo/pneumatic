@@ -8,7 +8,12 @@ export function ThemeProvider({ children }: { children?: any }) {
   const media = useMediaQuery({
     query: '(min-width: 992px)'
   }) ? 'desktop' : 'mobile';
-  const [backgroundUrl, setBackgroundUrl] = useState('');
+  const [basicTheme, setBasicTheme] = useState({
+    background: {
+      type: 'url',
+      value: ''
+    }
+  });
 
   return <ThemeProviderContext.Provider value={{
     media
@@ -18,7 +23,9 @@ export function ThemeProvider({ children }: { children?: any }) {
       position: fixed;
       width: 100%;
       height: 100%;
-      background: url(${backgroundUrl}) no-repeat top left scroll;
+      ${basicTheme.background && basicTheme.background.type === 'url' ?
+        `background: url(${basicTheme.background.value}) no-repeat top left scroll;` :
+        ''}
       background-size: cover;
     `} />
     <div className={css`
