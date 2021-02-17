@@ -70,7 +70,7 @@ export function LoginView() {
         `}
           ref={userNameRef}
           placeholder='Enter user name'
-          onKeyDown={(event: KeyboardEvent) => {
+          onKeyDown={(event: React.KeyboardEvent) => {
             if (event.code === 'Enter' || event.code === 'Tab') {
               passwordRef.current.focus();
             }
@@ -101,7 +101,7 @@ export function LoginView() {
           ref={passwordRef}
           placeholder='Enter password'
           type='password'
-          onKeyDown={(event: KeyboardEvent) => {
+          onKeyDown={(event: React.KeyboardEvent) => {
             if (event.code === 'Enter') {
               login(userNameRef.current.value, passwordRef.current.value);
             }
