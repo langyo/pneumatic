@@ -108,7 +108,6 @@ export function TaskManager({ children }: { children?: any }) {
         }), {}));
     },
     setPage(id: string, page: string) {
-      console.log(id, page)
       if (Object.keys(apps[tasks[id].pkg].contentComponent).indexOf(page) < 0) {
         throw Error(`Unknown page '${page}' at '${tasks[id].pkg}[${id}]'.`);
       }

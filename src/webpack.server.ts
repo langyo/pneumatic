@@ -8,6 +8,7 @@ import * as webpack from 'webpack';
 import { Volume, IFs } from 'memfs';
 import { Script, createContext } from 'vm';
 
+import { log } from './utils/backend/logger';
 import { loadBackendApp } from './webpack.client';
 
 const fs: IFs = Volume.fromJSON({}) as IFs;
@@ -62,7 +63,7 @@ let middleware = async (
   _ctx: Koa.BaseContext,
   _next: () => Promise<void>
 ) => {
-  console.log('Please wait, the server is not ready.');
+  log('warn', 'Please wait, the service is not ready now.');
 };
 
 const app = new Koa();
@@ -71,7 +72,7 @@ app.use(async (
   ctx: Koa.BaseContext,
   next: () => Promise<void>
 ) => {
-  console.log('New connection -', ctx.path);
+  log('info', `Http(${ctx.ip}):`, ctx.path);
   await loadBackendApp(ctx, async () => {
     await middleware(ctx, next);
   })
@@ -85,9 +86,9 @@ const server = createServer(app.callback()).listen(
 const wss = new ws.Server({ server });
 wss.on('connection', (ws, req) => {
   const ip = req.socket.remoteAddress;
-  console.log('New Ws connection', ip);
+  log('info', 'New Ws connection:', ip);
   ws.on('message', msg => {
-    console.log(`Ws(${ip}):`, msg);
+    log('info', `Ws(${ip}):`, msg);
     ws.send(msg);
   });
 })
@@ -112,7 +113,7 @@ compiler.watch({
     }
     throw Error(errStr);
   } else {
-    console.log('Compiled the service part.');
+    log('info', 'Compiled the service part.');
 
     const script = new Script(
       fs.readFileSync(join(process.cwd(), '/main.js'), 'utf8') as string, {

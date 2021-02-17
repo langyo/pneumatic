@@ -1,5 +1,6 @@
 import * as Koa from 'koa';
 import { authLoginMiddleware, authVerify } from './utils/backend/authVerifyMiddleware';
+import { log } from './utils/backend/logger';
 
 declare global {
   function exportMiddleware(
@@ -43,4 +44,4 @@ exportMiddleware(async (ctx, next) => {
   await nextTask(0);
 });
 
-console.log('Server is ready.');
+log('info', 'Server is ready.');

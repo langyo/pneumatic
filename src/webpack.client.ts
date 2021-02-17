@@ -6,6 +6,8 @@ import { Volume, IFs } from 'memfs';
 import { Union } from 'unionfs'
 import * as realFs from 'fs';
 
+import { log } from './utils/backend/logger';
+
 const fs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
   [join(process.cwd(), './main.ts')]: `
 import { render } from 'react-dom';
@@ -86,7 +88,7 @@ compiler.watch({
     }
     throw Error(errStr);
   } else {
-    console.log('Compiled the SPA part.');
+    log('info', 'Compiled the client part.');
   }
 });
 
