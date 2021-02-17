@@ -1,4 +1,6 @@
+import { createServer } from 'http';
 import * as Koa from 'koa';
+import * as ws from 'ws';
 import * as bodyParserMiddleware from 'koa-bodyparser';
 
 import { join } from 'path';
@@ -74,10 +76,21 @@ app.use(async (
     await middleware(ctx, next);
   })
 });
-app.listen(
+
+const server = createServer(app.callback()).listen(
   process.env.PORT && +process.env.PORT || 80,
   process.env.HOST || undefined
 );
+
+const wss = new ws.Server({ server });
+wss.on('connection', (ws, req) => {
+  const ip = req.socket.remoteAddress;
+  console.log('New Ws connection', ip);
+  ws.on('message', msg => {
+    console.log(`Ws(${ip}):`, msg);
+    ws.send(msg);
+  });
+})
 
 compiler.watch({
   ignored: ['**/node_modules/**', '**/.git/**']

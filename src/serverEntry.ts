@@ -4,7 +4,7 @@ import { authLoginMiddleware, authVerify } from './utils/backend/authVerifyMiddl
 declare global {
   function exportMiddleware(
     newMiddleware: (ctx: Koa.BaseContext, next: () => Promise<void>) => Promise<void>
-  );
+  ): void;
 };
 
 import { explorerRoute } from './apps/explorer/routes/service';
