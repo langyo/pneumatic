@@ -19,7 +19,11 @@ export function AuthProvider({ children }: { children?: any }) {
       axios.post('/backend/login', {
         userName, signedPassword: signSaltPassword(userName, rawPassword)
       }).then(({ data }) => {
-        console.log(data);
+        if (data.status === 'success') {
+          setAuthToken(data.token);
+        } else {
+          alert('Wrong user name or password!');
+        }
       })
     }
   }}>
