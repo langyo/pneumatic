@@ -5,11 +5,9 @@ import Icon from '@mdi/react';
 import { mdiClose, mdiMenu } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
 
-import { useTranslationState, Fade } from './components/fadeTranslation';
+import { Fade, Grow } from './components/transition';
 import {
-  TaskManagerContext, IWindowInfo, IState,
-  ITaskInfo, IGenerateTask, IDestoryTask,
-  ISetPage, ISetState, ISetWindowInfo, ISetActiveTask
+  TaskManagerContext, IWindowInfo, IState, ITaskManagerContext
 } from './taskManagerContext';
 import { ApplicationProviderContext, IApp } from './appProviderContext';
 
@@ -17,13 +15,9 @@ export function TaskViewDesktop() {
   const {
     tasks, generateTask, destoryTask,
     setPage, setState, setWindowInfo, setActiveTask
-  }: {
-    tasks: ITaskInfo, generateTask: IGenerateTask, destoryTask: IDestoryTask,
-    setPage: ISetPage, setState: ISetState,
-    setWindowInfo: ISetWindowInfo, setActiveTask: ISetActiveTask
-  } = useContext(TaskManagerContext);
+  }: ITaskManagerContext = useContext(TaskManagerContext);
   const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
-  const [launcherState, setLauncherState] = useTranslationState(false);
+  const [launcherState, setLauncherState] = useState(false);
 
   function propsGenerator(key: string, page: string, state: IState) {
     return {
@@ -258,12 +252,12 @@ export function TaskViewDesktop() {
           background: rgba(0, 0, 0, 0.4);
         }
       `}
-        onClick={() => setLauncherState(!launcherState.exist)}
+        onClick={() => setLauncherState(!launcherState)}
       >
         <Icon path={mdiMenu} size={1} color='rgba(255, 255, 255, 1)' />
       </div>
     </div>
-    <Fade translationState={launcherState}>
+    <Fade on={launcherState}>
       <div className={css`
         position: fixed;
         left: 0px;

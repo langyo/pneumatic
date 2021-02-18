@@ -35,6 +35,16 @@ export type ISetState = (id: string, state: IState) => void;
 export type ISetWindowInfo = (id: string, info: Partial<IWindowInfo>) => void;
 export type ISetActiveTask = (id: string) => void;
 
+export interface ITaskManagerContext {
+  tasks: ITaskInfo,
+  generateTask: IGenerateTask,
+  destoryTask: IDestoryTask,
+  setPage: ISetPage,
+  setState: ISetState,
+  setWindowInfo: ISetWindowInfo,
+  setActiveTask: ISetActiveTask
+}
+
 export function TaskManager({ children }: { children?: any }) {
   const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
   const [tasks, setTasks]: [

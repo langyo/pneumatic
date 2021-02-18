@@ -4,11 +4,9 @@ import Icon from '@mdi/react';
 import { mdiClose, mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
 
-import { useTranslationState, Fade } from './components/fadeTranslation';
+import { Fade } from './components/transition';
 import {
-  TaskManagerContext, IWindowInfo, IState,
-  ITaskInfo, IGenerateTask, IDestoryTask,
-  ISetPage, ISetState, ISetWindowInfo, ISetActiveTask
+  TaskManagerContext, IWindowInfo, IState, ITaskManagerContext
 } from './taskManagerContext';
 import { ApplicationProviderContext, IApp } from './appProviderContext';
 
@@ -17,15 +15,11 @@ export function TaskViewMobile() {
   const {
     tasks, generateTask, destoryTask,
     setPage, setState, setWindowInfo, setActiveTask
-  }: {
-    tasks: ITaskInfo, generateTask: IGenerateTask, destoryTask: IDestoryTask,
-    setPage: ISetPage, setState: ISetState,
-    setWindowInfo: ISetWindowInfo, setActiveTask: ISetActiveTask
-  } = useContext(TaskManagerContext);
+  }: ITaskManagerContext = useContext(TaskManagerContext);
   const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
-  const [drawerState, setDrawerState] = useTranslationState(false);
-  const [taskManagerState, setTaskManagerState] = useTranslationState(false);
-  const [launcherState, setLauncherState] = useTranslationState(Object.keys(tasks).filter(
+  const [drawerState, setDrawerState] = useState(false);
+  const [taskManagerState, setTaskManagerState] = useState(false);
+  const [launcherState, setLauncherState] = useState(Object.keys(tasks).filter(
     (key: string) => tasks[key].windowInfo.status !== 'active'
   ).length === 0);
 
@@ -62,10 +56,7 @@ export function TaskViewMobile() {
       width: 100%;
       background: rgba(0, 0, 0, 0.2);
     `}>
-      <Fade translationState={{
-        exist: !launcherState.exist,
-        show: !launcherState.show
-      }}>
+      <Fade on={!launcherState}>
         {activeTaskId && <>
           <div className={css`
             position: absolute;
@@ -81,7 +72,7 @@ export function TaskViewMobile() {
               background: rgba(0, 0, 0, 0.4);
             }
           `}
-            onClick={() => setDrawerState(!drawerState.exist)}>
+            onClick={() => setDrawerState(!drawerState)}>
             <Icon path={apps[tasks[activeTaskId].pkg].icon} size={1} color='rgba(255, 255, 255, 1)' />
           </div>
           <div className={css`
@@ -108,7 +99,7 @@ export function TaskViewMobile() {
           </div>}
         </>}
       </Fade>
-      <Fade translationState={launcherState}>
+      <Fade on={launcherState}>
         <div className={css`
           position: absolute;
           top: 0px;
@@ -121,10 +112,7 @@ export function TaskViewMobile() {
           {'Launcher'}
         </div>
       </Fade>
-      <Fade translationState={{
-        exist: !taskManagerState.exist && Object.keys(tasks).length > 0,
-        show: !taskManagerState.show
-      }}>
+      <Fade on={!taskManagerState && Object.keys(tasks).length > 0}>
         {Object.keys(tasks).length > 0 && <div className={css`
           position: absolute;
           top: 0px;
@@ -144,7 +132,7 @@ export function TaskViewMobile() {
           <Icon path={mdiFullscreenExit} size={1} color='rgba(255, 255, 255, 1)' />
         </div>}
       </Fade>
-      <Fade translationState={taskManagerState}>
+      <Fade on={taskManagerState}>
         <div className={css`
           position: absolute;
           height: 100%;
@@ -196,7 +184,7 @@ export function TaskViewMobile() {
         width: 100%;
         height: 100%;
       `}>
-        <Fade translationState={taskManagerState}>
+        <Fade on={taskManagerState}>
           <div className={css`
             position: absolute;
             height: 100%;
@@ -315,17 +303,14 @@ export function TaskViewMobile() {
             }
           } = tasks[key];
 
-          return <Fade translationState={{
-            exist: !launcherState.exist && status === 'active',
-            show: !launcherState.exist && status === 'active'
-          }}>
+          return <Fade on={!launcherState && status === 'active'}>
             {apps[pkg].contentComponent[page] ?
               apps[pkg].contentComponent[page](propsGenerator(key, page, state)) :
               apps[pkg].contentComponent.default(propsGenerator(key, page, state))}
           </Fade>;
         })}
 
-        <Fade translationState={launcherState}>
+        <Fade on={launcherState}>
           <div className={css`
             display: grid;
             margin-top: 8px;
@@ -375,7 +360,7 @@ export function TaskViewMobile() {
       </Scrollbars>
     </div>
 
-    <Fade translationState={drawerState}>
+    <Fade on={drawerState}>
       <div className={css`
         position: absolute;
         top: 50px;
