@@ -1,11 +1,11 @@
 import * as Koa from 'koa';
-import { authLoginMiddleware } from './utils/backend/authVerifyMiddleware';
 import { log } from './utils/backend/logger';
 
 declare global {
   function exportMiddleware(
     newMiddleware: (ctx: Koa.BaseContext, next: () => Promise<void>) => Promise<void>
   ): void;
+  function exportLongtermMiddleware(/* TODO */): void;
 };
 
 import { explorerRoute } from './apps/explorer/routes/service';
@@ -20,7 +20,6 @@ import { settingRoute } from './apps/setting/routes/service';
 
 exportMiddleware(async (ctx, next) => {
   const arr = [
-    authLoginMiddleware,
     explorerRoute,
     monitorRoute,
     browserRoute,

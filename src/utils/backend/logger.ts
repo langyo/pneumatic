@@ -8,11 +8,11 @@ const logLevelMap = {
   error: bgYellow(red('ERROR'))
 }
 
-export function log(type: ILogLevel, message: string, extraMessage?: string) {
+export function log(type: ILogLevel, message: string, ...extraMessage: string[]) {
   console.log(
     bold((new Date()).toLocaleString()),
     logLevelMap[type],
     type === 'error' ? red(message) : message,
-    extraMessage ? blue(extraMessage) : ''
+    extraMessage.length > 0 ? blue(extraMessage.join(' ')) : ''
   );
 }

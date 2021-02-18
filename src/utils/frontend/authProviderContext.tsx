@@ -20,6 +20,19 @@ export function AuthProvider({ children }: { children?: any }) {
       }).then(({ data }) => {
         if (data.status === 'success') {
           setAuthToken(data.token);
+          const ws = new WebSocket(`ws://${window.location.host}/${data.token}`);
+          ws.addEventListener('open', () => {
+            console.log('Websocket connection has opened.');
+            ws.addEventListener('message', ({ data }) => {
+              console.log(data);
+            });
+            ws.addEventListener('close', () => {
+              console.log('Websocket connection has closed.');
+            })
+          });
+          ws.addEventListener('error', () => {
+            console.error('Websocket connection has broken.');
+          })
         } else {
           alert('Wrong user name or password!');
         }
