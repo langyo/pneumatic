@@ -1,5 +1,5 @@
 import * as Koa from 'koa';
-import { authLoginMiddleware, authVerify } from './utils/backend/authVerifyMiddleware';
+import { authLoginMiddleware } from './utils/backend/authVerifyMiddleware';
 import { log } from './utils/backend/logger';
 
 declare global {
@@ -21,15 +21,15 @@ import { settingRoute } from './apps/setting/routes/service';
 exportMiddleware(async (ctx, next) => {
   const arr = [
     authLoginMiddleware,
-    authVerify('pneumatic.explorer', explorerRoute),
-    authVerify('pneumatic.monitor', monitorRoute),
-    authVerify('pneumatic.browser', browserRoute),
-    authVerify('pneumatic.database', databaseRoute),
-    authVerify('pneumatic.plan', planRoute),
-    authVerify('pneumatic.teriminal', terminalRoute),
-    authVerify('pneumatic.theme', themeRoute),
-    authVerify('pneumatic.market', marketRoute),
-    authVerify('pneumatic.setting', settingRoute)
+    explorerRoute,
+    monitorRoute,
+    browserRoute,
+    databaseRoute,
+    planRoute,
+    terminalRoute,
+    themeRoute,
+    marketRoute,
+    settingRoute
   ];
 
   async function nextTask(pos: number) {

@@ -59,7 +59,7 @@ const compiler = webpack({
 });
 compiler.outputFileSystem = fs;
 
-let middleware = async (
+let httpMiddleware = async (
   _ctx: Koa.BaseContext,
   _next: () => Promise<void>
 ) => {
@@ -74,8 +74,8 @@ app.use(async (
 ) => {
   log('info', `Http(${ctx.ip}):`, ctx.path);
   await loadBackendApp(ctx, async () => {
-    await middleware(ctx, next);
-  })
+    await httpMiddleware(ctx, next);
+  });
 });
 
 const server = createServer(app.callback()).listen(
@@ -91,7 +91,7 @@ wss.on('connection', (ws, req) => {
     log('info', `Ws(${ip}):`, msg);
     ws.send(msg);
   });
-})
+});
 
 compiler.watch({
   ignored: ['**/node_modules/**', '**/.git/**']
@@ -123,9 +123,9 @@ compiler.watch({
       exportMiddleware(
         newMiddleware: (ctx: Koa.BaseContext, next: () => Promise<void>) => Promise<void>
       ) {
-        middleware = newMiddleware;
+        httpMiddleware = newMiddleware;
       },
-      console, process, require
+      console, process, require, setInterval, setTimeout
     });
     try {
       script.runInContext(context);

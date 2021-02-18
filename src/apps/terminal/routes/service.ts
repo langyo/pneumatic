@@ -1,8 +1,7 @@
 import * as Koa from 'koa';
 
 export async function terminalRoute(
-  path: string,
-  { userId }: { userId: number }
+  ctx, next
 ): Promise<any> {
   return '';
 }

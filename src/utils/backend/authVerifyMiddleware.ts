@@ -1,6 +1,7 @@
 import * as Koa from 'koa';
 import { v4 as generateUUID } from 'uuid';
 import { accounts } from './configLoader';
+import { log } from './logger';
 
 interface IConnection {
   birth: Date,
@@ -36,18 +37,24 @@ export async function authLoginMiddleware(
   }
 }
 
-export function authVerify(
-  pkg: string,
-  middleware: (path: string, { userId }: { userId: number }) => Promise<any>
-): (ctx: Koa.BaseContext, next: () => Promise<unknown>) => Promise<void> {
-  const path = pkg.split('.').join('/');
-  return async function (ctx: Koa.BaseContext, next: () => Promise<unknown>) {
-    if (ctx.url.substr(0, path.length) === path) {
-      ctx.body = JSON.stringify(
-        await middleware(ctx.url.substr(path.length), { userId: 0 })
-      );
-    } else {
-      await next();
-    }
+export function connectionVerify(token: string): boolean {
+  if (typeof connectionList[token] !== 'boolean') {
+    connectionList[token].lastConnect = new Date();
+    return true;
+  } else {
+    return false;
   }
 }
+
+// Clean up invalid connections regularly.
+// Check every 1 mins.
+setInterval(() => {
+  let count = 0;
+  for (const token of Object.keys(connectionList)) {
+    if (connectionList[token].lastConnect.getTime() - Date.now() >= 10 * 60 * 1000) {
+      delete connectionList[token];
+      count += 1;
+    }
+  }
+  log('info', `${count} token${count > 1 ? 's' : ''} cleaned up.`);
+}, 60 * 1000);
