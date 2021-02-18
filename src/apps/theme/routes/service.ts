@@ -1,7 +1,7 @@
 import * as Koa from 'koa';
 
 export async function themeRoute(
-  ctx, next
+  ctx: Koa.BaseContext, next: () => Promise<unknown>
 ): Promise<any> {
-  return '';
+  await next();
 }
