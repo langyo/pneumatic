@@ -205,7 +205,7 @@ serverPartCompiler.watch({
       ) {
         serverSideLongtermMiddleware = middlewareMap;
       }, 
-      console, process, require, setInterval, setTimeout
+      console, process, require, setInterval, setTimeout, clearInterval, clearTimeout
     });
     try {
       script.runInContext(context);

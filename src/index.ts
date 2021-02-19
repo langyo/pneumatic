@@ -58,10 +58,10 @@ wss.on('connection', (ws, req) => {
           emitters[id].on('send', (msg: any) => {
             ws.send(JSON.stringify({ head: id, data: msg }));
           });
-          serverSideLongtermMiddleware[pkg](req, emitters[id]);
           ws.send(JSON.stringify({
             head: '#init', data: { status: 'success', id }
           }));
+          serverSideLongtermMiddleware[pkg](req, emitters[id]);
         } else if (head === '#destory') {
           const { id } = data;
           if (!emitters[id]) {

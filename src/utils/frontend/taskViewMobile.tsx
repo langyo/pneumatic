@@ -14,34 +14,16 @@ import { ApplicationProviderContext, IApp } from './appProviderContext';
 export function TaskViewMobile() {
   const {
     tasks, generateTask, destoryTask,
-    setPage, setState, setWindowInfo, setActiveTask
+    propsGenerator, setActiveTask,
+    globalState: {
+      drawerState, launcherState, taskManagerState
+    }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
   const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
-  const [drawerState, setDrawerState] = useState(false);
-  const [taskManagerState, setTaskManagerState] = useState(false);
-  const [launcherState, setLauncherState] = useState(Object.keys(tasks).filter(
-    (key: string) => tasks[key].windowInfo.status !== 'active'
-  ).length === 0);
 
   const activeTaskId = Object.keys(tasks).find(
     (id: string) => tasks[id].windowInfo.status === 'active' ? id : undefined
   );
-
-  function propsGenerator(key: string, page: string, state: IState) {
-    return {
-      mediaMode: 'mobile',
-      windowInfo: tasks[key].windowInfo,
-      setWindowInfo(info: IWindowInfo) { setWindowInfo(key, info); },
-      page,
-      setPage(page: string) { setPage(key, page); },
-      state,
-      setState(state: IState) { setState(key, state); },
-      isDrawerShow: drawerState,
-      setDrawerShow(status: boolean) { setDrawerState(status); },
-      generateTask,
-      destoryTask
-    };
-  }
 
   return <div className={css`
     position: fixed;
@@ -72,7 +54,9 @@ export function TaskViewMobile() {
               background: rgba(0, 0, 0, 0.4);
             }
           `}
-            onClick={() => setDrawerState(!drawerState)}>
+            onClick={() => setGlobalState({
+              drawerState: !drawerState
+            })}>
             <Icon path={apps[tasks[activeTaskId].pkg].icon} size={1} color='rgba(255, 255, 255, 1)' />
           </div>
           <div className={css`
@@ -127,7 +111,10 @@ export function TaskViewMobile() {
             background: rgba(0, 0, 0, 0.4);
           }
         `}
-          onClick={() => (setTaskManagerState(true), setDrawerState(false))}
+          onClick={() => setGlobalState({
+            taskManagerState: true,
+            drawerState: false
+          })}
         >
           <Icon path={mdiFullscreenExit} size={1} color='rgba(255, 255, 255, 1)' />
         </div>}
@@ -166,7 +153,9 @@ export function TaskViewMobile() {
               background: rgba(0, 0, 0, 0.4);
             }
           `}
-            onClick={() => setTaskManagerState(false)}>
+            onClick={() => setGlobalState({
+              taskManagerState: false
+            })}>
             <Icon path={mdiFullscreen} size={1} color='rgba(255, 255, 255, 1)' />
           </div>
         </div>
@@ -188,7 +177,9 @@ export function TaskViewMobile() {
           z-index: 10000;
           backdrop-filter: blur(2px);
         `}
-          onClick={() => setTaskManagerState(false)}
+          onClick={() => setGlobalState({
+            taskManagerState: false
+          })}
         >
           <Scrollbars className={css`
             width: 100%;
@@ -223,9 +214,10 @@ export function TaskViewMobile() {
                 `}
                   onClick={() => (
                     setActiveTask(key),
-                    setDrawerState(false),
-                    setLauncherState(false)
-                  )}
+                    setGlobalState({
+                      drawerState: false,
+                      launcherState: false
+                    }))}
                 >
                   <div className={css`
                     position: absolute;
@@ -265,7 +257,9 @@ export function TaskViewMobile() {
                     onClick={(event: Event) => {
                       event.stopPropagation();
                       if (activeTaskId === key) {
-                        setLauncherState(true);
+                        setGlobalState({
+                          launcherState: true
+                        });
                       }
                       destoryTask(key);
                     }}
@@ -294,11 +288,11 @@ export function TaskViewMobile() {
             background: rgba(0, 0, 0, 0.4);
           }
         `}
-          onClick={() => (
-            setLauncherState(true),
-            setDrawerState(false),
-            setTaskManagerState(false)
-          )}
+          onClick={() => setGlobalState({
+            launcherState: true,
+            drawerState: false,
+            taskManagerState: false
+          })}
         >
           {'Back to the launcher'}
         </div>
@@ -360,7 +354,9 @@ export function TaskViewMobile() {
                 }
               `}
                 onClick={() => (
-                  setLauncherState(false),
+                  setGlobalState({
+                    launcherState: false
+                  }),
                   generateTask(pkg)
                 )}
               >
@@ -421,7 +417,9 @@ export function TaskViewMobile() {
           width: 40%;
           background: rgba(0, 0, 0, 0.2);
         `}
-          onClick={() => setDrawerState(false)}
+          onClick={() => setGlobalState({
+            drawerState: false
+          })}
         />
       </div>
     </Fade>

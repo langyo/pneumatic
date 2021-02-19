@@ -14,26 +14,10 @@ import { ApplicationProviderContext, IApp } from './appProviderContext';
 export function TaskViewDesktop() {
   const {
     tasks, generateTask, destoryTask,
-    setPage, setState, setWindowInfo, setActiveTask
+    propsGenerator, setWindowInfo, setActiveTask,
+    globalState: { launcherState }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
   const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
-  const [launcherState, setLauncherState] = useState(false);
-
-  function propsGenerator(key: string, page: string, state: IState) {
-    return {
-      mediaMode: 'desktop',
-      windowInfo: tasks[key].windowInfo,
-      setWindowInfo(info: IWindowInfo) { setWindowInfo(key, info); },
-      page,
-      setPage(page: string) { setPage(key, page); },
-      state,
-      setState(state: IState) { setState(key, state); },
-      isDrawerShow: false,
-      setDrawerShow(_status: boolean) { },
-      generateTask,
-      destoryTask
-    };
-  }
 
   const activeTaskId = Object.keys(tasks).find(
     (id: string) => tasks[id].windowInfo.status === 'active' ? id : undefined
@@ -252,7 +236,9 @@ export function TaskViewDesktop() {
           background: rgba(0, 0, 0, 0.4);
         }
       `}
-        onClick={() => setLauncherState(!launcherState)}
+        onClick={() => setGlobalState({
+          launcherState: !launcherState
+        })}
       >
         <Icon path={mdiMenu} size={1} color='rgba(255, 255, 255, 1)' />
       </div>
@@ -267,7 +253,9 @@ export function TaskViewDesktop() {
         background: rgba(0, 0, 0, 0.4);
         z-index: 9999;
       `}
-        onClick={() => setLauncherState(false)}
+        onClick={() => setGlobalState({
+          launcherState: false
+        })}
       />
       <div className={css`
         position: fixed;
@@ -278,7 +266,9 @@ export function TaskViewDesktop() {
         z-index: 10000;
         user-select: none;
       `}
-        onClick={() => setLauncherState(false)}
+        onClick={() => setGlobalState({
+          launcherState: false
+        })}
       >
         <div className={css`
           padding: 16px 32px;
