@@ -1,4 +1,5 @@
 import { createServer } from 'http';
+import { EventEmitter } from 'events';
 import * as Koa from 'koa';
 import * as ws from 'ws';
 import * as bodyParserMiddleware from 'koa-bodyparser';
@@ -6,7 +7,9 @@ import * as bodyParserMiddleware from 'koa-bodyparser';
 import {
   authLoginMiddleware, verifyConnection, terminateConnection
 } from './utils/backend/authVerifyMiddleware';
-import { clientSideMiddleware, serverSideMiddleware } from './webpack';
+import {
+  clientSideMiddleware, serverSideMiddleware, serverSideLongtermMiddleware
+} from './webpack';
 import { log } from './utils/backend/logger';
 
 const app = new Koa();
@@ -34,11 +37,57 @@ wss.on('connection', (ws, req) => {
 
   if (verifyConnection(token)) {
     log('info', `New Ws connection(${ip}):`, token);
+    let emitters: { [id: string]: EventEmitter } = {};
 
     ws.on('message', (msg: string) => {
-      log('info', `Ws(${ip}):`, msg);
+      try {
+        const { head, data } = JSON.parse(msg);
+        log('info', `Ws(${ip}):`, head);
+        if (head === '#init') {
+          const { id, pkg } = data;
+          if (!serverSideLongtermMiddleware[pkg]) {
+            throw Error(`Unknown package: '${pkg}'`);
+          }
+          if (emitters[id]) {
+            ws.send(JSON.stringify({
+              head: '#init', data: { status: 'fail', id }
+            }));
+            return;
+          }
+          emitters[id] = new EventEmitter();
+          emitters[id].on('send', (msg: any) => {
+            ws.send(JSON.stringify({ head: id, data: msg }));
+          });
+          serverSideLongtermMiddleware[pkg](req, emitters[id]);
+          ws.send(JSON.stringify({
+            head: '#init', data: { status: 'success', id }
+          }));
+        } else if (head === '#destory') {
+          const { id } = data;
+          if (!emitters[id]) {
+            ws.send(JSON.stringify({
+              head: '#destory', data: { status: 'fail', id }
+            }));
+            return;
+          }
+          emitters[id].emit('close');
+          ws.send(JSON.stringify({
+            head: '#destory', data: { status: 'success', id }
+          }));
+        } else {
+          if (!emitters[head]) {
+            ws.send(JSON.stringify({
+              head: '#error', data: { msg: `Unknown entity '${head}'.` }
+            }));
+          }
+          emitters[head].emit('message', data);
+        }
+      } catch (e) {
+        ws.send(JSON.stringify({
+          head: '#error', data: { msg: `${e}` }
+        }));
+      }
     });
-    ws.send('test');
 
     ws.on('close', () => {
       terminateConnection(token);

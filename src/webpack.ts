@@ -7,6 +7,7 @@ import { Union } from 'unionfs'
 import * as realFs from 'fs';
 import { Script, createContext } from 'vm';
 
+import { EventEmitter } from 'events';
 import { log } from './utils/backend/logger';
 
 const globalConfig = {
@@ -150,6 +151,9 @@ export let serverSideMiddleware = async (
 ) => {
   log('warn', 'Please wait, the service is not ready now.');
 };
+export let serverSideLongtermMiddleware: {
+  [pkg: string]: (ctx, emitter: EventEmitter) => Promise<void>
+} = {};
 
 serverPartCompiler.watch({
   ignored: ['**/node_modules/**', '**/.git/**']
@@ -196,6 +200,11 @@ serverPartCompiler.watch({
           await nextTask(0);
         };
       },
+      exportLongtermMiddleware(
+        middlewareMap: { [pkg: string]: (ctx, emitter: EventEmitter) => Promise<void> }
+      ) {
+        serverSideLongtermMiddleware = middlewareMap;
+      }, 
       console, process, require, setInterval, setTimeout
     });
     try {

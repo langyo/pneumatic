@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
+import { wsEventEmitter } from './authProviderContext';
 import { ApplicationProviderContext, IApp } from './appProviderContext';
 import { generate } from 'shortid';
 
@@ -11,6 +12,8 @@ export interface ITask {
 };
 export interface IWindowInfo {
   status: 'active' | 'notActive' | 'hidden',
+  // TODO - Support websocket connection verify.
+  // connection: 'loading' | 'access' | 'block'
   title: string,
   left: number, top: number,
   width: number, height: number,
@@ -56,6 +59,8 @@ export function TaskManager({ children }: { children?: any }) {
     generateTask(
       pkg: string, page?: string, initState?: IState
     ) {
+      const id = generate();
+      wsEventEmitter.emit('send', { head: '#init', data: { id, pkg }});
       setTasks(tasks => Object.keys(tasks).reduce((obj, id: string) => ({
         ...obj,
         [id]: {
@@ -66,7 +71,7 @@ export function TaskManager({ children }: { children?: any }) {
           }
         }
       }), {
-        [generate()]: {
+        [id]: {
           pkg,
           page: apps[pkg].defaultPage || 'default',
           state: {
@@ -98,6 +103,7 @@ export function TaskManager({ children }: { children?: any }) {
       } as ITaskInfo));
     },
     destoryTask(id: string) {
+      wsEventEmitter.emit('send', { head: '#destory', data: { id }});
       setTasks(tasks => Object.keys(tasks).filter(n => n !== id).reduce(
         (obj: { [key: string]: ITask }, key: string) => ({
           ...obj,

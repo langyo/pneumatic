@@ -7,35 +7,32 @@ import { ThemeProvider, ThemeProviderContext } from './utils/frontend/themeProvi
 import { TaskManager } from './utils/frontend/taskManagerContext';
 import { ApplicationProvider } from './utils/frontend/appProviderContext';
 import { AuthProvider, AuthProviderContext } from './utils/frontend/authProviderContext';
-import { DataProvider } from './utils/frontend/dataProviderContext';
 import { LoginView } from './utils/frontend/loginView';
 
 export default function () {
   return <>
     <style>{`html, body { margin: 0px; padding: 0px; }`}</style>
     <AuthProvider>
-      <DataProvider>
-        <ThemeProvider>
-          <ApplicationProvider>
-            <TaskManager>
-              <AuthProviderContext.Consumer>
-                {({ authToken }) => {
-                  if (authToken) {
-                    return <ThemeProviderContext.Consumer>
-                      {({ media }) => <>
-                        {media === 'mobile' && <TaskViewMobile />}
-                        {media === 'desktop' && <TaskViewDesktop />}
-                      </>}
-                    </ThemeProviderContext.Consumer>;
-                  } else {
-                    return <LoginView />
-                  }
-                }}
-              </AuthProviderContext.Consumer>
-            </TaskManager>
-          </ApplicationProvider>
-        </ThemeProvider>
-      </DataProvider>
+      <ThemeProvider>
+        <ApplicationProvider>
+          <TaskManager>
+            <AuthProviderContext.Consumer>
+              {({ authToken }) => {
+                if (authToken) {
+                  return <ThemeProviderContext.Consumer>
+                    {({ media }) => <>
+                      {media === 'mobile' && <TaskViewMobile />}
+                      {media === 'desktop' && <TaskViewDesktop />}
+                    </>}
+                  </ThemeProviderContext.Consumer>;
+                } else {
+                  return <LoginView />
+                }
+              }}
+            </AuthProviderContext.Consumer>
+          </TaskManager>
+        </ApplicationProvider>
+      </ThemeProvider>
     </AuthProvider>
   </>;
 }

@@ -1,8 +1,12 @@
+import EventEmitter from 'events';
 import React, { createContext, useState } from 'react';
 import useLocalStorage from 'react-use-localstorage';
 import axios from 'axios';
 
 import { signSaltPassword } from '../authVerifyTools';
+
+export let wsConnection: WebSocket;
+export let wsEventEmitter = new EventEmitter();
 
 export const AuthProviderContext = createContext({});
 
@@ -20,18 +24,23 @@ export function AuthProvider({ children }: { children?: any }) {
       }).then(({ data }) => {
         if (data.status === 'success') {
           setAuthToken(data.token);
-          const ws = new WebSocket(`ws://${window.location.host}/${data.token}`);
-          ws.addEventListener('open', () => {
-            console.log('Websocket connection has opened.');
-            ws.addEventListener('message', ({ data }) => {
-              console.log(data);
-            });
-            ws.addEventListener('close', () => {
-              console.log('Websocket connection has closed.');
+          wsConnection = new WebSocket(`ws://${window.location.host}/${data.token}`);
+          wsConnection.addEventListener('open', () => {
+            wsEventEmitter.on('send', (msg: any) => {
+              console.log('WebSocket send', data);
+              wsConnection.send(JSON.stringify(msg));
             })
+            wsConnection.addEventListener('message', ({ data }) => {
+              console.log('WebSocket receive', data);
+              wsEventEmitter.emit('message', data);
+            });
+            wsConnection.addEventListener('close', () => {
+              alert(`The WebSocket connection has closed.\nYou will jump to the login page later.`)
+              location.reload();
+            });
           });
-          ws.addEventListener('error', () => {
-            console.error('Websocket connection has broken.');
+          wsConnection.addEventListener('error', (e) => {
+            console.error(e);
           })
         } else {
           alert('Wrong user name or password!');
