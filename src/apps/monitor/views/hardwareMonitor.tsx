@@ -27,7 +27,7 @@ function UsageBarItem({ title, progress }) {
         font-size: 20px;
         user-select: none;
       `}>
-        {progress * 100 + '%'}
+        {`${Math.round(progress * 10000) / 100}%`}
       </p>
     </div>
     <div className={css`
@@ -45,7 +45,9 @@ function UsageBarItem({ title, progress }) {
   </div>;
 }
 
-export function HardwareMonitor({ }) {
+export function HardwareMonitor({ state }) {
+  const { freeMem, totalMem } = state;
+
   return <div className={css`
     color: rgba(255, 255, 255, 1);
   `}>
@@ -66,9 +68,10 @@ export function HardwareMonitor({ }) {
       display: flex;
       flex-wrap: wrap;
     `}>
-      <UsageBarItem title='CPU #0' progress={0.36} />
-      <UsageBarItem title='RAM #0' progress={0.67} />
-      <UsageBarItem title='RAM #1' progress={0.16} />
+      {freeMem && totalMem && <UsageBarItem
+        title='RAM (Own)'
+        progress={freeMem / totalMem}
+      />}
     </div>
   </div>;
 }
