@@ -179,9 +179,22 @@ serverPartCompiler.watch({
     });
     const context = createContext({
       exportMiddleware(
-        newMiddleware: (ctx: Koa.BaseContext, next: () => Promise<void>) => Promise<void>
+        middlewares: ((ctx: Koa.BaseContext, next: () => Promise<void>) => Promise<void>)[]
       ) {
-        serverSideMiddleware = newMiddleware;
+        serverSideMiddleware = async (
+          ctx: Koa.BaseContext, next: () => Promise<void>
+        ) => {
+          async function nextTask(pos: number) {
+            await middlewares[pos](ctx, async () => {
+              if (pos + 1 === middlewares.length) {
+                await next();
+              } else {
+                await nextTask(pos + 1);
+              }
+            });
+          }
+          await nextTask(0);
+        };
       },
       console, process, require, setInterval, setTimeout
     });

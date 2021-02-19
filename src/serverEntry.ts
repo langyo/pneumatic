@@ -3,7 +3,7 @@ import { log } from './utils/backend/logger';
 
 declare global {
   function exportMiddleware(
-    newMiddleware: (ctx: Koa.BaseContext, next: () => Promise<void>) => Promise<void>
+    middlewares: ((ctx: Koa.BaseContext, next: () => Promise<void>) => Promise<void>)[]
   ): void;
   function exportLongtermMiddleware(/* TODO */): void;
 };
@@ -18,29 +18,16 @@ import { themeRoute } from './apps/theme/routes/service';
 import { marketRoute } from './apps/market/routes/service';
 import { settingRoute } from './apps/setting/routes/service';
 
-exportMiddleware(async (ctx, next) => {
-  const arr = [
-    explorerRoute,
-    monitorRoute,
-    browserRoute,
-    databaseRoute,
-    planRoute,
-    terminalRoute,
-    themeRoute,
-    marketRoute,
-    settingRoute
-  ];
-
-  async function nextTask(pos: number) {
-    await arr[pos](ctx, async () => {
-      if (pos + 1 === arr.length) {
-        await next();
-      } else {
-        await nextTask(pos + 1);
-      }
-    });
-  }
-  await nextTask(0);
-});
+exportMiddleware([
+  explorerRoute,
+  monitorRoute,
+  browserRoute,
+  databaseRoute,
+  planRoute,
+  terminalRoute,
+  themeRoute,
+  marketRoute,
+  settingRoute
+]);
 
 log('info', 'Server is ready.');
