@@ -26,9 +26,9 @@ export function Fade({ children, on }: {
       exit: fadeOut,
       exitActive: fadeOutActive
     }}>
-      <>
+      <div>
         {children}
-      </>
+      </div>
     </CSSTransition>;
 }
 
@@ -59,8 +59,8 @@ export function Grow({ children, on }: {
       exit: growOut,
       exitActive: growOutActive
     }}>
-      <>
+      <div>
         {children}
-      </>
+      </div>
     </CSSTransition>;
 }
