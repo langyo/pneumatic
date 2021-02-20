@@ -92,6 +92,13 @@ export function TaskManager({ children }: { children?: any }) {
   } as IGlobalState);
 
   useEffect(() => {
+    _setGlobalState(state => ({
+      ...state,
+      launcherState: media === 'mobile'
+    }));
+  }, [media]);
+
+  useEffect(() => {
     wsEventEmitter.on('message', (msg: string) => {
       try {
         const { head, data } = JSON.parse(msg);
