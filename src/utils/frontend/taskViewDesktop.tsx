@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import Draggable, { DraggableData } from 'react-draggable';
 import { css, cx } from '@emotion/css';
 import Icon from '@mdi/react';
@@ -15,7 +15,7 @@ export function TaskViewDesktop() {
   const {
     tasks, generateTask, destoryTask,
     propsGenerator, setWindowInfo, setActiveTask,
-    globalState: { launcherState }, setGlobalState
+    globalState: { launcherState, taskManagerPosition }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
   const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
 
@@ -170,13 +170,15 @@ export function TaskViewDesktop() {
     <div className={css`
       position: fixed;
       top: 10%;
-      left: 0px;
+      ${taskManagerPosition.direction === 'left' ?
+        'left: 0px;' : 'right: 0px;'}
       height: calc(80% - 8px);
       width: 48px;
       padding: 4px;
       z-index: 9000;
       background: rgba(0, 0, 0, 0.2);
-      border-radius: 0px 4px 4px 0px;
+      border-radius: ${taskManagerPosition.direction === 'left' ?
+        '0px 4px 4px 0px' : '4px 0px 0px 4px'};
       backdrop-filter: blur(2px);
       display: flex;
       flex-direction: column;

@@ -16,11 +16,14 @@ export interface ITask {
 export interface IGlobalState {
   drawerState: boolean,
   launcherState: boolean,
-  taskManagerState: boolean
+  taskManagerState: boolean,
+  taskManagerPosition: {
+    direction: 'left' | 'right',
+    top: number,      // It is invalid on desktop.
+    lastTop: number   // It is invalid on desktop.
+  }
 }
-export type ISetGlobalState = (state: {
-  drawerState?: boolean, launcherState?: boolean, taskManagerState?: boolean
-}) => void;
+export type ISetGlobalState = (state: Partial<IGlobalState>) => void;
 
 export interface IWindowInfo {
   status: 'active' | 'notActive' | 'hidden',
@@ -88,6 +91,11 @@ export function TaskManager({ children }: { children?: any }) {
   ] = useState({
     drawerState: false,
     taskManagerState: false,
+    taskManagerPosition: {
+      direction: media === 'desktop' ? 'left' : 'right',
+      top: 50,
+      lastTop: 50
+    },
     launcherState: media === 'mobile'
   } as IGlobalState);
 

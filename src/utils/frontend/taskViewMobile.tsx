@@ -1,4 +1,5 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
+import Draggable, { DraggableData } from 'react-draggable';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
 import { mdiClose, mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
@@ -16,7 +17,7 @@ export function TaskViewMobile() {
     tasks, generateTask, destoryTask,
     propsGenerator, setActiveTask,
     globalState: {
-      drawerState, launcherState, taskManagerState
+      drawerState, launcherState, taskManagerState, taskManagerPosition
     }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
   const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
@@ -97,27 +98,49 @@ export function TaskViewMobile() {
         </div>
       </Fade>
       <Fade on={!taskManagerState && Object.keys(tasks).length > 0}>
-        {Object.keys(tasks).length > 0 && <div className={css`
-          position: absolute;
-          top: 0px;
-          right: 4px;
-          margin: 4px;
-          padding: 8px;
-          border-radius: 4px;
-          &:hover {
+        <Draggable
+          position={{
+            x: taskManagerPosition.direction === 'left' ? 4 : window.innerWidth - 48,
+            y: taskManagerPosition.top
+          }}
+          onStop={(_e: Event, state: DraggableData) => {
+            if (
+              Math.abs(state.y - taskManagerPosition.top) > 10 ||
+              state.x < window.innerWidth / 2 && state.x > 4 + 10 ||
+              state.x >= window.innerWidth / 2 && state.x < window.innerWidth - 48 - 10
+            ) {
+              setGlobalState({
+                taskManagerPosition: {
+                  direction: state.x < window.innerWidth / 2 ? 'left' : 'right',
+                  top: state.y,
+                  lastTop: taskManagerPosition.top
+                }
+              });
+            } else {
+              setGlobalState({
+                taskManagerState: true,
+                drawerState: false
+              });
+            }
+          }}>
+          <div className={css`
+            position: fixed;
+            margin: 4px;
+            padding: 8px;
+            border-radius: 4px;
+            z-index: 10000;
             background: rgba(0, 0, 0, 0.2);
-          }
-          &:active {
-            background: rgba(0, 0, 0, 0.4);
-          }
-        `}
-          onClick={() => setGlobalState({
-            taskManagerState: true,
-            drawerState: false
-          })}
-        >
-          <Icon path={mdiFullscreenExit} size={1} color='rgba(255, 255, 255, 1)' />
-        </div>}
+            &:hover {
+              background: rgba(0, 0, 0, 0.4);
+            }
+            &:active {
+              background: rgba(0, 0, 0, 0.8);
+            }
+          `}
+          >
+            <Icon path={mdiFullscreenExit} size={1} color='rgba(255, 255, 255, 1)' />
+          </div>
+        </Draggable>
       </Fade>
       <Fade on={taskManagerState}>
         <div className={css`
