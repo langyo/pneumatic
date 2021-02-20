@@ -21,10 +21,8 @@ export function TaskViewMobile() {
     }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
   const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
-
-  const activeTaskId = Object.keys(tasks).find(
-    (id: string) => tasks[id].windowInfo.status === 'active' ? id : undefined
-  );
+  console.log('launcherState', launcherState)
+  console.log('taskManagerState', taskManagerState)
 
   return <div className={css`
     position: fixed;
@@ -32,22 +30,221 @@ export function TaskViewMobile() {
     width: 100%;
     user-select: none;
   `}>
-    <div className={css`
-      position: absolute;
-      top: 0px;
-      height: 48px;
-      width: 100%;
-      background: rgba(0, 0, 0, 0.2);
-    `}>
-      <Fade on={!launcherState}>
-        {activeTaskId && <>
+    <Fade on={!taskManagerState && Object.keys(tasks).length > 0}>
+      <Draggable
+        position={{
+          x: taskManagerPosition.direction === 'left' ? 4 : window.innerWidth - 48,
+          y: taskManagerPosition.top
+        }}
+        onStop={(_e: Event, state: DraggableData) => {
+          if (
+            Math.abs(state.y - taskManagerPosition.top) > 10 ||
+            state.x < window.innerWidth / 2 && state.x > 4 + 10 ||
+            state.x >= window.innerWidth / 2 && state.x < window.innerWidth - 48 - 10
+          ) {
+            setGlobalState({
+              taskManagerPosition: {
+                direction: state.x < window.innerWidth / 2 ? 'left' : 'right',
+                top: state.y
+              }
+            });
+          } else {
+            setGlobalState({
+              taskManagerState: true,
+              drawerState: false
+            });
+          }
+        }}>
+        <div className={css`
+          position: fixed;
+          margin: 4px;
+          padding: 8px;
+          border-radius: 4px;
+          z-index: 10000;
+          background: rgba(0, 0, 0, 0.2);
+          &:hover {
+            background: rgba(0, 0, 0, 0.4);
+          }
+          &:active {
+            background: rgba(0, 0, 0, 0.8);
+          }
+        `}
+        >
+          <Icon path={mdiFullscreenExit} size={1} color='rgba(255, 255, 255, 1)' />
+        </div>
+      </Draggable>
+    </Fade>
+
+    <Fade on={taskManagerState}>
+      <div className={css`
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        z-index: 10000;
+      `}>
+        <div className={css`
+          position: absolute;
+          top: 0px;
+          height: 48px;
+          width: 100%;
+          backdrop-filter: blur(2px);
+        `}>
           <div className={css`
             position: absolute;
-            top: 0px;
-            left: 4px;
-            margin: 4px;
-            padding: 8px;
-            border-radius: 4px;
+            height: 100%;
+            width: 100%;
+          `}>
+            <div className={css`
+              position: absolute;
+              top: 0px;
+              left: 20px;
+              height: 48px;
+              line-height: 48px;
+              font-size: 24px;
+              color: rgba(255, 255, 255, 1);
+              user-select: none;
+            `}>
+              {'Task Manager'}
+            </div>
+            <div className={css`
+              position: absolute;
+              top: 0px;
+              right: 4px;
+              margin: 4px;
+              padding: 8px;
+              border-radius: 4px;
+              &:hover {
+                background: rgba(0, 0, 0, 0.2);
+              }
+              &:active {
+                background: rgba(0, 0, 0, 0.4);
+              }
+            `}
+              onClick={() => setGlobalState({
+                taskManagerState: false
+              })}>
+              <Icon path={mdiFullscreen} size={1} color='rgba(255, 255, 255, 1)' />
+            </div>
+          </div>
+        </div>
+        <div className={css`
+          position: absolute;
+          top: 50px;
+          height: calc(100% - 50px);
+          width: 100%;
+          backdrop-filter: blur(2px);
+        `}>
+          <div className={css`
+            position: absolute;
+            width: 100%;
+            height: calc(100% - 50px);
+            z-index: 10000;
+            backdrop-filter: blur(2px);
+          `}
+            onClick={() => setGlobalState({
+              taskManagerState: false
+            })}
+          >
+            <Scrollbars className={css`
+              width: 100%;
+              height: calc(100% - 50px);
+            `}>
+              <div className={css`
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-context: flex-start;
+                align-items: center;
+              `}
+              >
+                {Object.keys(tasks).sort(
+                  (left, right) =>
+                    tasks[left].windowInfo.taskManagerOrder -
+                    tasks[right].windowInfo.taskManagerOrder
+                ).map((key: string) => {
+                  const pkg = tasks[key].pkg;
+                  const { title }: IWindowInfo = tasks[key].windowInfo;
+
+                  return <div className={css`
+                    margin-top: 4px;
+                    height: 48px;
+                    width: calc(90% - 12px);
+                    border-left: 12px solid ${tasks[key].windowInfo.status === 'active' ?
+                      'rgba(0, 0, 0, 0.6)' :
+                      'rgba(0, 0, 0, 0.2)'};
+                    border-radius: 4px;
+                    background: rgba(0, 0, 0, 0.2);
+                    position: relative;
+                  `}
+                    onClick={() => (
+                      setActiveTask(key),
+                      setGlobalState({
+                        drawerState: false,
+                        launcherState: false
+                      }))}
+                  >
+                    <div className={css`
+                      position: absolute;
+                      top: 0px;
+                      left: 16px;
+                      height: ${title ? 28 : 48}px;
+                      line-height: ${title ? 28 : 48}px;
+                      font-size: ${title ? 16 : 24}px;
+                      color: rgba(255, 255, 255, 1);
+                    `}>
+                      {apps[pkg].name}
+                    </div>
+                    {title && <div className={css`
+                      position: absolute;
+                      bottom: 4px;
+                      left: 16px;
+                      height: 16px;
+                      line-height: 16px;
+                      font-size: 12px;
+                      color: rgba(255, 255, 255, 1);
+                    `}>
+                      {title}
+                    </div>}
+                    <div className={css`
+                      position: absolute;
+                      top: 8px;
+                      right: 4px;
+                      margin: 4px;
+                      border-radius: 4px;
+                      &:hover {
+                        background: rgba(0, 0, 0, 0.2);
+                      }
+                      &:active {
+                        background: rgba(0, 0, 0, 0.4);
+                      }
+                    `}
+                      onClick={(event: Event) => {
+                        event.stopPropagation();
+                        if (tasks[key].windowInfo.status === 'active') {
+                          setGlobalState({
+                            launcherState: true
+                          });
+                        }
+                        destoryTask(key);
+                      }}
+                    >
+                      <Icon path={mdiClose} size={1} color='rgba(255, 255, 255, 1)' />
+                    </div>
+                  </div>;
+                })}
+              </div>
+            </Scrollbars>
+          </div>
+          <div className={css`
+            position: absolute;
+            height: 48px;
+            width: 100%;
+            bottom: 0px;
+            text-align: center;
+            font-size: 24px;
+            color: rgba(255, 255, 255, 1);
+            line-height: 48px;
+            z-index: 10000;
             &:hover {
               background: rgba(0, 0, 0, 0.2);
             }
@@ -56,35 +253,25 @@ export function TaskViewMobile() {
             }
           `}
             onClick={() => setGlobalState({
-              drawerState: !drawerState
-            })}>
-            <Icon path={apps[tasks[activeTaskId].pkg].icon} size={1} color='rgba(255, 255, 255, 1)' />
+              launcherState: true,
+              drawerState: false,
+              taskManagerState: false
+            })}
+          >
+            {'Back to the launcher'}
           </div>
-          <div className={css`
-            position: absolute;
-            top: 0px;
-            left: 52px;
-            height: ${tasks[activeTaskId].windowInfo.title !== '' ? 28 : 48}px;
-            line-height: ${tasks[activeTaskId].windowInfo.title !== '' ? 28 : 48}px;
-            font-size: ${tasks[activeTaskId].windowInfo.title !== '' ? 16 : 24}px;
-            color: rgba(255, 255, 255, 1);
-          `}>
-            {apps[tasks[activeTaskId].pkg].name}
-          </div>
-          {tasks[activeTaskId].windowInfo.title && <div className={css`
-            position: absolute;
-            bottom: 4px;
-            left: 52px;
-            height: 16px;
-            line-height: 16px;
-            font-size: 12px;
-            color: rgba(255, 255, 255, 1);
-          `}>
-            {tasks[activeTaskId].windowInfo.title}
-          </div>}
-        </>}
-      </Fade>
-      <Fade on={launcherState}>
+        </div>
+      </div>
+    </Fade>
+
+    <Fade on={launcherState}>
+      <div className={css`
+        position: absolute;
+        top: 0px;
+        height: 48px;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.2);
+      `}>
         <div className={css`
           position: absolute;
           top: 0px;
@@ -96,253 +283,14 @@ export function TaskViewMobile() {
         `}>
           {'Launcher'}
         </div>
-      </Fade>
-      <Fade on={!taskManagerState && Object.keys(tasks).length > 0}>
-        <Draggable
-          position={{
-            x: taskManagerPosition.direction === 'left' ? 4 : window.innerWidth - 48,
-            y: taskManagerPosition.top
-          }}
-          onStop={(_e: Event, state: DraggableData) => {
-            if (
-              Math.abs(state.y - taskManagerPosition.top) > 10 ||
-              state.x < window.innerWidth / 2 && state.x > 4 + 10 ||
-              state.x >= window.innerWidth / 2 && state.x < window.innerWidth - 48 - 10
-            ) {
-              setGlobalState({
-                taskManagerPosition: {
-                  direction: state.x < window.innerWidth / 2 ? 'left' : 'right',
-                  top: state.y,
-                  lastTop: taskManagerPosition.top
-                }
-              });
-            } else {
-              setGlobalState({
-                taskManagerState: true,
-                drawerState: false
-              });
-            }
-          }}>
-          <div className={css`
-            position: fixed;
-            margin: 4px;
-            padding: 8px;
-            border-radius: 4px;
-            z-index: 10000;
-            background: rgba(0, 0, 0, 0.2);
-            &:hover {
-              background: rgba(0, 0, 0, 0.4);
-            }
-            &:active {
-              background: rgba(0, 0, 0, 0.8);
-            }
-          `}
-          >
-            <Icon path={mdiFullscreenExit} size={1} color='rgba(255, 255, 255, 1)' />
-          </div>
-        </Draggable>
-      </Fade>
-      <Fade on={taskManagerState}>
-        <div className={css`
-          position: absolute;
-          height: 100%;
-          width: 100%;
-          z-index: 10000;
-          backdrop-filter: blur(2px);
-        `}>
-          <div className={css`
-            position: absolute;
-            top: 0px;
-            left: 20px;
-            height: 48px;
-            line-height: 48px;
-            font-size: 24px;
-            color: rgba(255, 255, 255, 1);
-            user-select: none;
-          `}>
-            {'Task Manager'}
-          </div>
-          <div className={css`
-            position: absolute;
-            top: 0px;
-            right: 4px;
-            margin: 4px;
-            padding: 8px;
-            border-radius: 4px;
-            &:hover {
-              background: rgba(0, 0, 0, 0.2);
-            }
-            &:active {
-              background: rgba(0, 0, 0, 0.4);
-            }
-          `}
-            onClick={() => setGlobalState({
-              taskManagerState: false
-            })}>
-            <Icon path={mdiFullscreen} size={1} color='rgba(255, 255, 255, 1)' />
-          </div>
-        </div>
-      </Fade>
-    </div>
-
-    <div className={css`
-      position: absolute;
-      top: 50px;
-      height: calc(100% - 50px);
-      width: 100%;
-      background: rgba(0, 0, 0, 0.2);
-    `}>
-      <Fade on={taskManagerState}>
-        <div className={css`
-          position: absolute;
-          width: 100%;
-          height: calc(100% - 50px);
-          z-index: 10000;
-          backdrop-filter: blur(2px);
-        `}
-          onClick={() => setGlobalState({
-            taskManagerState: false
-          })}
-        >
-          <Scrollbars className={css`
-            width: 100%;
-            height: calc(100% - 50px);
-          `}>
-            <div className={css`
-              width: 100%;
-              display: flex;
-              flex-direction: column;
-              justify-context: flex-start;
-              align-items: center;
-            `}
-            >
-              {Object.keys(tasks).sort(
-                (left, right) =>
-                  tasks[left].windowInfo.taskManagerOrder -
-                  tasks[right].windowInfo.taskManagerOrder
-              ).map((key: string) => {
-                const pkg = tasks[key].pkg;
-                const { title }: IWindowInfo = tasks[key].windowInfo;
-
-                return <div className={css`
-                  margin-top: 4px;
-                  height: 48px;
-                  width: calc(90% - 12px);
-                  border-left: 12px solid ${activeTaskId === key ?
-                    'rgba(0, 0, 0, 0.6)' :
-                    'rgba(0, 0, 0, 0.2)'};
-                  border-radius: 4px;
-                  background: rgba(0, 0, 0, 0.2);
-                  position: relative;
-                `}
-                  onClick={() => (
-                    setActiveTask(key),
-                    setGlobalState({
-                      drawerState: false,
-                      launcherState: false
-                    }))}
-                >
-                  <div className={css`
-                    position: absolute;
-                    top: 0px;
-                    left: 16px;
-                    height: ${title ? 28 : 48}px;
-                    line-height: ${title ? 28 : 48}px;
-                    font-size: ${title ? 16 : 24}px;
-                    color: rgba(255, 255, 255, 1);
-                  `}>
-                    {apps[pkg].name}
-                  </div>
-                  {title && <div className={css`
-                    position: absolute;
-                    bottom: 4px;
-                    left: 16px;
-                    height: 16px;
-                    line-height: 16px;
-                    font-size: 12px;
-                    color: rgba(255, 255, 255, 1);
-                  `}>
-                    {title}
-                  </div>}
-                  <div className={css`
-                    position: absolute;
-                    top: 8px;
-                    right: 4px;
-                    margin: 4px;
-                    border-radius: 4px;
-                    &:hover {
-                      background: rgba(0, 0, 0, 0.2);
-                    }
-                    &:active {
-                      background: rgba(0, 0, 0, 0.4);
-                    }
-                  `}
-                    onClick={(event: Event) => {
-                      event.stopPropagation();
-                      if (activeTaskId === key) {
-                        setGlobalState({
-                          launcherState: true
-                        });
-                      }
-                      destoryTask(key);
-                    }}
-                  >
-                    <Icon path={mdiClose} size={1} color='rgba(255, 255, 255, 1)' />
-                  </div>
-                </div>;
-              })}
-            </div>
-          </Scrollbars>
-        </div>
-        <div className={css`
-          position: absolute;
-          height: 48px;
-          width: 100%;
-          bottom: 0px;
-          text-align: center;
-          font-size: 24px;
-          color: rgba(255, 255, 255, 1);
-          line-height: 48px;
-          z-index: 10000;
-          &:hover {
-            background: rgba(0, 0, 0, 0.2);
-          }
-          &:active {
-            background: rgba(0, 0, 0, 0.4);
-          }
-        `}
-          onClick={() => setGlobalState({
-            launcherState: true,
-            drawerState: false,
-            taskManagerState: false
-          })}
-        >
-          {'Back to the launcher'}
-        </div>
-      </Fade>
-
-
-      {Object.keys(tasks).map((key) => {
-        const {
-          pkg, page, state,
-          windowInfo: {
-            status
-          }
-        } = tasks[key];
-
-        return <Fade on={!launcherState && status === 'active'}>
-          <Scrollbars className={css`
-            width: 100%;
-            height: 100%;
-          `}>
-            {apps[pkg].contentComponent[page] ?
-              apps[pkg].contentComponent[page](propsGenerator(key, page, state)) :
-              apps[pkg].contentComponent.default(propsGenerator(key, page, state))}
-          </Scrollbars>
-        </Fade>;
-      })}
-
-      <Fade on={launcherState}>
+      </div>
+      <div className={css`
+        position: absolute;
+        top: 50px;
+        height: calc(100% - 50px);
+        width: 100%;
+        background: rgba(0, 0, 0, 0.2);
+      `}>
         <Scrollbars className={css`
           width: 100%;
           height: 100%;
@@ -395,56 +343,124 @@ export function TaskViewMobile() {
             })}
           </div>
         </Scrollbars>
-      </Fade>
-    </div>
-
-    <Fade on={drawerState}>
-      <div className={css`
-        position: absolute;
-        top: 50px;
-        height: 100%;
-        width: 100%;
-        z-index: 5000;
-        backdrop-filter: blur(2px);
-      `}>
-        <div className={css`
-          position: absolute;
-          left: 0px;
-          top: 0px;
-          height: 100%;
-          width: 60%;
-          background: rgba(0, 0, 0, 0.4);
-          border-radius: 0px 4px 4px 0px;
-        `}>
-          {activeTaskId && (
-            apps[tasks[activeTaskId].pkg]
-              .drawerComponent[tasks[activeTaskId].page] ?
-              apps[tasks[activeTaskId].pkg]
-                .drawerComponent[tasks[activeTaskId].page](propsGenerator(
-                  activeTaskId,
-                  tasks[activeTaskId].page,
-                  tasks[activeTaskId].state
-                )) :
-              apps[tasks[activeTaskId].pkg]
-                .drawerComponent.default(propsGenerator(
-                  activeTaskId,
-                  tasks[activeTaskId].page,
-                  tasks[activeTaskId].state
-                )))}
-        </div>
-        <div className={css`
-          position: absolute;
-          right: 0px;
-          top: 0px;
-          height: 100%;
-          width: 40%;
-          background: rgba(0, 0, 0, 0.2);
-        `}
-          onClick={() => setGlobalState({
-            drawerState: false
-          })}
-        />
       </div>
     </Fade>
-  </div >;
+
+    {Object.keys(tasks).map((key) => {
+      const {
+        pkg, page, state,
+        windowInfo: {
+          status, title
+        }
+      } = tasks[key];
+
+      return <>
+        <Fade on={!launcherState && status === 'active'}>
+          <div className={css`
+            position: absolute;
+            top: 0px;
+            height: 48px;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+          `}>
+            <div className={css`
+              position: absolute;
+              top: 0px;
+              left: 4px;
+              margin: 4px;
+              padding: 8px;
+              border-radius: 4px;
+              &:hover {
+                background: rgba(0, 0, 0, 0.2);
+              }
+              &:active {
+                background: rgba(0, 0, 0, 0.4);
+              }
+            `}
+              onClick={() => setGlobalState({
+                drawerState: !drawerState
+              })}>
+              <Icon path={apps[pkg].icon} size={1} color='rgba(255, 255, 255, 1)' />
+            </div>
+            <div className={css`
+              position: absolute;
+              top: 0px;
+              left: 52px;
+              height: ${title !== '' ? 28 : 48}px;
+              line-height: ${title !== '' ? 28 : 48}px;
+              font-size: ${title !== '' ? 16 : 24}px;
+              color: rgba(255, 255, 255, 1);
+            `}>
+              {apps[pkg].name}
+            </div>
+            {title && <div className={css`
+              position: absolute;
+              bottom: 4px;
+              left: 52px;
+              height: 16px;
+              line-height: 16px;
+              font-size: 12px;
+              color: rgba(255, 255, 255, 1);
+            `}>
+              {title}
+            </div>}
+          </div>
+
+          <div className={css`
+            position: absolute;
+            top: 50px;
+            height: calc(100% - 50px);
+            width: 100%;
+            background: rgba(0, 0, 0, 0.2);
+          `}>
+            <Scrollbars className={css`
+              width: 100%;
+              height: 100%;
+            `}>
+              {apps[pkg].contentComponent[page] ?
+                apps[pkg].contentComponent[page](propsGenerator(key, page, state)) :
+                apps[pkg].contentComponent.default(propsGenerator(key, page, state))}
+            </Scrollbars>
+          </div>
+        </Fade>
+
+        <Fade on={drawerState}>
+          <div className={css`
+            position: absolute;
+            top: 50px;
+            height: 100%;
+            width: 100%;
+            z-index: 5000;
+            backdrop-filter: blur(2px);
+          `}>
+            <div className={css`
+              position: absolute;
+              left: 0px;
+              top: 0px;
+              height: 100%;
+              width: 60%;
+              background: rgba(0, 0, 0, 0.4);
+              border-radius: 0px 4px 4px 0px;
+            `}>
+              {apps[pkg].drawerComponent[page] ?
+                apps[pkg].drawerComponent[page](propsGenerator(key, page, state)) :
+                apps[pkg].drawerComponent.default(propsGenerator(key, page, state))}
+            </div>
+            <div className={css`
+              position: absolute;
+              right: 0px;
+              top: 0px;
+              height: 100%;
+              width: 40%;
+              background: rgba(0, 0, 0, 0.2);
+            `}
+              onClick={() => setGlobalState({
+                drawerState: false
+              })}
+            />
+          </div>
+        </Fade>
+      </>;
+    })}
+  </div>;
 }

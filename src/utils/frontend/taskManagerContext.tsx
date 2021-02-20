@@ -20,7 +20,6 @@ export interface IGlobalState {
   taskManagerPosition: {
     direction: 'left' | 'right',
     top: number,      // It is invalid on desktop.
-    lastTop: number   // It is invalid on desktop.
   }
 }
 export type ISetGlobalState = (state: Partial<IGlobalState>) => void;
@@ -102,7 +101,11 @@ export function TaskManager({ children }: { children?: any }) {
   useEffect(() => {
     _setGlobalState(state => ({
       ...state,
-      launcherState: media === 'mobile'
+      launcherState: media === 'mobile',
+      taskManagerPosition: {
+        direction: media === 'desktop' ? 'left' : 'right',
+        top: state.taskManagerPosition.top
+      }
     }));
   }, [media]);
 
