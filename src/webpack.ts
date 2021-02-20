@@ -78,7 +78,7 @@ clientSideCompiler.watch({
   ignored: ['**/node_modules/**', '**/.git/**']
 }, (err: Error, status) => {
   if (err) {
-    throw err;
+    console.error(err);
   } else if (status.hasErrors()) {
     const info = status.toJson();
     let errStr = '';
@@ -92,7 +92,7 @@ clientSideCompiler.watch({
         errStr += e.message + '\n';
       }
     }
-    throw Error(errStr);
+    console.error(Error(errStr));
   } else {
     log('info', 'Compiled the client part.');
   }
@@ -159,7 +159,7 @@ serverPartCompiler.watch({
   ignored: ['**/node_modules/**', '**/.git/**']
 }, (err: Error, status) => {
   if (err) {
-    throw err;
+    console.error(err);
   } else if (status.hasErrors()) {
     const info = status.toJson();
     let errStr = '';
@@ -173,7 +173,7 @@ serverPartCompiler.watch({
         errStr += e.message + '\n';
       }
     }
-    throw Error(errStr);
+    console.error(Error(errStr));
   } else {
     log('info', 'Compiled the service part.');
 
@@ -204,7 +204,7 @@ serverPartCompiler.watch({
         middlewareMap: { [pkg: string]: (ctx, emitter: EventEmitter) => Promise<void> }
       ) {
         serverSideLongtermMiddleware = middlewareMap;
-      }, 
+      },
       console, process, require, setInterval, setTimeout, clearInterval, clearTimeout
     });
     try {
