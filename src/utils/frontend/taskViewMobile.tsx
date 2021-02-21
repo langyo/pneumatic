@@ -70,7 +70,7 @@ export function TaskViewMobile() {
           }
         `}
         >
-          <Icon path={mdiFullscreenExit} size={1} color='rgba(255, 255, 255, 1)' />
+          <Icon path={mdiFullscreen} size={1} color='rgba(255, 255, 255, 1)' />
         </div>
       </Draggable>
     </Fade>
@@ -123,7 +123,7 @@ export function TaskViewMobile() {
               onClick={() => setGlobalState({
                 taskManagerState: false
               })}>
-              <Icon path={mdiFullscreen} size={1} color='rgba(255, 255, 255, 1)' />
+              <Icon path={mdiFullscreenExit} size={1} color='rgba(255, 255, 255, 1)' />
             </div>
           </div>
         </div>
