@@ -5,32 +5,12 @@ import {
   mdiConsole, mdiPaletteOutline, mdiApps, mdiCogOutline
 } from '@mdi/js';
 
-import { ExplorerContent } from '../../apps/explorer/views/content';
-import { ExplorerDrawer } from '../../apps/explorer/views/drawer';
-import { MonitorContentMap } from '../../apps/monitor/views/content';
-import { MonitorDrawer } from '../../apps/monitor/views/drawer';
-import { BrowserContent } from '../../apps/browser/views/content';
-import { BrowserDrawer } from '../../apps/browser/views/drawer';
-import { DatabaseContent } from '../../apps/database/views/content';
-import { DatabaseDrawer } from '../../apps/database/views/drawer';
-import { PlanContent } from '../../apps/plan/views/content';
-import { PlanDrawer } from '../../apps/plan/views/drawer';
-import { TerminalContent } from '../../apps/terminal/views/content';
-import { TerminalDrawer } from '../../apps/terminal/views/drawer';
-import { ThemeContent } from '../../apps/theme/views/content';
-import { ThemeDrawer } from '../../apps/theme/views/drawer';
-import { MarketContent } from '../../apps/market/views/content';
-import { MarketDrawer } from '../../apps/market/views/drawer';
-import { SettingContent } from '../../apps/setting/views/content';
-import { SettingDrawer } from '../../apps/setting/views/drawer';
-
-import { IState, ITaskInfo } from './taskManagerContext';
+import { IState, ITaskInfo, IWindowInfo } from './taskManagerContext';
 
 export interface IApp {
   icon: string,   // SVG path.
   name: string,
-  contentComponent: { [key: string]: (props: any) => React.Component },
-  drawerComponent: { [key: string]: (props: any) => React.Component },
+  path: string,
   defaultPage?: string,
   defaultState?: { [key: string]: string }
   defaultWindowInfo?: {
@@ -45,54 +25,45 @@ export interface IApp {
 export const defaultApp: { [pkg: string]: IApp } = {
   'pneumatic.explorer': {
     icon: mdiFolderOutline, name: 'Explorer',
-    contentComponent: { default: ExplorerContent },
-    drawerComponent: { default: ExplorerDrawer },
+    path: 'explorer/frontend',
     defaultState: { path: '/' },
     defaultWindowInfo: { title: (_page, { path }) => path }
   },
   'pneumatic.monitor': {
     icon: mdiMemory, name: 'Monitor',
-    contentComponent: MonitorContentMap,
-    drawerComponent: { default: MonitorDrawer },
+    path: 'monitor/frontend',
     defaultPage: 'hardware',
     defaultWindowInfo: { title: (_page, _data) => 'Hardware' }
   },
   'pneumatic.browser': {
     icon: mdiWeb, name: 'Proxy browser',
-    contentComponent: { default: BrowserContent },
-    drawerComponent: { default: BrowserDrawer },
+    path: 'browser/frontend',
     defaultState: { url: 'https://github.com/' },
     defaultWindowInfo: { title: (_page, { url }) => /^https?:\/\/([^\/]+)\/.*/.exec(url)[1] }
   },
   'pneumatic.database': {
     icon: mdiDatabase, name: 'Database manager',
-    contentComponent: { default: DatabaseContent },
-    drawerComponent: { default: DatabaseDrawer }
+    path: 'databse/frontend'
   },
   'pneumatic.plan': {
     icon: mdiFormatListChecks, name: 'Plan tasks',
-    contentComponent: { default: PlanContent },
-    drawerComponent: { default: PlanDrawer }
+    path: 'plan/frontend'
   },
   'pneumatic.terminal': {
     icon: mdiConsole, name: 'Terminal',
-    contentComponent: { default: TerminalContent },
-    drawerComponent: { default: TerminalDrawer }
+    path: 'terminal/frontend'
   },
   'pneumatic.theme': {
     icon: mdiPaletteOutline, name: 'Theme setting',
-    contentComponent: { default: ThemeContent },
-    drawerComponent: { default: ThemeDrawer }
+    path: 'theme/frontend'
   },
   'pneumatic.market': {
     icon: mdiApps, name: 'Application market',
-    contentComponent: { default: MarketContent },
-    drawerComponent: { default: MarketDrawer }
+    path: 'market/frontend'
   },
   'pneumatic.setting': {
     icon: mdiCogOutline, name: 'Setting',
-    contentComponent: { default: SettingContent },
-    drawerComponent: { default: SettingDrawer }
+    path: 'setting/frontend'
   },
 };
 
@@ -100,6 +71,7 @@ export const ApplicationProviderContext = createContext({});
 
 export function ApplicationProvider({ children }: { children?: any }) {
   const [apps, setApps] = useState(defaultApp);
+  // TODO - Use code split and lazy load by webpack.
 
   return <ApplicationProviderContext.Provider value={{
     apps,

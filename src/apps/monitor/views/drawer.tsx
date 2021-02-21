@@ -15,7 +15,7 @@ const tagMap = [
 
 import { ToolbarItem } from '../../../utils/frontend/components/toolbarItem';
 
-export function MonitorDrawer({ setPage, setWindowInfo }) {
+export function Drawer({ setPage, setWindowInfo }) {
   return <div className={css`
     margin: 0px;
     padding-top: 8px;

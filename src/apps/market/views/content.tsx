@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { css } from '@emotion/css';
 
-export function MarketContent({ }) {
+export function Content({ }) {
   return <div className={css`
     color: rgba(255, 255, 255, 1);
   `}>

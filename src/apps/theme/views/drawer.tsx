@@ -6,7 +6,7 @@ import {
 
 import { ToolbarItem } from '../../../utils/frontend/components/toolbarItem';
 
-export function ThemeDrawer({ }) {
+export function Drawer({ }) {
   return <div className={css`
     margin: 0px;
     padding-top: 8px;

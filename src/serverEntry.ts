@@ -11,15 +11,15 @@ declare global {
   ): void;
 };
 
-import { explorerRoute, explorerSocket } from './apps/explorer/routes/service';
-import { monitorRoute, monitorSocket } from './apps/monitor/routes/service';
-import { browserRoute, browserSocket } from './apps/browser/routes/service';
-import { databaseRoute, databaseSocket } from './apps/database/routes/service';
-import { planRoute, planSocket } from './apps/plan/routes/service';
-import { terminalRoute, terminalSocket } from './apps/terminal/routes/service';
-import { themeRoute, themeSocket } from './apps/theme/routes/service';
-import { marketRoute, marketSocket } from './apps/market/routes/service';
-import { settingRoute, settingSocket } from './apps/setting/routes/service';
+import { explorerRoute, explorerSocket } from './apps/explorer/backend';
+import { monitorRoute, monitorSocket } from './apps/monitor/backend';
+import { browserRoute, browserSocket } from './apps/browser/backend';
+import { databaseRoute, databaseSocket } from './apps/database/backend';
+import { planRoute, planSocket } from './apps/plan/backend';
+import { terminalRoute, terminalSocket } from './apps/terminal/backend';
+import { themeRoute, themeSocket } from './apps/theme/backend';
+import { marketRoute, marketSocket } from './apps/market/backend';
+import { settingRoute, settingSocket } from './apps/setting/backend';
 
 exportMiddleware([
   explorerRoute,

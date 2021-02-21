@@ -40,7 +40,7 @@ function ContentItem({ iconPath, title }) {
   </div>;
 }
 
-export function ExplorerContent({ }) {
+export function Content({ }) {
   return <div className={css`
     color: rgba(255, 255, 255, 1);
   `}>
