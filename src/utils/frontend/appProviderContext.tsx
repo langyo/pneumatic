@@ -14,11 +14,9 @@ export interface IApp {
   defaultPage?: string,
   defaultState?: { [key: string]: string }
   defaultWindowInfo?: {
-    top?: (page: string, state: IState, tasks: ITaskInfo) => number,
-    left?: (page: string, state: IState, tasks: ITaskInfo) => number,
-    width?: (page: string, state: IState, tasks: ITaskInfo) => number,
-    height?: (page: string, state: IState, tasks: ITaskInfo) => number,
-    title?: (page: string, state: IState, tasks: ITaskInfo) => string
+    [key in keyof IWindowInfo]?: (
+      page: string, state: IState, tasks: ITaskInfo
+    ) => IWindowInfo[key]
   }
 }
 
@@ -75,6 +73,9 @@ export function ApplicationProvider({ children }: { children?: any }) {
 
   return <ApplicationProviderContext.Provider value={{
     apps,
+    getAppComponent(pkg: string, component?: string) {
+
+    },
     pushApp(pkg: string, app: IApp) { setApps({ ...apps, [pkg]: app }); }
   }}>
     {children}
