@@ -9,7 +9,9 @@ import { Fade } from './components/transition';
 import {
   TaskManagerContext, IWindowInfo, IState, ITaskManagerContext
 } from './taskManagerContext';
-import { ApplicationProviderContext, IApp } from './appProviderContext';
+import {
+  ApplicationProviderContext, IApps, IGetAppComponent
+} from './appProviderContext';
 
 
 export function TaskViewMobile() {
@@ -20,9 +22,9 @@ export function TaskViewMobile() {
       drawerState, launcherState, taskManagerState, taskManagerPosition
     }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
-  const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
-  console.log('launcherState', launcherState)
-  console.log('taskManagerState', taskManagerState)
+  const { apps, getAppComponent }: {
+    apps: IApps, getAppComponent: IGetAppComponent
+  } = useContext(ApplicationProviderContext);
 
   return <div className={css`
     position: fixed;
@@ -417,9 +419,7 @@ export function TaskViewMobile() {
               width: 100%;
               height: 100%;
             `}>
-              {apps[pkg].contentComponent[page] ?
-                apps[pkg].contentComponent[page](propsGenerator(key, page, state)) :
-                apps[pkg].contentComponent.default(propsGenerator(key, page, state))}
+              {getAppComponent(pkg, page)(propsGenerator(key, page, state))}
             </Scrollbars>
           </div>
         </Fade>
@@ -442,9 +442,7 @@ export function TaskViewMobile() {
               background: rgba(0, 0, 0, 0.4);
               border-radius: 0px 4px 4px 0px;
             `}>
-              {apps[pkg].drawerComponent[page] ?
-                apps[pkg].drawerComponent[page](propsGenerator(key, page, state)) :
-                apps[pkg].drawerComponent.default(propsGenerator(key, page, state))}
+              {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, state))}
             </div>
             <div className={css`
               position: absolute;

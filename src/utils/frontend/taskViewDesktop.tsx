@@ -7,9 +7,11 @@ import { Scrollbars } from 'react-custom-scrollbars';
 
 import { Fade, Grow } from './components/transition';
 import {
-  TaskManagerContext, IWindowInfo, IState, ITaskManagerContext
+  TaskManagerContext, ITaskManagerContext
 } from './taskManagerContext';
-import { ApplicationProviderContext, IApp } from './appProviderContext';
+import {
+  ApplicationProviderContext, IApps, IGetAppComponent
+} from './appProviderContext';
 
 export function TaskViewDesktop() {
   const {
@@ -17,7 +19,9 @@ export function TaskViewDesktop() {
     propsGenerator, setWindowInfo, setActiveTask,
     globalState: { launcherState, taskManagerPosition }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
-  const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
+  const { apps, getAppComponent }: {
+    apps: IApps, getAppComponent: IGetAppComponent
+  } = useContext(ApplicationProviderContext);
 
   const activeTaskId = Object.keys(tasks).find(
     (id: string) => tasks[id].windowInfo.status === 'active' ? id : undefined
@@ -134,9 +138,7 @@ export function TaskViewDesktop() {
               width: 100%;
               height: 100%;
             `}>
-              {apps[pkg].drawerComponent[page] ?
-                apps[pkg].drawerComponent[page](propsGenerator(key, page, state)) :
-                apps[pkg].drawerComponent.default(propsGenerator(key, page, state))}
+              {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, state))}
             </Scrollbars>
           </div>
           <div className={css`
@@ -159,9 +161,7 @@ export function TaskViewDesktop() {
               width: 100%;
               height: 100%;
             `}>
-              {apps[pkg].contentComponent[page] ?
-                apps[pkg].contentComponent[page](propsGenerator(key, page, state)) :
-                apps[pkg].contentComponent.default(propsGenerator(key, page, state))}
+              {getAppComponent(pkg, page)(propsGenerator(key, page, state))}
             </Scrollbars>
           </div>
         </div>

@@ -10,7 +10,6 @@ import { IState, ITaskInfo, IWindowInfo } from './taskManagerContext';
 export interface IApp {
   icon: string,   // SVG path.
   name: string,
-  path: string,
   defaultPage?: string,
   defaultState?: { [key: string]: string }
   defaultWindowInfo?: {
@@ -20,61 +19,67 @@ export interface IApp {
   }
 }
 
-export const defaultApp: { [pkg: string]: IApp } = {
+export type IApps = { [pkg: string]: IApp };
+export type IGetAppComponent = (pkg: string, page?: string) => React.Component;
+export type IPushApp = (pkg: string, app: IApp) => void;
+
+export const defaultApp: IApps = {
   'pneumatic.explorer': {
     icon: mdiFolderOutline, name: 'Explorer',
-    path: 'explorer/frontend',
     defaultState: { path: '/' },
     defaultWindowInfo: { title: (_page, { path }) => path }
   },
   'pneumatic.monitor': {
     icon: mdiMemory, name: 'Monitor',
-    path: 'monitor/frontend',
     defaultPage: 'hardware',
     defaultWindowInfo: { title: (_page, _data) => 'Hardware' }
   },
   'pneumatic.browser': {
     icon: mdiWeb, name: 'Proxy browser',
-    path: 'browser/frontend',
     defaultState: { url: 'https://github.com/' },
     defaultWindowInfo: { title: (_page, { url }) => /^https?:\/\/([^\/]+)\/.*/.exec(url)[1] }
   },
   'pneumatic.database': {
-    icon: mdiDatabase, name: 'Database manager',
-    path: 'databse/frontend'
+    icon: mdiDatabase, name: 'Database manager'
   },
   'pneumatic.plan': {
-    icon: mdiFormatListChecks, name: 'Plan tasks',
-    path: 'plan/frontend'
+    icon: mdiFormatListChecks, name: 'Plan tasks'
   },
   'pneumatic.terminal': {
-    icon: mdiConsole, name: 'Terminal',
-    path: 'terminal/frontend'
+    icon: mdiConsole, name: 'Terminal'
   },
   'pneumatic.theme': {
-    icon: mdiPaletteOutline, name: 'Theme setting',
-    path: 'theme/frontend'
+    icon: mdiPaletteOutline, name: 'Theme setting'
   },
   'pneumatic.market': {
-    icon: mdiApps, name: 'Application market',
-    path: 'market/frontend'
+    icon: mdiApps, name: 'Application market'
   },
   'pneumatic.setting': {
-    icon: mdiCogOutline, name: 'Setting',
-    path: 'setting/frontend'
-  },
+    icon: mdiCogOutline, name: 'Setting'
+  }
 };
 
 export const ApplicationProviderContext = createContext({});
 
+let appCache: {
+  [pkg: string]: { [page: string]: (props: any) => React.Component }
+} = {};
+
 export function ApplicationProvider({ children }: { children?: any }) {
-  const [apps, setApps] = useState(defaultApp);
-  // TODO - Use code split and lazy load by webpack.
+  const [apps, setApps]: [IApps, (apps: IApps) => void] = useState(defaultApp);
 
   return <ApplicationProviderContext.Provider value={{
     apps,
-    getAppComponent(pkg: string, component?: string) {
-
+    getAppComponent(pkg: string, page: string = 'default') {
+      if (appCache[pkg] && appCache[pkg][page]) {
+        return appCache[pkg][page];
+      } else {
+        import(pkg).then(module => {
+          console.log(`The application '${pkg}' has loaded.`);
+          appCache[pkg] = module;
+        }).catch(e => console.error(e));
+        return () => <>{'Loading'}</>;
+      }
     },
     pushApp(pkg: string, app: IApp) { setApps({ ...apps, [pkg]: app }); }
   }}>
