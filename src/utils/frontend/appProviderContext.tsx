@@ -78,7 +78,15 @@ export function ApplicationProvider({ children }: { children?: any }) {
           console.log(`The application '${pkg}' has loaded.`);
           appCache[pkg] = module;
         }).catch(e => console.error(e));
-        return () => <>{'Loading'}</>;
+        return () => <>
+          <div className="ui container">
+            <div className="ui column">
+              <div className="ui active dimmer">
+                <div className="ui loader"></div>
+              </div>
+            </div>
+          </div>
+        </>;
       }
     },
     pushApp(pkg: string, app: IApp) { setApps({ ...apps, [pkg]: app }); }
