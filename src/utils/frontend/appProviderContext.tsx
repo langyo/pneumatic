@@ -1,4 +1,5 @@
 import React, { createContext, useState } from 'react';
+import { Spin } from 'antd';
 import {
   mdiFolderOutline, mdiMemory,
   mdiWeb, mdiDatabase, mdiFormatListChecks,
@@ -79,13 +80,7 @@ export function ApplicationProvider({ children }: { children?: any }) {
           appCache[pkg] = module;
         }).catch(e => console.error(e));
         return () => <>
-          <div className="ui container">
-            <div className="ui column">
-              <div className="ui active dimmer">
-                <div className="ui loader"></div>
-              </div>
-            </div>
-          </div>
+          <Spin />
         </>;
       }
     },

@@ -11,7 +11,7 @@ import { LoginView } from './utils/frontend/loginView';
 
 export default function () {
   return <>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/semantic-ui/dist/semantic.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/antd/dist/antd.min.css" />
     <style>{`html, body { margin: 0px; padding: 0px; }`}</style>
     <AuthProvider>
       <ThemeProvider>
