@@ -1,10 +1,11 @@
 import React, { createContext, useState } from 'react';
-import { Spin } from 'antd';
+import { Spin, Row, Col } from 'antd';
 import {
   mdiFolderOutline, mdiMemory,
   mdiWeb, mdiDatabase, mdiFormatListChecks,
   mdiConsole, mdiPaletteOutline, mdiApps, mdiCogOutline
 } from '@mdi/js';
+import { css } from '@emotion/css';
 
 import { IState, ITaskInfo, IWindowInfo } from './taskManagerContext';
 
@@ -79,9 +80,13 @@ export function ApplicationProvider({ children }: { children?: any }) {
           console.log(`The application '${pkg}' has loaded.`);
           appCache[pkg] = module;
         }).catch(e => console.error(e));
-        return () => <>
-          <Spin />
-        </>;
+        return () => <Row justify="center" className={css`
+          margin: 16px 0px;
+        `}>
+          <Col>
+            <Spin size="large" tip={`Downloading the application`} />
+          </Col>
+        </Row>;
       }
     },
     pushApp(pkg: string, app: IApp) { setApps({ ...apps, [pkg]: app }); }

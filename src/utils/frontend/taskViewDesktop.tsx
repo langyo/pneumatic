@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { Row, Col, Card, Button, Tooltip } from 'antd';
 import Draggable, { DraggableData } from 'react-draggable';
 import { css, cx } from '@emotion/css';
 import Icon from '@mdi/react';
@@ -31,7 +32,6 @@ export function TaskViewDesktop() {
     position: fixed;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.2);
   `}>
     {Object.keys(tasks).map((key: string) => {
       const {
@@ -172,20 +172,20 @@ export function TaskViewDesktop() {
       top: 10%;
       ${taskManagerPosition.direction === 'left' ?
         'left: 0px;' : 'right: 0px;'}
-      height: calc(80% - 8px);
       width: 48px;
+      height: calc(80% - 8px);
       padding: 4px;
       z-index: 9000;
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(255, 255, 255, 1);
+      border: 1px solid rgba(240, 240, 240, 1);
+      ${taskManagerPosition.direction === 'left' ?
+        'border-left: none;' : 'border-right: none;'}
       border-radius: ${taskManagerPosition.direction === 'left' ?
         '0px 4px 4px 0px' : '4px 0px 0px 4px'};
-      backdrop-filter: blur(2px);
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       align-items: center;
-      user-select: none;
-      color: rgba(255, 255, 255, 1);
     `}>
       {Object.keys(tasks).sort(
         (left, right) =>
@@ -194,55 +194,33 @@ export function TaskViewDesktop() {
         const { icon, name } = apps[tasks[key].pkg];
         const { title } = tasks[key].windowInfo;
 
-        return <div className={css`
-          margin: 4px;
-          padding: 8px;
-          border-radius: 4px;
-          ${key === activeTaskId && 'background: rgba(0, 0, 0, 0.2);'}
-          &:hover {
-            background: rgba(0, 0, 0, 0.2);
-          }
-          &:hover::after {
-            position: absolute;
-            line-height: 48px;
-            font-size: 16px;
-            content: "${`${name}${title !== '' ? ` - ${title}` : ''}`}";
-            white-space: nowrap;
-            left: 72px;
-            height: 48px;
-            margin: -12px;
-            padding: 0px 4px;
-            border-radius: 4px;
-            background: rgba(0, 0, 0, 0.4);
-          }
-          &:active {
-            background: rgba(0, 0, 0, 0.4);
-          }
-        `}
-          onClick={() => setActiveTask(key)}
+        return <Tooltip
+          placement='right'
+          title={`${name}${title !== '' ? ` - ${title}` : ''}`}
         >
-          <Icon path={icon} size={1} color='rgba(255, 255, 255, 1)' />
-        </div>
+          <Button
+            size='large'
+            type={key === activeTaskId ? 'default' : 'text'}
+            onClick={() => setActiveTask(key)}
+            icon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
+          />
+        </Tooltip>
       })}
       <div className={css`
         position: absolute;
-        left: 4px;
-        bottom: 8px;
-        margin: 4px;
-        padding: 8px;
-        border-radius: 4px;
-        &:hover {
-          background: rgba(0, 0, 0, 0.2);
-        }
-        &:active {
-          background: rgba(0, 0, 0, 0.4);
-        }
-      `}
-        onClick={() => setGlobalState({
-          launcherState: !launcherState
-        })}
-      >
-        <Icon path={mdiMenu} size={1} color='rgba(255, 255, 255, 1)' />
+        bottom: 4px;
+      `}>
+        <Tooltip
+          placement='right'
+          title={`Launcher`}
+        >
+          <Button
+            size='large'
+            type='text'
+            onClick={() => setGlobalState({ launcherState: !launcherState })}
+            icon={<Icon path={mdiMenu} size={1} color='rgba(0, 0, 0, 1)' />}
+          />
+        </Tooltip>
       </div>
     </div>
     <Fade on={launcherState}>
@@ -273,6 +251,7 @@ export function TaskViewDesktop() {
         })}
       >
         <div className={css`
+          margin: 16px 0px;
           padding: 16px 32px;
           width: calc(100% - 32px);
           height: 36px;
@@ -306,7 +285,6 @@ export function TaskViewDesktop() {
                 return <div className={css`
                   width: 120px;
                   height: 100px;
-                  padding: 4px;
                   display: flex;
                   flex-direction: column;
                   font-size: 16px;
@@ -338,5 +316,5 @@ export function TaskViewDesktop() {
         </div>
       </div>
     </Fade>
-  </div>;
+  </div >;
 }
