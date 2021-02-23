@@ -214,9 +214,6 @@ export function TaskManager({ children }: { children?: any }) {
   }
 
   function setPage(id: string, page: string) {
-    if (Object.keys(apps[tasks[id].pkg].contentComponent).indexOf(page) < 0) {
-      throw Error(`Unknown page '${page}' at '${tasks[id].pkg}[${id}]'.`);
-    }
     _setTasks(tasks => ({
       ...tasks,
       [id]: {

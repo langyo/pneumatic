@@ -11,7 +11,7 @@ export function ThemeProvider({ children }: { children?: any }) {
   const [basicTheme, setBasicTheme] = useState({
     background: {
       type: 'url',
-      value: ''
+      value: 'https://i.loli.net/2021/02/09/8vaVgHdnXtEwQDs.jpg'
     }
   });
 
