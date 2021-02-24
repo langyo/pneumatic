@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { PageHeader, Card, Button, Tooltip, Modal, Row, Col } from 'antd';
+import { PageHeader, Card, Button, Tooltip, Popover, Row, Col } from 'antd';
 import Draggable, { DraggableData } from 'react-draggable';
 import { css, cx } from '@emotion/css';
 import Icon from '@mdi/react';
@@ -168,39 +168,35 @@ export function TaskViewDesktop() {
           placement='right'
           title={`Launcher`}
         >
-          <Button
-            size='large'
-            type='text'
-            onClick={() => setGlobalState({ launcherState: !launcherState })}
-            icon={<Icon path={mdiMenu} size={1} color='rgba(0, 0, 0, 1)' />}
-          />
+          <Popover
+            placement='rightBottom'
+            title='Launcher'
+            visible={launcherState}
+            content={<Row justify='start' align='start'>
+              {Object.keys(apps).map(pkg => {
+                const { icon, name } = apps[pkg];
+                return <Col span={6}>
+                  <Tooltip title={name} placement='top'>
+                    <Button
+                      size='large'
+                      shape='circle'
+                      icon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
+                      onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
+                    />
+                  </Tooltip>
+                </Col>;
+              })}
+            </Row>}
+          >
+            <Button
+              size='large'
+              type='text'
+              onClick={() => setGlobalState({ launcherState: !launcherState })}
+              icon={<Icon path={mdiMenu} size={1} color='rgba(0, 0, 0, 1)' />}
+            />
+          </Popover>
         </Tooltip>
       </div>
     </div>
-    <Modal
-      title='Launcher'
-      centered
-      width={window.innerWidth * 0.8}
-      visible={launcherState}
-      footer={null}
-      closable={false}
-      onCancel={() => setGlobalState({ launcherState: false })}
-    >
-      <Row justify='start' align='start'>
-        {Object.keys(apps).map(pkg => {
-          const { icon, name } = apps[pkg];
-          return <Col span={2}>
-            <Tooltip title={name} placement='top'>
-              <Button
-                size='large'
-                shape='circle'
-                icon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
-                onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
-              />
-            </Tooltip>
-          </Col>;
-        })}
-      </Row>
-    </Modal>
   </div >;
 }
