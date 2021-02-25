@@ -1,12 +1,13 @@
 import React, { useContext } from 'react';
-import { Button, Drawer, PageHeader, List, Row, Col, Tooltip } from 'antd';
+import {
+  Button, IconButton, Drawer, Tooltip, AppBar, Toolbar,
+  List, ListItem, ListItemText, ListItemSecondaryAction
+} from '@material-ui/core';
 import Draggable, { DraggableData } from 'react-draggable';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
-import { mdiArrowRight, mdiClose, mdiFullscreen, mdiFullscreenExit } from '@mdi/js';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { mdiArrowRight, mdiClose, mdiFullscreen } from '@mdi/js';
 
-import { Fade } from './components/transition';
 import {
   TaskManagerContext, IWindowInfo, IState, ITaskManagerContext
 } from './taskManagerContext';
@@ -62,52 +63,41 @@ export function TaskViewMobile() {
           }
         }}>
         <Button
-          icon={<Icon path={mdiFullscreen} size={1} color='rgba(0, 0, 0, 1)' />}
+          startIcon={<Icon path={mdiFullscreen} size={1} color='rgba(0, 0, 0, 1)' />}
         />
       </Draggable>
     </div>}
 
     <Drawer
-      placement='top'
-      title='Task Manager'
-      visible={taskManagerState}
-      closable={false}
+      anchor='top'
+      open={taskManagerState}
       onClose={() => setGlobalState({ taskManagerState: false })}
     >
-      <List
-        footer={<Button
-          type='text'
-          title='Back to the launcher'
-          onClick={() => setGlobalState({ launcherState: true, taskManagerState: false })}
-        />}
-        dataSource={Object.keys(tasks).sort(
+      <List>
+        {Object.keys(tasks).sort(
           (left, right) =>
             tasks[left].windowInfo.taskManagerOrder -
             tasks[right].windowInfo.taskManagerOrder
-        )}
-        renderItem={(key: string) => {
+        ).map((key: string) => {
           const pkg = tasks[key].pkg;
           const { title }: IWindowInfo = tasks[key].windowInfo;
 
-          return <List.Item
-            actions={[<Button
-              size='small'
-              type='text'
-              icon={<Icon path={mdiArrowRight} size={1} color='rgba(0, 0, 0, 1)' />}
-              onClick={() => (
+          return <ListItem >
+            <ListItemText
+              primary={apps[pkg].name}
+              secondary={title}
+            />
+            <ListItemSecondaryAction>
+              <IconButton onClick={() => (
                 setActiveTask(key),
                 setGlobalState({
                   drawerState: false,
                   launcherState: false
                 })
-              )}
-            />,
-            <Button
-              size='small'
-              type='text'
-              icon={<Icon path={mdiClose} size={1} color='rgba(0, 0, 0, 1)' />}
-              onClick={(event: Event) => {
-                event.stopPropagation();
+              )}>
+                <Icon path={mdiArrowRight} size={1} color='rgba(0, 0, 0, 1)' />
+              </IconButton>
+              <IconButton onClick={() => {
                 if (tasks[key].windowInfo.status === 'active') {
                   setGlobalState({
                     launcherState: true
@@ -115,20 +105,17 @@ export function TaskViewMobile() {
                 }
                 destoryTask(key);
                 setGlobalState({ taskManagerState: false });
-              }}
-            />]}
-          >
-            <List.Item.Meta
-              title={apps[pkg].name}
-              description={title}
-            />
-          </List.Item>;
-        }}
-      />
+              }}>
+                <Icon path={mdiClose} size={1} color='rgba(0, 0, 0, 1)' />
+              </IconButton>
+            </ListItemSecondaryAction>
+          </ListItem>;
+        })}
+      </List>
     </Drawer>
 
-    {launcherState && <PageHeader ghost={false} title='Launcher'>
-      <Row justify='start' align='start'>
+    {launcherState && <AppBar title='Launcher'>
+      <Toolbar>
         <Button
           onClick={() => setGlobalState({
             launcherState: true,
@@ -138,19 +125,15 @@ export function TaskViewMobile() {
         />
         {Object.keys(apps).map(pkg => {
           const { icon, name } = apps[pkg];
-          return <Col span={4}>
-            <Tooltip title={name} placement='top'>
-              <Button
-                size='large'
-                shape='circle'
-                icon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
-                onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
-              />
-            </Tooltip>
-          </Col>;
+          <Tooltip title={name} placement='top'>
+            <Button
+              startIcon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
+              onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
+            />
+          </Tooltip>
         })}
-      </Row>
-    </PageHeader>}
+      </Toolbar>
+    </AppBar>}
 
     {Object.keys(tasks).map((key) => {
       const {
@@ -158,20 +141,19 @@ export function TaskViewMobile() {
       } = tasks[key];
 
       return <>
-        <PageHeader
-          ghost={false}
-          title={apps[pkg].name}
-          subTitle={title}
-          backIcon={<Icon path={apps[pkg].icon} size={1} color='rgba(0, 0, 0, 1)' />}
-          onBack={() => setGlobalState({ drawerState: !drawerState })}
-        >
-          {getAppComponent(pkg, page)(propsGenerator(key, page, state))}
-        </PageHeader>
+        <AppBar>
+          <IconButton onClick={() => setGlobalState({ drawerState: !drawerState })}>
+            <Icon path={apps[pkg].icon} size={1} color='rgba(0, 0, 0, 1)' />
+          </IconButton>
+          <Toolbar>
+            {`${apps[pkg].name} ${title}`}
+          </Toolbar>
+        </AppBar>
+        {getAppComponent(pkg, page)(propsGenerator(key, page, state))}
 
         <Drawer
-          placement='left'
-          visible={drawerState}
-          closable={false}
+          anchor='left'
+          open={drawerState}
           onClose={() => setGlobalState({ drawerState: false })}
         >
           {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, state))}

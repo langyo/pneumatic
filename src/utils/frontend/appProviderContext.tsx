@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-import { Spin, Row, Col } from 'antd';
+import { CircularProgress } from '@material-ui/core';
 import {
   mdiFolderOutline, mdiMemory,
   mdiWeb, mdiDatabase, mdiFormatListChecks,
@@ -80,13 +80,7 @@ export function ApplicationProvider({ children }: { children?: any }) {
           console.log(`The application '${pkg}' has loaded.`);
           appCache[pkg] = module;
         }).catch(e => console.error(e));
-        return () => <Row justify="center" className={css`
-          margin: 16px 0px;
-        `}>
-          <Col>
-            <Spin size="large" tip={`Downloading the application`} />
-          </Col>
-        </Row>;
+        return () => <CircularProgress />;
       }
     },
     pushApp(pkg: string, app: IApp) { setApps({ ...apps, [pkg]: app }); }

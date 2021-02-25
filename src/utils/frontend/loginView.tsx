@@ -1,5 +1,5 @@
 import React, { useState, useRef, useContext } from 'react';
-import { Row, Col, Card, Button, Input } from 'antd';
+import { Paper, Button, TextField } from '@material-ui/core';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
 import { mdiArrowRight } from '@mdi/js';
@@ -12,7 +12,7 @@ export function LoginView() {
     login: (name: string, hashedPasswd: string) => void
   } = useContext(AuthProviderContext);
   const passwordRef = useRef();
-  const [password, setPassword] = useState();
+  const [password, setPassword]: [string, (p: string) => void] = useState();
 
   return <div className={css`
     position: fixed;
@@ -24,31 +24,33 @@ export function LoginView() {
     justify-content: center;
     align-items: center;
   `}>
-    <Card title={`Login`} className={css`
+    <Paper title={`Login`} className={css`
       width: 260px;
       height: 200px;
     `}>
-      <Input
+      <TextField
+        label='User name'
         placeholder='Enter user name'
-        onPressEnter={() => passwordRef.current.focus()}
+        variant='outlined'
+        fullWidth
         onChange={({ target: { value } }) => setUserName(value)}
         value={userName}
       />
-      <Input.Password
+      <TextField
+        label='Password'
         ref={passwordRef}
         placeholder='Enter password'
-        onPressEnter={() => login(userName, password)}
+        variant='outlined'
+        fullWidth
         onChange={({ target: { value } }) => setPassword(value)}
         value={password}
       />
-      <Row justify="center" >
-        <Col>
-          <Button
-            onClick={() => login(userName, password)}
-            icon={<Icon path={mdiArrowRight} size={1} color='rgba(0, 0, 0, 1)' />}
-          />
-        </Col>
-      </Row>
-    </Card>
+      <Button
+        onClick={() => login(userName, password)}
+        startIcon={<Icon path={mdiArrowRight} size={1} color='rgba(0, 0, 0, 1)' />}
+      >
+        {'Login'}
+      </Button>
+    </Paper>
   </div>
 }

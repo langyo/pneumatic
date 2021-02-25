@@ -1,12 +1,11 @@
 import React, { useContext } from 'react';
-import { PageHeader, Card, Button, Tooltip, Popover, Row, Col } from 'antd';
+import { Paper, Button, Tooltip, Popover, IconButton } from '@material-ui/core';
 import Draggable, { DraggableData } from 'react-draggable';
 import { css, cx } from '@emotion/css';
 import Icon from '@mdi/react';
 import { mdiClose, mdiMenu } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
 
-import { Fade, Grow } from './components/transition';
 import {
   TaskManagerContext, ITaskManagerContext
 } from './taskManagerContext';
@@ -27,8 +26,6 @@ export function TaskViewDesktop() {
   const activeTaskId = Object.keys(tasks).find(
     (id: string) => tasks[id].windowInfo.status === 'active' ? id : undefined
   );
-
-  console.log(tasks)
 
   return <div className={css`
     position: fixed;
@@ -55,69 +52,51 @@ export function TaskViewDesktop() {
           position: fixed;
           z-index: ${5000 + priority};
         `}>
-          <Card className={css`
+          <Paper className={css`
             width: ${width}px;
             height: ${height}px;
           `}
           >
-            <div className={css`
+            <div className={cx(css`
               width: 100%;
               height: 100%;
-            `}
+            `, 'drag-handle-tag')}
               onMouseDown={() => setActiveTask(key)}
             >
-              <PageHeader
-                title={apps[pkg].name}
-                subTitle={title || ''}
-                backIcon={<Icon path={apps[pkg].icon} size={1} color='rgba(0, 0, 0, 1)' />}
-                onBack={() => { }}
-                className={cx(css`
-                  user-select: none;
-                `, 'drag-handle-tag')}
-                extra={[
-                  <Button
-                    type='text'
-                    icon={<Icon path={mdiClose} size={1} color='rgba(0, 0, 0, 1)' />}
-                    onClick={() => destoryTask(key)}
-                  />
-                ]}
+              <Icon path={apps[pkg].icon} size={1} color='rgba(0, 0, 0, 1)' />
+              {apps[pkg].name}
+              {title || ''}
+              <IconButton onClick={() => destoryTask(key)}>
+                <Icon path={mdiClose} size={1} color='rgba(0, 0, 0, 1)' />
+              </IconButton>
+              <div className={css`
+                width: 40%;
+                height: 100%;
+              `}
+                onMouseDown={() => setActiveTask(key)}
               >
-                <div className={css`
+                <Scrollbars className={css`
                   width: 100%;
                   height: 100%;
-                  display: flex;
-                  flex-direction: row;
                 `}>
-                  <div className={css`
-                    width: 40%;
-                    height: 100%;
-                  `}
-                    onMouseDown={() => setActiveTask(key)}
-                  >
-                    <Scrollbars className={css`
-                      width: 100%;
-                      height: 100%;
-                    `}>
-                      {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, state))}
-                    </Scrollbars>
-                  </div>
-                  <div className={css`
-                    width: 60%;
-                    height: 100%;
-                  `}
-                    onMouseDown={() => setActiveTask(key)}
-                  >
-                    <Scrollbars className={css`
-                      width: 100%;
-                      height: 100%;
-                    `}>
-                      {getAppComponent(pkg, page)(propsGenerator(key, page, state))}
-                    </Scrollbars>
-                  </div>
-                </div>
-              </PageHeader>
+                  {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, state))}
+                </Scrollbars>
+              </div>
+              <div className={css`
+                width: 60%;
+                height: 100%;
+              `}
+                onMouseDown={() => setActiveTask(key)}
+              >
+                <Scrollbars className={css`
+                  width: 100%;
+                  height: 100%;
+                `}>
+                  {getAppComponent(pkg, page)(propsGenerator(key, page, state))}
+                </Scrollbars>
+              </div>
             </div>
-          </Card>
+          </Paper>
         </div>
       </Draggable>;
     })}
@@ -152,12 +131,11 @@ export function TaskViewDesktop() {
           placement='right'
           title={`${name}${title !== '' ? ` - ${title}` : ''}`}
         >
-          <Button
-            size='large'
-            type={key === activeTaskId ? 'default' : 'text'}
+          <IconButton
             onClick={() => setActiveTask(key)}
-            icon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
-          />
+          >
+            <Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />
+          </IconButton>
         </Tooltip>
       })}
       <div className={css`
@@ -168,34 +146,34 @@ export function TaskViewDesktop() {
           placement='right'
           title={`Launcher`}
         >
-          <Popover
-            placement='rightBottom'
-            title='Launcher'
-            visible={launcherState}
-            content={<Row justify='start' align='start'>
-              {Object.keys(apps).map(pkg => {
-                const { icon, name } = apps[pkg];
-                return <Col span={6}>
-                  <Tooltip title={name} placement='top'>
-                    <Button
-                      size='large'
-                      shape='circle'
-                      icon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
-                      onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
-                    />
-                  </Tooltip>
-                </Col>;
-              })}
-            </Row>}
+          <IconButton
+            onClick={() => setGlobalState({ launcherState: !launcherState })}
           >
-            <Button
-              size='large'
-              type='text'
-              onClick={() => setGlobalState({ launcherState: !launcherState })}
-              icon={<Icon path={mdiMenu} size={1} color='rgba(0, 0, 0, 1)' />}
-            />
-          </Popover>
+            <Icon path={mdiMenu} size={1} color='rgba(0, 0, 0, 1)' />
+          </IconButton>
         </Tooltip>
+        <Popover
+          anchorOrigin={{
+            vertical: 'center',
+            horizontal: 'right',
+          }}
+          transformOrigin={{
+            vertical: 'center',
+            horizontal: 'left',
+          }}
+          open={launcherState}
+        >
+          {Object.keys(apps).map(pkg => {
+            const { icon, name } = apps[pkg];
+            return <Tooltip title={name} placement='top'>
+              <IconButton
+                onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
+              >
+                <Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />
+              </IconButton>
+            </Tooltip>;
+          })}
+        </Popover>
       </div>
     </div>
   </div >;
