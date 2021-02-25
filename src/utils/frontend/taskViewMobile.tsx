@@ -63,6 +63,7 @@ export function TaskViewMobile() {
           }
         }}>
         <Button
+          variant='outlined'
           startIcon={<Icon path={mdiFullscreen} size={1} color='rgba(0, 0, 0, 1)' />}
         />
       </Draggable>

@@ -8,11 +8,19 @@ import { signSaltPassword } from '../authVerifyTools';
 export let wsConnection: WebSocket;
 export let wsEventEmitter = new EventEmitter();
 
-export const AuthProviderContext = createContext({});
+export const AuthProviderContext = createContext({} as IAuthProviderContext);
+
+export interface IAuthProviderContext {
+  userName: string,
+  setUserName: (name: string) => void,
+  authToken: string,
+  setAuthToken: (token: string) => void,
+  login: (userName: string, rawPassword: string) => void
+}
 
 export function AuthProvider({ children }: { children?: any }) {
   const [userName, setUserName] = useLocalStorage('history-user-name', '');
-  const [authToken, setAuthToken] = useState();
+  const [authToken, setAuthToken] = useState('');
 
   return <AuthProviderContext.Provider value={{
     userName, setUserName,

@@ -1,5 +1,7 @@
 import React, { useState, useRef, useContext } from 'react';
-import { Paper, Button, TextField } from '@material-ui/core';
+import {
+  Card, CardContent, Button, TextField, Grid, Typography
+} from '@material-ui/core';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
 import { mdiArrowRight } from '@mdi/js';
@@ -24,33 +26,52 @@ export function LoginView() {
     justify-content: center;
     align-items: center;
   `}>
-    <Paper title={`Login`} className={css`
-      width: 260px;
-      height: 200px;
+    <Card className={css`
+      minWidth: 300px;
     `}>
-      <TextField
-        label='User name'
-        placeholder='Enter user name'
-        variant='outlined'
-        fullWidth
-        onChange={({ target: { value } }) => setUserName(value)}
-        value={userName}
-      />
-      <TextField
-        label='Password'
-        ref={passwordRef}
-        placeholder='Enter password'
-        variant='outlined'
-        fullWidth
-        onChange={({ target: { value } }) => setPassword(value)}
-        value={password}
-      />
-      <Button
-        onClick={() => login(userName, password)}
-        startIcon={<Icon path={mdiArrowRight} size={1} color='rgba(0, 0, 0, 1)' />}
-      >
-        {'Login'}
-      </Button>
-    </Paper>
+      <CardContent>
+        <Grid container spacing={1}>
+          <Grid item xs={12}>
+            <Typography variant='h6'>
+              {'Login'}
+            </Typography>
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label='User name'
+              placeholder='Enter user name'
+              variant='outlined'
+              fullWidth
+              onChange={({ target: { value } }) => setUserName(value)}
+              value={userName}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label='Password'
+              inputRef={passwordRef}
+              placeholder='Enter password'
+              variant='outlined'
+              fullWidth
+              onChange={({ target: { value } }) => setPassword(value)}
+              value={password}
+            />
+          </Grid>
+          <Grid container>
+            <Grid item xs />
+            <Grid item xs>
+              <Button
+                variant='outlined'
+                onClick={() => login(userName, password)}
+                startIcon={<Icon path={mdiArrowRight} size={1} color='rgba(0, 0, 0, 1)' />}
+              >
+                {'Login'}
+              </Button>
+            </Grid>
+            <Grid item xs />
+          </Grid>
+        </Grid>
+      </CardContent>
+    </Card>
   </div>
 }
