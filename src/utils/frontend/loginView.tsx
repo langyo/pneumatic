@@ -48,6 +48,7 @@ export function LoginView() {
             <TextField
               label='Password'
               inputRef={passwordRef}
+              type='password'
               placeholder='Enter password'
               variant='outlined'
               fullWidth
