@@ -3,8 +3,6 @@ import {
   Card, CardContent, Button, TextField, Grid, Typography
 } from '@material-ui/core';
 import { css } from '@emotion/css';
-import Icon from '@mdi/react';
-import { mdiArrowRight } from '@mdi/js';
 
 import { AuthProviderContext } from './authProviderContext';
 
@@ -27,7 +25,7 @@ export function LoginView() {
     align-items: center;
   `}>
     <Card className={css`
-      minWidth: 300px;
+      width: 300px;
     `}>
       <CardContent>
         <Grid container spacing={1}>
@@ -57,18 +55,19 @@ export function LoginView() {
               value={password}
             />
           </Grid>
-          <Grid container>
-            <Grid item xs />
-            <Grid item xs>
-              <Button
-                variant='outlined'
-                onClick={() => login(userName, password)}
-                startIcon={<Icon path={mdiArrowRight} size={1} color='rgba(0, 0, 0, 1)' />}
-              >
-                {'Login'}
-              </Button>
+          <Grid item xs={12}>
+            <Grid container>
+              <Grid item xs />
+              <Grid item xs='auto'>
+                <Button
+                  variant='outlined'
+                  onClick={() => login(userName, password)}
+                >
+                  {'Login'}
+                </Button>
+              </Grid>
+              <Grid item xs />
             </Grid>
-            <Grid item xs />
           </Grid>
         </Grid>
       </CardContent>
