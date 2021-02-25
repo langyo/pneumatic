@@ -2,7 +2,11 @@ import React, { createContext, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { css } from '@emotion/css';
 
-export const ThemeProviderContext = createContext({});
+export const ThemeProviderContext = createContext({} as IThemeProviderContext);
+
+export interface IThemeProviderContext {
+  media: 'desktop' | 'mobile'
+}
 
 export function ThemeProvider({ children }: { children?: any }) {
   const media = useMediaQuery({

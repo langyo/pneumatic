@@ -22,7 +22,7 @@ export interface IApp {
 }
 
 export type IApps = { [pkg: string]: IApp };
-export type IGetAppComponent = (pkg: string, page?: string) => React.Component;
+export type IGetAppComponent = (pkg: string, page?: string) => (props: any) => React.Component | any;
 export type IPushApp = (pkg: string, app: IApp) => void;
 
 export const defaultApp: IApps = {
@@ -61,7 +61,13 @@ export const defaultApp: IApps = {
   }
 };
 
-export const ApplicationProviderContext = createContext({});
+export const ApplicationProviderContext = createContext({} as IApplicationProviderContext);
+
+export interface IApplicationProviderContext {
+  apps: IApps,
+  getAppComponent: IGetAppComponent,
+  pushApp: IPushApp
+}
 
 let appCache: {
   [pkg: string]: { [page: string]: (props: any) => React.Component }

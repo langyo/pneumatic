@@ -12,7 +12,7 @@ import {
   TaskManagerContext, IWindowInfo, IState, ITaskManagerContext
 } from './taskManagerContext';
 import {
-  ApplicationProviderContext, IApps, IGetAppComponent
+  ApplicationProviderContext, IApplicationProviderContext, IApps, IGetAppComponent
 } from './appProviderContext';
 
 
@@ -24,9 +24,9 @@ export function TaskViewMobile() {
       drawerState, launcherState, taskManagerState, taskManagerPosition
     }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
-  const { apps, getAppComponent }: {
-    apps: IApps, getAppComponent: IGetAppComponent
-  } = useContext(ApplicationProviderContext);
+  const {
+    apps, getAppComponent
+  }: IApplicationProviderContext = useContext(ApplicationProviderContext);
 
   return <div className={css`
     position: fixed;
@@ -43,7 +43,7 @@ export function TaskViewMobile() {
           x: taskManagerPosition.direction === 'left' ? 4 : window.innerWidth - 40,
           y: taskManagerPosition.top
         }}
-        onStop={(_e: Event, state: DraggableData) => {
+        onStop={(_e, state: DraggableData) => {
           if (
             Math.abs(state.y - taskManagerPosition.top) > 10 ||
             state.x < window.innerWidth / 2 && state.x > 4 + 10 ||

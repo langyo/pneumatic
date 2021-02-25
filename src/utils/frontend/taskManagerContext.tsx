@@ -4,7 +4,7 @@ import { ApplicationProviderContext, IApp } from './appProviderContext';
 import { ThemeProviderContext } from './themeProviderContext';
 import { generate } from 'shortid';
 
-export const TaskManagerContext = createContext({});
+export const TaskManagerContext = createContext({} as ITaskManagerContext);
 export interface ITask {
   pkg: '#merge' | string,    // The embedded package format is 'pneumatic.*'.
   page: string,   // The default page is 'default'.
@@ -240,7 +240,7 @@ export function TaskManager({ children }: { children?: any }) {
     }));
   }
 
-  function setWindowInfo(id: string, info: IWindowInfo) {
+  function setWindowInfo(id: string, info: Partial<IWindowInfo>) {
     _setTasks(tasks => ({
       ...tasks,
       [id]: {

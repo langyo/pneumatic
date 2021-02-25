@@ -10,7 +10,7 @@ import {
   TaskManagerContext, ITaskManagerContext
 } from './taskManagerContext';
 import {
-  ApplicationProviderContext, IApps, IGetAppComponent
+  ApplicationProviderContext, IApplicationProviderContext, IApps, IGetAppComponent
 } from './appProviderContext';
 
 export function TaskViewDesktop() {
@@ -19,9 +19,9 @@ export function TaskViewDesktop() {
     propsGenerator, setWindowInfo, setActiveTask,
     globalState: { launcherState, taskManagerPosition }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
-  const { apps, getAppComponent }: {
-    apps: IApps, getAppComponent: IGetAppComponent
-  } = useContext(ApplicationProviderContext);
+  const {
+    apps, getAppComponent
+  }: IApplicationProviderContext = useContext(ApplicationProviderContext);
 
   const activeTaskId = Object.keys(tasks).find(
     (id: string) => tasks[id].windowInfo.status === 'active' ? id : undefined
@@ -43,7 +43,7 @@ export function TaskViewDesktop() {
       return <Draggable
         position={{ x: left, y: top }}
         handle='.drag-handle-tag'
-        onStop={(_e: Event, state: DraggableData) => setWindowInfo(key, {
+        onStop={(_e, state: DraggableData) => setWindowInfo(key, {
           left: state.x,
           top: state.y
         })}
