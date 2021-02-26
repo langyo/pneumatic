@@ -1,18 +1,18 @@
 import React, { useContext } from 'react';
 import {
-  Button, IconButton, Drawer, Tooltip, AppBar, Toolbar,
-  List, ListItem, ListItemText, ListItemSecondaryAction
+  useScrollTrigger,
+  Button, IconButton, Drawer, Grid, AppBar, Toolbar, Typography,
+  List, ListItem, ListItemText, ListItemSecondaryAction, ListSubheader
 } from '@material-ui/core';
-import Draggable, { DraggableData } from 'react-draggable';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
 import { mdiArrowRight, mdiClose, mdiFullscreen } from '@mdi/js';
 
 import {
-  TaskManagerContext, IWindowInfo, IState, ITaskManagerContext
+  TaskManagerContext, IWindowInfo, ITaskManagerContext
 } from './taskManagerContext';
 import {
-  ApplicationProviderContext, IApplicationProviderContext, IApps, IGetAppComponent
+  ApplicationProviderContext, IApplicationProviderContext
 } from './appProviderContext';
 
 
@@ -34,47 +34,16 @@ export function TaskViewMobile() {
     width: 100%;
     user-select: none;
   `}>
-    {!taskManagerState && Object.keys(tasks).length > 0 && <div className={css`
-      position: absolute;
-      z-index: 10000;
-    `}>
-      <Draggable
-        position={{
-          x: taskManagerPosition.direction === 'left' ? 4 : window.innerWidth - 40,
-          y: taskManagerPosition.top
-        }}
-        onStop={(_e, state: DraggableData) => {
-          if (
-            Math.abs(state.y - taskManagerPosition.top) > 10 ||
-            state.x < window.innerWidth / 2 && state.x > 4 + 10 ||
-            state.x >= window.innerWidth / 2 && state.x < window.innerWidth - 40 - 10
-          ) {
-            setGlobalState({
-              taskManagerPosition: {
-                direction: state.x < window.innerWidth / 2 ? 'left' : 'right',
-                top: state.y
-              }
-            });
-          } else {
-            setGlobalState({
-              taskManagerState: true,
-              drawerState: false
-            });
-          }
-        }}>
-        <Button
-          variant='outlined'
-          startIcon={<Icon path={mdiFullscreen} size={1} color='rgba(0, 0, 0, 1)' />}
-        />
-      </Draggable>
-    </div>}
-
     <Drawer
       anchor='top'
       open={taskManagerState}
       onClose={() => setGlobalState({ taskManagerState: false })}
     >
-      <List>
+      <List subheader={
+        <ListSubheader>
+          {'Tasks'}
+        </ListSubheader>
+      }>
         {Object.keys(tasks).sort(
           (left, right) =>
             tasks[left].windowInfo.taskManagerOrder -
@@ -83,7 +52,7 @@ export function TaskViewMobile() {
           const pkg = tasks[key].pkg;
           const { title }: IWindowInfo = tasks[key].windowInfo;
 
-          return <ListItem >
+          return <ListItem>
             <ListItemText
               primary={apps[pkg].name}
               secondary={title}
@@ -112,54 +81,89 @@ export function TaskViewMobile() {
             </ListItemSecondaryAction>
           </ListItem>;
         })}
+        <ListItem button onClick={() => setGlobalState({
+          launcherState: true,
+          taskManagerState: false
+        })}>
+          <ListItemText
+            primary={'Back to the launcher'}
+          />
+        </ListItem>
       </List>
     </Drawer>
 
-    {launcherState && <AppBar title='Launcher'>
-      <Toolbar>
-        <Button
-          onClick={() => setGlobalState({
-            launcherState: true,
-            drawerState: false,
-            taskManagerState: false
-          })}
-        />
-        {Object.keys(apps).map(pkg => {
-          const { icon, name } = apps[pkg];
-          <Tooltip title={name} placement='top'>
-            <Button
-              startIcon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
-              onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
-            />
-          </Tooltip>
+    <AppBar position='sticky'>
+      <Toolbar className={css`
+        display: flex;
+        flex-direction: row;
+      `}>
+        {Object.keys(tasks).map((key) => {
+          const { pkg, windowInfo: { status, title } } = tasks[key];
+          return <>
+            {status === 'active' && <>
+              <div className={css`
+              margin-right: 8px;
+            `}>
+                <IconButton onClick={() => setGlobalState({
+                  drawerState: true
+                })}>
+                  <Icon path={apps[pkg].icon} size={1} color='rgba(255, 255, 255, 1)' />
+                </IconButton>
+              </div>
+              <Typography variant='h6'>
+                {`${apps[pkg].name} ${title}`}
+              </Typography>
+            </>}
+          </>;
         })}
+        {launcherState && <Typography variant='h6'>
+          {'Launcher'}
+        </Typography>}
+        <div className={css`
+          margin-left: auto;
+        `}>
+          <IconButton onClick={() => setGlobalState({
+            taskManagerState: !taskManagerState
+          })} >
+            <Icon path={mdiFullscreen} size={1} color='rgba(255, 255, 255, 1)' />
+          </IconButton>
+        </div>
       </Toolbar>
-    </AppBar>}
+    </AppBar>
+
+    {launcherState && <Grid container>
+      {Object.keys(apps).map(pkg => {
+        const { icon, name } = apps[pkg];
+        return <Grid item xs={6}>
+          <Button
+            size='large'
+            onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
+            startIcon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
+          >
+            {name}
+          </Button>
+        </Grid>;
+      })}
+    </Grid>}
 
     {Object.keys(tasks).map((key) => {
       const {
-        pkg, page, state, windowInfo: { title }
+        pkg, page, state
       } = tasks[key];
-
       return <>
-        <AppBar>
-          <IconButton onClick={() => setGlobalState({ drawerState: !drawerState })}>
-            <Icon path={apps[pkg].icon} size={1} color='rgba(0, 0, 0, 1)' />
-          </IconButton>
-          <Toolbar>
-            {`${apps[pkg].name} ${title}`}
-          </Toolbar>
-        </AppBar>
         {getAppComponent(pkg, page)(propsGenerator(key, page, state))}
-
         <Drawer
           anchor='left'
           open={drawerState}
           onClose={() => setGlobalState({ drawerState: false })}
         >
-          {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, state))}
+          <div className={css`
+            width: ${window.innerHeight * 0.4};
+          `}>
+            {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, state))}
+          </div>
         </Drawer>
       </>;
     })}
-  </div>;
+  </div >;
 }
