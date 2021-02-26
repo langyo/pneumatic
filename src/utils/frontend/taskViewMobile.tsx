@@ -1,7 +1,6 @@
 import React, { useContext } from 'react';
 import {
-  useScrollTrigger,
-  Button, IconButton, Drawer, Grid, AppBar, Toolbar, Typography,
+  Button, IconButton, Drawer, Grid, AppBar, Toolbar, Typography, Paper,
   List, ListItem, ListItemText, ListItemSecondaryAction, ListSubheader
 } from '@material-ui/core';
 import { css } from '@emotion/css';
@@ -61,8 +60,8 @@ export function TaskViewMobile() {
               <IconButton onClick={() => (
                 setActiveTask(key),
                 setGlobalState({
-                  drawerState: false,
-                  launcherState: false
+                  launcherState: false,
+                  taskManagerState: false
                 })
               )}>
                 <Icon path={mdiArrowRight} size={1} color='rgba(0, 0, 0, 1)' />
@@ -119,40 +118,45 @@ export function TaskViewMobile() {
         {launcherState && <Typography variant='h6'>
           {'Launcher'}
         </Typography>}
-        <div className={css`
+        {Object.keys(tasks).length > 0 && <div className={css`
           margin-left: auto;
         `}>
           <IconButton onClick={() => setGlobalState({
-            taskManagerState: !taskManagerState
+            taskManagerState: true
           })} >
             <Icon path={mdiFullscreen} size={1} color='rgba(255, 255, 255, 1)' />
           </IconButton>
-        </div>
+        </div>}
       </Toolbar>
     </AppBar>
 
-    {launcherState && <Grid container>
-      {Object.keys(apps).map(pkg => {
-        const { icon, name } = apps[pkg];
-        return <Grid item xs={6}>
-          <Button
-            size='large'
-            onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
-            startIcon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
-          >
-            {name}
-          </Button>
-        </Grid>;
-      })}
-    </Grid>}
+    {launcherState && <Paper className={css`
+      width: 100%;
+      height: 100%;
+    `}>
+      <Grid container>
+        {Object.keys(apps).map(pkg => {
+          const { icon, name } = apps[pkg];
+          return <Grid item xs={6}>
+            <Button
+              size='large'
+              onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
+              startIcon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
+            >
+              {name}
+            </Button>
+          </Grid>;
+        })}
+      </Grid>
+    </Paper>}
 
     {Object.keys(tasks).map((key) => {
       const {
-        pkg, page, state
+        pkg, page, state, windowInfo: { status }
       } = tasks[key];
       return <>
-        {getAppComponent(pkg, page)(propsGenerator(key, page, state))}
-        <Drawer
+        {status === 'active' && getAppComponent(pkg, page)(propsGenerator(key, page, state))}
+        {status === 'active' && <Drawer
           anchor='left'
           open={drawerState}
           onClose={() => setGlobalState({ drawerState: false })}
@@ -162,7 +166,7 @@ export function TaskViewMobile() {
           `}>
             {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, state))}
           </div>
-        </Drawer>
+        </Drawer>}
       </>;
     })}
   </div >;

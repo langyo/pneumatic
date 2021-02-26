@@ -86,7 +86,15 @@ export function ApplicationProvider({ children }: { children?: any }) {
           console.log(`The application '${pkg}' has loaded.`);
           appCache[pkg] = module;
         }).catch(e => console.error(e));
-        return () => <CircularProgress />;
+        return () => <div className={css`
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        `}>
+          <CircularProgress />
+        </div>;
       }
     },
     pushApp(pkg: string, app: IApp) { setApps({ ...apps, [pkg]: app }); }
