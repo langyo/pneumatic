@@ -31,7 +31,7 @@ export function ThemeProvider({ children }: { children?: any }) {
         `background: url(${basicTheme.background.value}) no-repeat top left scroll;` :
         ''}
       background-size: cover;
-      opacity: 0.3;
+      opacity: 0.5;
     `} />
     <div className={css`
       font-family: -apple-system,BlinkMacSystemFont,Helvetica Neue,Helvetica,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,sans-serif;

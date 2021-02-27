@@ -39,7 +39,7 @@ export function TaskViewDesktop() {
       const {
         pkg, page, state,
         windowInfo: {
-          status, left, top, width, height, title, priority
+          left, top, width, height, title, priority
         }
       } = tasks[key];
 
@@ -55,10 +55,12 @@ export function TaskViewDesktop() {
           position: fixed;
           z-index: ${5000 + priority};
         `}>
-          <Paper className={css`
-            width: ${width}px;
-            height: ${height}px;
-          `}
+          <Paper
+            className={css`
+              width: ${width}px;
+              height: ${height}px;
+            `}
+            elevation={3}
           >
             <div className={css`
               width: 100%;
@@ -161,6 +163,8 @@ export function TaskViewDesktop() {
         'border-left: none;' : 'border-right: none;'}
       border-radius: ${taskManagerPosition.direction === 'left' ?
         '0px 2px 2px 0px' : '2px 0px 0px 2px'};
+      box-shadow: ${taskManagerPosition.direction === 'left' ?
+        '1px 1px' : '-1px 1px'} 2px rgba(0, 0, 0, 0.5);
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
