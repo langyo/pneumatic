@@ -6,6 +6,7 @@ import {
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
 import { mdiArrowRight, mdiClose, mdiFullscreen } from '@mdi/js';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import {
   TaskManagerContext, IWindowInfo, ITaskManagerContext
@@ -31,6 +32,9 @@ export function TaskViewMobile() {
     position: fixed;
     height: 100%;
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
     user-select: none;
   `}>
     <Drawer
@@ -109,9 +113,20 @@ export function TaskViewMobile() {
                   <Icon path={apps[pkg].icon} size={1} color='rgba(255, 255, 255, 1)' />
                 </IconButton>
               </div>
-              <Typography variant='h6'>
-                {`${apps[pkg].name} ${title}`}
-              </Typography>
+              {title !== '' && <div className={css`
+                display: flex;
+                flex-direction: column;
+              `}>
+                <Typography variant='subtitle1'>
+                  {apps[pkg].name}
+                </Typography>
+                <Typography variant='subtitle2'>
+                  {title}
+                </Typography>
+              </div>}
+              {title === '' && <Typography variant='h6'>
+                {apps[pkg].name}
+              </Typography>}
             </>}
           </>;
         })}
@@ -130,9 +145,9 @@ export function TaskViewMobile() {
       </Toolbar>
     </AppBar>
 
-    {launcherState && <Paper className={css`
+    {launcherState && <div className={css`
       width: 100%;
-      height: 100%;
+      padding: 8px;
     `}>
       <Grid container>
         {Object.keys(apps).map(pkg => {
@@ -148,14 +163,19 @@ export function TaskViewMobile() {
           </Grid>;
         })}
       </Grid>
-    </Paper>}
+    </div>}
 
     {Object.keys(tasks).map((key) => {
       const {
         pkg, page, state, windowInfo: { status }
       } = tasks[key];
       return <>
-        {status === 'active' && getAppComponent(pkg, page)(propsGenerator(key, page, state))}
+        <Scrollbars className={css`
+          width: 100%;
+          height: 100%;
+        `}>
+          {status === 'active' && getAppComponent(pkg, page)(propsGenerator(key, page, state))}
+        </Scrollbars>
         {status === 'active' && <Drawer
           anchor='left'
           open={drawerState}
@@ -163,8 +183,14 @@ export function TaskViewMobile() {
         >
           <div className={css`
             width: ${window.innerHeight * 0.4};
+            height: 100%;
           `}>
-            {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, state))}
+            <Scrollbars className={css`
+              width: 100%;
+              height: 100%;
+            `}>
+              {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, state))}
+            </Scrollbars>
           </div>
         </Drawer>}
       </>;
