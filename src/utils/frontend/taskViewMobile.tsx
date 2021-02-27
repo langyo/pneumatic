@@ -103,10 +103,10 @@ export function TaskViewMobile() {
         {Object.keys(tasks).map((key) => {
           const { pkg, windowInfo: { status, title } } = tasks[key];
           return <>
-            {status === 'active' && <>
+            {status === 'active' && !launcherState && <>
               <div className={css`
-              margin-right: 8px;
-            `}>
+                margin-right: 8px;
+              `}>
                 <IconButton onClick={() => setGlobalState({
                   drawerState: true
                 })}>
