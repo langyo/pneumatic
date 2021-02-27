@@ -25,42 +25,6 @@ export type IApps = { [pkg: string]: IApp };
 export type IGetAppComponent = (pkg: string, page?: string) => (props: any) => React.Component | any;
 export type IPushApp = (pkg: string, app: IApp) => void;
 
-export const defaultApp: IApps = {
-  'pneumatic.explorer': {
-    icon: mdiFolderOutline, name: 'Explorer',
-    defaultState: { path: '/' },
-    defaultWindowInfo: { title: (_page, { path }) => path }
-  },
-  'pneumatic.monitor': {
-    icon: mdiMemory, name: 'Monitor',
-    defaultPage: 'hardware',
-    defaultWindowInfo: { title: (_page, _data) => 'Hardware' }
-  },
-  'pneumatic.browser': {
-    icon: mdiWeb, name: 'Proxy browser',
-    defaultState: { url: 'https://github.com/' },
-    defaultWindowInfo: { title: (_page, { url }) => /^https?:\/\/([^\/]+)\/.*/.exec(url)[1] }
-  },
-  'pneumatic.database': {
-    icon: mdiDatabase, name: 'Database manager'
-  },
-  'pneumatic.plan': {
-    icon: mdiFormatListChecks, name: 'Plan tasks'
-  },
-  'pneumatic.terminal': {
-    icon: mdiConsole, name: 'Terminal'
-  },
-  'pneumatic.theme': {
-    icon: mdiPaletteOutline, name: 'Theme setting'
-  },
-  'pneumatic.market': {
-    icon: mdiApps, name: 'Application market'
-  },
-  'pneumatic.setting': {
-    icon: mdiCogOutline, name: 'Setting'
-  }
-};
-
 export const ApplicationProviderContext = createContext({} as IApplicationProviderContext);
 
 export interface IApplicationProviderContext {
@@ -74,7 +38,41 @@ let appCache: {
 } = {};
 
 export function ApplicationProvider({ children }: { children?: any }) {
-  const [apps, setApps]: [IApps, (apps: IApps) => void] = useState(defaultApp);
+  const [apps, setApps]: [IApps, (apps: IApps) => void] = useState({
+    'pneumatic.explorer': {
+      icon: mdiFolderOutline, name: 'Explorer',
+      defaultState: { path: '/' },
+      defaultWindowInfo: { title: (_page, { path }) => path }
+    },
+    'pneumatic.monitor': {
+      icon: mdiMemory, name: 'Monitor',
+      defaultPage: 'hardware',
+      defaultWindowInfo: { title: (_page, _data) => 'Hardware' }
+    },
+    'pneumatic.browser': {
+      icon: mdiWeb, name: 'Proxy browser',
+      defaultState: { url: 'https://github.com/' },
+      defaultWindowInfo: { title: (_page, { url }) => /^https?:\/\/([^\/]+)\/.*/.exec(url)[1] }
+    },
+    'pneumatic.database': {
+      icon: mdiDatabase, name: 'Database manager'
+    },
+    'pneumatic.plan': {
+      icon: mdiFormatListChecks, name: 'Plan tasks'
+    },
+    'pneumatic.terminal': {
+      icon: mdiConsole, name: 'Terminal'
+    },
+    'pneumatic.theme': {
+      icon: mdiPaletteOutline, name: 'Theme setting'
+    },
+    'pneumatic.market': {
+      icon: mdiApps, name: 'Application market'
+    },
+    'pneumatic.setting': {
+      icon: mdiCogOutline, name: 'Setting'
+    }
+  } as IApps);
 
   return <ApplicationProviderContext.Provider value={{
     apps,

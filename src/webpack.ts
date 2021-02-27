@@ -7,6 +7,7 @@ import { Union } from 'unionfs'
 import * as realFs from 'fs';
 import { Script, createContext } from 'vm';
 
+import { v4 } from 'uuid';
 import { EventEmitter } from 'events';
 import { log } from './utils/backend/logger';
 
@@ -32,7 +33,7 @@ const globalConfig = {
     ]
   },
   resolve: {
-    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+    extensions: ['.js', '.jsx', '.mjs', '.ts', '.tsx'],
     modules: [
       join(process.cwd(), './node_modules'),
       'node_modules'
@@ -45,6 +46,10 @@ const globalConfig = {
     ]
   }
 }
+
+let clientBundleId = {
+  main: v4()
+};
 
 const clientSideFs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
   [join(process.cwd(), './main.ts')]: `
@@ -63,13 +68,15 @@ clientSideFs['join'] = join;
 
 const clientSideCompiler = webpack({
   ...globalConfig,
-  entry: join(process.cwd(), './main.ts'),
+  entry: {
+    main: join(process.cwd(), './main.ts')
+  },
   mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
   output: {
-    filename: '[name].js',
+    filename: '[name].bundle.js',
     path: process.cwd()
   },
-  devtool: process.env.NODE_ENV === 'production' ? 'none' : 'source-map'
+  devtool: process.env.NODE_ENV === 'production' ? 'none' : 'inline-source-map'
 });
 clientSideCompiler.inputFileSystem = clientSideFs;
 clientSideCompiler.outputFileSystem = clientSideFs;
@@ -102,12 +109,12 @@ export async function clientSideMiddleware(
   ctx: Koa.BaseContext,
   next: () => Promise<unknown>
 ) {
+  const entryId = clientBundleId.main;
+
   switch (ctx.path) {
-    case '/main.js':
-      ctx.body = clientSideFs.readFileSync(join(process.cwd(), '/main.js'), 'utf8');
-      break;
-    case '/main.js.map':
-      ctx.body = clientSideFs.readFileSync(join(process.cwd(), '/main.js.map'), 'utf8');
+    case `/${entryId}`:
+      ctx.body = clientSideFs.readFileSync(join(process.cwd(), '/main.bundle.js'), 'utf8');
+      ctx.type = 'application/javascript';
       break;
     case '/':
       ctx.body = `<html>
@@ -120,9 +127,10 @@ export async function clientSideMiddleware(
           ${ctx.query.debug === '1' && `
           <script src='//cdn.jsdelivr.net/npm/eruda'></script><script>eruda.init();</script>
           ` || ``}
-          <script src='/main.js'></script>
+          <script src='/${entryId}'></script>
         </body>
       </html>`;
+      ctx.type = 'text/html';
       break;
     default:
       await next();
