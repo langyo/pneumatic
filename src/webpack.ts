@@ -48,12 +48,14 @@ const globalConfig = {
   }
 }
 
-let clientBundleRouteId = {
+let clientBundleIdMap = {
   main: generateId()
 };
 
 const clientSideFs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
   [join(process.cwd(), './main.ts')]: `
+import './id';
+
 import { render } from 'react-dom';
 import { createElement } from 'react';
 render(
@@ -93,13 +95,9 @@ export async function clientSideMiddleware(
   ctx: Koa.BaseContext,
   next: () => Promise<unknown>
 ) {
-  const entryId = clientBundleRouteId.main;
+  const entryId = clientBundleIdMap.main;
 
   switch (ctx.path) {
-    case `/${entryId}`:
-      ctx.body = clientSideFs.readFileSync(join(process.cwd(), '/main.bundle.js'), 'utf8');
-      ctx.type = 'application/javascript';
-      break;
     case '/':
       ctx.body = `<html>
         <head>
@@ -117,6 +115,13 @@ export async function clientSideMiddleware(
       ctx.type = 'text/html';
       break;
     default:
+      for (const pkg of Object.keys(clientBundleIdMap)) {
+        if (ctx.path === `/${clientBundleIdMap[pkg]}`) {
+          ctx.body = clientSideFs.readFileSync(join(process.cwd(), `/${pkg}.bundle.js`), 'utf8');
+          ctx.type = 'application/javascript';
+          break;
+        }
+      }
       await next();
   }
 }
@@ -196,16 +201,52 @@ let watcherWaitingState = {
   firstChange: false,
   continueChange: false
 };
+
+function clientVirtualEntryGenerator() {
+  for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
+    let externalFilename = '';
+    for (const ex of ['.js', '.jsx', '.mjs', '.ts', '.tsx']) {
+      if (realFs.existsSync(join(__dirname, 'apps', pkgName, 'frontend' + ex))) {
+        externalFilename = ex;
+      }
+    }
+    if (externalFilename !== '') {
+      const id = clientBundleIdMap[`pneumatic.${pkgName}`] = generateId();
+      const path = join(
+        __dirname, 'apps', pkgName, 'frontend' + externalFilename
+      ).split('\\').join('\\\\');
+      const body = `
+        if (window.__applications) {
+          window.__applications['${id}'] = require("${path}");
+        } else {
+          throw Error('Cannot register the application.');
+        }
+      `;
+      clientSideFs.writeFileSync(join(process.cwd(), `pneumatic.${pkgName}.ts`), body);
+    }
+  }
+
+  clientSideFs.writeFileSync(join(process.cwd(), 'id.ts'), `
+    window.__applicationIdMap = ${JSON.stringify(clientBundleIdMap)};
+    window.__applications = {};
+  `);
+}
+
 function watcherTrigger() {
   if (!watcherWaitingState.continueChange) {
     log('info', 'Compiling the codes.');
     watcherWaitingState.firstChange = false;
     watcherWaitingState.continueChange = false;
 
+    clientVirtualEntryGenerator();
     const clientSideCompiler = webpack({
       ...globalConfig,
       entry: {
-        main: join(process.cwd(), './main.ts')
+        main: join(process.cwd(), './main.ts'),
+        ...(Object.keys(clientBundleIdMap).reduce((obj, pkg) => ({
+          ...obj,
+          [pkg]: join(process.cwd(), `${pkg}.ts`)
+        }), {}))
       },
       mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
       output: {
@@ -237,9 +278,10 @@ function watcherTrigger() {
     setTimeout(watcherTrigger, 3000);
   }
 }
+
 watchFiles(__dirname, {
   ignored: /^(node_modules)|(\.git)$/
-}).on('all', (_event, path) => {
+}).on('all', () => {
   if (!watcherWaitingState.firstChange) {
     watcherWaitingState.firstChange = true;
     setTimeout(watcherTrigger, 3000);

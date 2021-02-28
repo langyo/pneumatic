@@ -1,5 +1,5 @@
-import React, { createContext, useState } from 'react';
-import { CircularProgress } from '@material-ui/core';
+import React, { createContext, useState, useEffect } from 'react';
+import { CircularProgress, Fade } from '@material-ui/core';
 import {
   mdiFolderOutline, mdiMemory,
   mdiWeb, mdiDatabase, mdiFormatListChecks,
@@ -33,9 +33,17 @@ export interface IApplicationProviderContext {
   pushApp: IPushApp
 }
 
-let appCache: {
-  [pkg: string]: { [page: string]: (props: any) => React.Component }
-} = {};
+declare global {
+  interface Window {
+    __applications: {
+      [id: string]: { [page: string]: (props: any) => React.Component }
+    },
+    __applicationIdMap: {
+      [pkg: string]: string
+    }
+  }
+}
+let applicationRegistryList: string[] = [];
 
 export function ApplicationProvider({ children }: { children?: any }) {
   const [apps, setApps]: [IApps, (apps: IApps) => void] = useState({
@@ -77,26 +85,45 @@ export function ApplicationProvider({ children }: { children?: any }) {
   return <ApplicationProviderContext.Provider value={{
     apps,
     getAppComponent(pkg: string, page: string = 'default') {
-      if (appCache[pkg] && appCache[pkg][page]) {
-        return appCache[pkg][page];
-      } else {
-        import(pkg).then(module => {
-          console.log(`The application '${pkg}' has loaded.`);
-          appCache[pkg] = module;
-        }).catch(e => console.error(e));
-        return () => <div className={css`
-          width: 100%;
-          height: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        `}>
-          <CircularProgress />
-        </div>;
+      const id = window.__applicationIdMap[pkg];
+      if (!id) {
+        throw Error(`Cannot find the application '${pkg}'.`);
+      }
+
+      return () => {
+        const [loading, setLoading] = useState(true);
+        useEffect(() => {
+          if (applicationRegistryList.indexOf(id) < 0) {
+            applicationRegistryList.push(id);
+            let node = document.createElement('script');
+            node.src = `/${window.__applicationIdMap[pkg]}`;
+            document.body.appendChild(node);
+          }
+
+          const handler = setInterval(() => {
+            if (window.__applications[id]) {
+              clearInterval(handler);
+              setLoading(false);
+            }
+          }, 1000);
+        }, []);
+
+        return <>
+          {window.__applications[id] && window.__applications[id]?.components[page]}
+          {loading && <div className={css`
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          `}>
+            <CircularProgress />
+          </div>}
+        </>;
       }
     },
     pushApp(pkg: string, app: IApp) { setApps({ ...apps, [pkg]: app }); }
   }}>
     {children}
-  </ApplicationProviderContext.Provider>;
+  </ApplicationProviderContext.Provider >;
 }
