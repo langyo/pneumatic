@@ -8,7 +8,7 @@ const logLevelMap = {
   error: bgYellow(red('ERROR'))
 }
 
-export function log(type: ILogLevel, message: string, ...extraMessage: string[]) {
+export function log(type: ILogLevel, message: string | any, ...extraMessage: string[] | any[]) {
   console.log(
     bold((new Date()).toLocaleString()),
     logLevelMap[type],

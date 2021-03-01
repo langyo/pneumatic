@@ -49,7 +49,9 @@ const globalConfig = {
 }
 
 let clientBundleIdMap = {
-  main: generateId()
+  main: generateId(),
+  vendor: generateId(),
+  runtime: generateId()
 };
 
 const clientSideFs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
@@ -95,7 +97,6 @@ export async function clientSideMiddleware(
   ctx: Koa.BaseContext,
   next: () => Promise<unknown>
 ) {
-  const entryId = clientBundleIdMap.main;
 
   switch (ctx.path) {
     case '/':
@@ -109,7 +110,9 @@ export async function clientSideMiddleware(
           ${ctx.query.debug === '1' && `
           <script src='//cdn.jsdelivr.net/npm/eruda'></script><script>eruda.init();</script>
           ` || ``}
-          <script src='/${entryId}'></script>
+          <script src='/${clientBundleIdMap.vendor}'></script>
+          <script src='/${clientBundleIdMap.runtime}'></script>
+          <script src='/${clientBundleIdMap.main}'></script>
         </body>
       </html>`;
       ctx.type = 'text/html';
@@ -243,7 +246,9 @@ function watcherTrigger() {
       ...globalConfig,
       entry: {
         main: join(process.cwd(), './main.ts'),
-        ...(Object.keys(clientBundleIdMap).reduce((obj, pkg) => ({
+        ...(Object.keys(clientBundleIdMap).filter(
+          n => ['main', 'vendor', 'runtime'].indexOf(n) < 0
+        ).reduce((obj, pkg) => ({
           ...obj,
           [pkg]: join(process.cwd(), `${pkg}.ts`)
         }), {}))
@@ -252,6 +257,21 @@ function watcherTrigger() {
       output: {
         filename: '[name].bundle.js',
         path: process.cwd()
+      },
+      optimization: {
+        splitChunks: {
+          chunks: 'all',
+          automaticNameDelimiter: '.',
+          cacheGroups: {
+            vendor: {
+              test: /node_modules/,
+              chunks: 'initial',
+              name: 'vendor',
+              enforce: true
+            }
+          }
+        },
+        runtimeChunk: 'single'
       },
       devtool: process.env.NODE_ENV === 'production' ? 'none' : 'inline-source-map'
     });
