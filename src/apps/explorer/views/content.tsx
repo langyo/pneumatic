@@ -24,7 +24,7 @@ function ContentItem({ iconPath, title }) {
       background: rgba(0.5, 0.5, 0.5, 0.2);
     }
   `}>
-    <Icon path={iconPath} size={2} color='rgba(255, 255, 255, 1)' />
+    <Icon path={iconPath} size={2} color='rgba(0, 0, 0, 1)' />
     <p className={css`
       margin: 0px;
       line-height: 24px;
@@ -42,7 +42,7 @@ function ContentItem({ iconPath, title }) {
 
 export function Content({ }) {
   return <div className={css`
-    color: rgba(255, 255, 255, 1);
+    color: rgba(0, 0, 0, 1);
   `}>
     <div className={css`
       font-size: 32px;
@@ -95,7 +95,7 @@ export function Content({ }) {
                 background: rgba(0.5, 0.5, 0.5, 0.2);
               }
             `}>
-              <Icon path={mdiMenuRight} size={0.8} color='rgba(255, 255, 255, 1)' />
+              <Icon path={mdiMenuRight} size={0.8} color='rgba(0, 0, 0, 1)' />
             </div>
           ],
           [
@@ -108,7 +108,7 @@ export function Content({ }) {
                 background: rgba(0.5, 0.5, 0.5, 0.2);
               }
             `}>
-              <Icon path={mdiMenuDown} size={0.8} color='rgba(255, 255, 255, 1)' />
+              <Icon path={mdiMenuDown} size={0.8} color='rgba(0, 0, 0, 1)' />
             </div>
           ]
         )

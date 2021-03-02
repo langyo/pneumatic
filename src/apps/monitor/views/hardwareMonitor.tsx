@@ -49,7 +49,7 @@ export function HardwareMonitor({ state }) {
   const { freeMem, totalMem } = state;
 
   return <div className={css`
-    color: rgba(255, 255, 255, 1);
+    color: rgba(0, 0, 0, 1);
   `}>
     <div className={css`
       font-size: 32px;

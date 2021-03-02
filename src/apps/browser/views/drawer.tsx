@@ -17,7 +17,7 @@ export function Drawer({ }) {
     align-items: center;
     align-content: flex-start;
     user-select: none;
-    color: rgba(255, 255, 255, 1);
+    color: rgba(0, 0, 0, 1);
   `}>
     <div className={css`
       width: 80%;

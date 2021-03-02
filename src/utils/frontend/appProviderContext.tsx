@@ -90,8 +90,8 @@ export function ApplicationProvider({ children }: { children?: any }) {
         throw Error(`Cannot find the application '${pkg}'.`);
       }
 
-      return () => {
-        const [loading, setLoading] = useState(true);
+      return (props) => {
+        const [loading, setLoading] = useState(applicationRegistryList.indexOf(id) < 0);
         useEffect(() => {
           if (applicationRegistryList.indexOf(id) < 0) {
             applicationRegistryList.push(id);
@@ -109,7 +109,11 @@ export function ApplicationProvider({ children }: { children?: any }) {
         }, []);
 
         return <>
-          {window.__applications[id] && window.__applications[id]?.components[page]}
+          {
+            window.__applications[id] &&
+            window.__applications[id]?.components[page] &&
+            window.__applications[id]?.components[page](props)
+          }
           {loading && <div className={css`
             width: 100%;
             height: 100%;

@@ -170,13 +170,13 @@ export function TaskViewMobile() {
         pkg, page, state, windowInfo: { status }
       } = tasks[key];
       return <>
-        <Scrollbars className={css`
+        {status === 'active' && !launcherState && <Scrollbars className={css`
           width: 100%;
           height: 100%;
         `}>
-          {status === 'active' && getAppComponent(pkg, page)(propsGenerator(key, page, state))}
-        </Scrollbars>
-        {status === 'active' && <Drawer
+          {getAppComponent(pkg, page)(propsGenerator(key, page, state))}
+        </Scrollbars>}
+        {status === 'active' && !launcherState && <Drawer
           anchor='left'
           open={drawerState}
           onClose={() => setGlobalState({ drawerState: false })}
