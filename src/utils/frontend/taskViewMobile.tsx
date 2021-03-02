@@ -1,7 +1,8 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
-  Button, IconButton, Drawer, Grid, AppBar, Toolbar, Typography, Paper,
-  List, ListItem, ListItemText, ListItemSecondaryAction, ListSubheader
+  Button, IconButton, Drawer, Grid, AppBar, Toolbar, Typography,
+  List, ListItem, ListItemText, ListItemSecondaryAction, ListSubheader,
+  CircularProgress
 } from '@material-ui/core';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
@@ -15,7 +16,6 @@ import {
   ApplicationProviderContext, IApplicationProviderContext
 } from './appProviderContext';
 
-
 export function TaskViewMobile() {
   const {
     tasks, generateTask, destoryTask,
@@ -25,8 +25,10 @@ export function TaskViewMobile() {
     }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
   const {
-    apps, getAppComponent
+    apps, appRegistryStatus, getAppComponent
   }: IApplicationProviderContext = useContext(ApplicationProviderContext);
+
+  useEffect(() => { }, [appRegistryStatus]);
 
   return <div className={css`
     position: fixed;

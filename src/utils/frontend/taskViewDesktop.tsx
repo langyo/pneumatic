@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Paper, Typography, Tooltip, IconButton, Button, Grid,
-  Dialog, DialogTitle, DialogContent
+  Dialog, DialogTitle, DialogContent, CircularProgress
 } from '@material-ui/core';
 import Draggable, { DraggableData } from 'react-draggable';
 import { css, cx } from '@emotion/css';
@@ -23,12 +23,10 @@ export function TaskViewDesktop() {
     globalState: { launcherState, taskManagerPosition }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
   const {
-    apps, getAppComponent
+    apps, appRegistryStatus, getAppComponent
   }: IApplicationProviderContext = useContext(ApplicationProviderContext);
 
-  const activeTaskId = Object.keys(tasks).find(
-    (id: string) => tasks[id].windowInfo.status === 'active' ? id : undefined
-  );
+  useEffect(() => { }, [appRegistryStatus]);
 
   return <div className={css`
     position: fixed;

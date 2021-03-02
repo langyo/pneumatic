@@ -29,6 +29,7 @@ export const ApplicationProviderContext = createContext({} as IApplicationProvid
 
 export interface IApplicationProviderContext {
   apps: IApps,
+  appRegistryStatus: string[],
   getAppComponent: IGetAppComponent,
   pushApp: IPushApp
 }
@@ -43,7 +44,6 @@ declare global {
     }
   }
 }
-let applicationRegistryList: string[] = [];
 
 export function ApplicationProvider({ children }: { children?: any }) {
   const [apps, setApps]: [IApps, (apps: IApps) => void] = useState({
@@ -81,49 +81,41 @@ export function ApplicationProvider({ children }: { children?: any }) {
       icon: mdiCogOutline, name: 'Setting'
     }
   } as IApps);
+  const [appRegistryStatus, setAppRegistryStatus]: [
+    string[], (str: string[]) => void
+  ] = useState([]);
 
   return <ApplicationProviderContext.Provider value={{
-    apps,
+    apps, appRegistryStatus,
     getAppComponent(pkg: string, page: string = 'default') {
       const id = window.__applicationIdMap[pkg];
       if (!id) {
         throw Error(`Cannot find the application '${pkg}'.`);
       }
 
-      return (props) => {
-        const [loading, setLoading] = useState(applicationRegistryList.indexOf(id) < 0);
-        useEffect(() => {
-          if (applicationRegistryList.indexOf(id) < 0) {
-            applicationRegistryList.push(id);
-            let node = document.createElement('script');
-            node.src = `/${window.__applicationIdMap[pkg]}`;
-            document.body.appendChild(node);
-          }
+      if (appRegistryStatus.indexOf(pkg) < 0) {
+        let node = document.createElement('script');
+        node.src = `/${window.__applicationIdMap[pkg]}`;
+        document.body.appendChild(node);
 
-          const handler = setInterval(() => {
-            if (window.__applications[id]) {
-              clearInterval(handler);
-              setLoading(false);
-            }
-          }, 1000);
-        }, []);
-
-        return <>
-          {
-            window.__applications[id] &&
-            window.__applications[id]?.components[page] &&
-            window.__applications[id]?.components[page](props)
+        const handler = setInterval(() => {
+          if (window.__applications[id]) {
+            clearInterval(handler);
+            setAppRegistryStatus([...appRegistryStatus, pkg]);
           }
-          {loading && <div className={css`
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-          `}>
-            <CircularProgress />
-          </div>}
-        </>;
+        }, 1000);
+
+        return () => <div className={css`
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        `}>
+          <CircularProgress />
+        </div>;
+      } else {
+        return window.__applications[id]?.components[page];
       }
     },
     pushApp(pkg: string, app: IApp) { setApps({ ...apps, [pkg]: app }); }
