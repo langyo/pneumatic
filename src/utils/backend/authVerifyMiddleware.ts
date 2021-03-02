@@ -1,6 +1,6 @@
 import * as Koa from 'koa';
 import { v4 as generateUUID } from 'uuid';
-import { accounts } from './configLoader';
+import { config } from './configLoader';
 import { log } from './logger';
 
 interface IConnection {
@@ -22,7 +22,7 @@ export function authLoginMiddleware(path: string) {
         ctx.throw(406, 'Json only.');
       } else {
         const { userName, signedPassword } = ctx.request.body;
-        if (accounts[userName] && accounts[userName] === signedPassword) {
+        if (config.accounts[userName] && config.accounts[userName] === signedPassword) {
           const token = generateUUID();
           connections[token] = {
             birth: new Date(),

@@ -11,6 +11,7 @@ import {
   clientSideMiddleware, serverSideMiddleware, serverSideLongtermMiddleware
 } from './webpack';
 import { log } from './utils/backend/logger';
+import { config } from './utils/backend/configLoader';
 
 const app = new Koa();
 app.use(bodyParserMiddleware());
@@ -43,6 +44,7 @@ wss.on('connection', (ws, req) => {
       try {
         const { head, data } = JSON.parse(msg);
         log('info', `Ws(${ip}):`, head);
+        // TODO - Move to server entry.
         if (head === '#init') {
           const { id, pkg } = data;
           if (!serverSideLongtermMiddleware[pkg]) {
@@ -74,6 +76,10 @@ wss.on('connection', (ws, req) => {
           ws.send(JSON.stringify({
             head: '#destory', data: { status: 'success', id }
           }));
+        } else if (head === '#get-applications') {
+          ws.send(JSON.stringify({
+            head: '#get-applications', data: config.applications
+          }))
         } else {
           if (!emitters[head]) {
             ws.send(JSON.stringify({

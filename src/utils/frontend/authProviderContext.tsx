@@ -5,8 +5,36 @@ import axios from 'axios';
 
 import { signSaltPassword } from '../authVerifyTools';
 
-export let wsConnection: WebSocket;
-export let wsEventEmitter = new EventEmitter();
+let wsConnection: WebSocket;
+let wsEventEmitter = new EventEmitter();
+export const wsSocket = Object.seal({
+  send(head: string, data: { [key: string]: any } = {}) {
+    wsEventEmitter.emit('send', JSON.stringify({ head, data }));
+    console.log('sended', head, data);
+  },
+  receive(
+    inputHead: string | '*',
+    callback: (data: { [key: string]: any }, id?: string) => void
+  ) {
+    wsEventEmitter.on('message', (input: string) => {
+      try {
+        const { head, data } = JSON.parse(input);
+        console.log('received', head, data);
+        if (inputHead === '*') {
+          if (head[0] !== '#') {
+            callback(data, inputHead);
+          }
+        } else if (head === inputHead) {
+          callback(data);
+        } else {
+          console.error(Error(`Unknown WebSocket message head: ${head}`));
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    });
+  }
+});
 
 export const AuthProviderContext = createContext({} as IAuthProviderContext);
 
@@ -49,7 +77,7 @@ export function AuthProvider({ children }: { children?: any }) {
           });
           wsConnection.addEventListener('error', (e) => {
             console.error(e);
-          })
+          });
         } else {
           alert('Wrong user name or password!');
         }

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { wsEventEmitter } from './authProviderContext';
+import { wsSocket } from './authProviderContext';
 import { ApplicationProviderContext, IApp } from './appProviderContext';
 import { ThemeProviderContext } from './themeProviderContext';
 import { generate } from 'shortid';
@@ -110,36 +110,30 @@ export function TaskManager({ children }: { children?: any }) {
   }, [media]);
 
   useEffect(() => {
-    wsEventEmitter.on('message', (msg: string) => {
-      try {
-        const { head, data } = JSON.parse(msg);
-        if (head === '#init') {
-          _setTasks(tasks => ({
-            ...tasks,
-            [data.id]: {
-              ...tasks[data.id],
-              connection: 'access'
-            }
-          }));
-        } else if (head === '#destory') {
-          return;
-        } else if (head === '#error') {
-          console.error('WebSocket:', data.msg);
-        } else {
-          _setTasks(tasks => ({
-            ...tasks,
-            [head]: {
-              ...tasks[head],
-              state: {
-                ...tasks[head].state,
-                ...data
-              }
-            }
-          }));
+    wsSocket.receive('#init', data => {
+      _setTasks(tasks => ({
+        ...tasks,
+        [data.id]: {
+          ...tasks[data.id],
+          connection: 'access'
         }
-      } catch (e) {
-        console.error(e);
-      }
+      }));
+    });
+    wsSocket.receive('#destory', _data => { });
+    wsSocket.receive('#error', data => {
+      console.error('WebSocket:', data.msg);
+    });
+    wsSocket.receive('*', (data, id) => {
+      _setTasks(tasks => ({
+        ...tasks,
+        [id]: {
+          ...tasks[id],
+          state: {
+            ...tasks[id].state,
+            ...data
+          }
+        }
+      }));
     })
   }, []);
 
@@ -147,7 +141,7 @@ export function TaskManager({ children }: { children?: any }) {
     pkg: string, page?: string, initState?: IState
   ) {
     const id = generate();
-    wsEventEmitter.emit('send', { head: '#init', data: { id, pkg } });
+    wsSocket.send('#init', { id, pkg });
     _setTasks(tasks => Object.keys(tasks).reduce((obj, id: string) => ({
       ...obj,
       [id]: {
@@ -192,7 +186,7 @@ export function TaskManager({ children }: { children?: any }) {
   }
 
   function destoryTask(id: string) {
-    wsEventEmitter.emit('send', { head: '#destory', data: { id } });
+    wsSocket.send('#destory', { id });
     _setTasks(tasks => Object.keys(tasks).filter(n => n !== id).reduce(
       (obj: { [key: string]: ITask }, key: string) => ({
         ...obj,

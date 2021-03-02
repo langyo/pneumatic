@@ -11,6 +11,7 @@ declare global {
   ): void;
 };
 
+// TODO - Dynamic construction.
 import { explorerRoute, explorerSocket } from './apps/explorer/backend';
 import { monitorRoute, monitorSocket } from './apps/monitor/backend';
 import { browserRoute, browserSocket } from './apps/browser/backend';

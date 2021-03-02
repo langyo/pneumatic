@@ -1,12 +1,8 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { CircularProgress, Fade } from '@material-ui/core';
-import {
-  mdiFolderOutline, mdiMemory,
-  mdiWeb, mdiDatabase, mdiFormatListChecks,
-  mdiConsole, mdiPaletteOutline, mdiApps, mdiCogOutline
-} from '@mdi/js';
+import { CircularProgress } from '@material-ui/core';
 import { css } from '@emotion/css';
 
+import { wsSocket } from './authProviderContext';
 import { IState, ITaskInfo, IWindowInfo } from './taskManagerContext';
 
 export interface IApp {
@@ -46,44 +42,20 @@ declare global {
 }
 
 export function ApplicationProvider({ children }: { children?: any }) {
-  const [apps, setApps]: [IApps, (apps: IApps) => void] = useState({
-    'pneumatic.explorer': {
-      icon: mdiFolderOutline, name: 'Explorer',
-      defaultState: { path: '/' },
-      defaultWindowInfo: { title: (_page, { path }) => path }
-    },
-    'pneumatic.monitor': {
-      icon: mdiMemory, name: 'Monitor',
-      defaultPage: 'hardware',
-      defaultWindowInfo: { title: (_page, _data) => 'Hardware' }
-    },
-    'pneumatic.browser': {
-      icon: mdiWeb, name: 'Proxy browser',
-      defaultState: { url: 'https://github.com/' },
-      defaultWindowInfo: { title: (_page, { url }) => /^https?:\/\/([^\/]+)\/.*/.exec(url)[1] }
-    },
-    'pneumatic.database': {
-      icon: mdiDatabase, name: 'Database manager'
-    },
-    'pneumatic.plan': {
-      icon: mdiFormatListChecks, name: 'Plan tasks'
-    },
-    'pneumatic.terminal': {
-      icon: mdiConsole, name: 'Terminal'
-    },
-    'pneumatic.theme': {
-      icon: mdiPaletteOutline, name: 'Theme setting'
-    },
-    'pneumatic.market': {
-      icon: mdiApps, name: 'Application market'
-    },
-    'pneumatic.setting': {
-      icon: mdiCogOutline, name: 'Setting'
-    }
-  } as IApps);
+  const [apps, setApps]: [IApps, (apps: IApps) => void] = useState({});
   const [appRegistryStatus, setAppRegistryStatus]: [
     string[], (str: string[]) => void
   ] = useState([]);
+
+  useEffect(() => {
+    wsSocket.send('#get-applications');
+    wsSocket.receive('#get-applications', data => {
+      setApps({
+        ...apps,
+        ...data
+      });
+    });
+  }, []);
 
   return <ApplicationProviderContext.Provider value={{
     apps, appRegistryStatus,
