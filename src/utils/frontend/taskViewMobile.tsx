@@ -169,14 +169,14 @@ export function TaskViewMobile() {
 
     {Object.keys(tasks).map((key) => {
       const {
-        pkg, page, state, windowInfo: { status }
+        pkg, page, sharedState, windowInfo: { status }
       } = tasks[key];
       return <>
         {status === 'active' && !launcherState && <Scrollbars className={css`
           width: 100%;
           height: 100%;
         `}>
-          {getAppComponent(pkg, page)(propsGenerator(key, page, state))}
+          {getAppComponent(pkg, page)(propsGenerator(key, page, sharedState))}
         </Scrollbars>}
         {status === 'active' && !launcherState && <Drawer
           anchor='left'
@@ -191,7 +191,7 @@ export function TaskViewMobile() {
               width: 100%;
               height: 100%;
             `}>
-              {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, state))}
+              {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState))}
             </Scrollbars>
           </div>
         </Drawer>}

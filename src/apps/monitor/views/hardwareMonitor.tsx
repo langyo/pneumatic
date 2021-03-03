@@ -45,8 +45,8 @@ function UsageBarItem({ title, progress }) {
   </div>;
 }
 
-export function HardwareMonitor({ state }) {
-  const { freeMem, totalMem } = state;
+export function HardwareMonitor({ sharedState }) {
+  const { freeMem, totalMem } = sharedState;
 
   return <div className={css`
     color: rgba(0, 0, 0, 1);

@@ -3,7 +3,7 @@ import { CircularProgress } from '@material-ui/core';
 import { css } from '@emotion/css';
 
 import { wsSocket } from './authProviderContext';
-import { IState, ITaskInfo, IWindowInfo } from './taskManagerContext';
+import { ISharedState, ITaskInfo, IWindowInfo } from './taskManagerContext';
 
 export interface IApp {
   icon: string,   // SVG path.
@@ -12,7 +12,7 @@ export interface IApp {
   defaultState?: { [key: string]: string }
   defaultWindowInfo?: {
     [key in keyof IWindowInfo]?: (
-      page: string, state: IState, tasks: ITaskInfo
+      page: string, sharedState: ISharedState, tasks: ITaskInfo
     ) => IWindowInfo[key]
   }
 }

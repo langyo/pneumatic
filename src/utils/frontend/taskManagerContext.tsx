@@ -8,7 +8,7 @@ export const TaskManagerContext = createContext({} as ITaskManagerContext);
 export interface ITask {
   pkg: '#merge' | string,    // The embedded package format is 'pneumatic.*'.
   page: string,   // The default page is 'default'.
-  state: { [key: string]: string | number | boolean },
+  sharedState: { [key: string]: string | number | boolean },
   connection: 'loading' | 'access' | 'block',
   windowInfo: IWindowInfo
 };
@@ -40,15 +40,15 @@ export interface IWindowInfo {
   subWindow: string[],  // TODO - Support binding sub windows.
   parentWindow: string
 };
-export type IState = { [key: string]: any };
+export type ISharedState = { [key: string]: any };
 export interface IProps {
   mediaMode: 'desktop' | 'mobile',
   windowInfo: IWindowInfo,
   setWindowInfo: (info: IWindowInfo) => void,
   page: string,
   setPage: (page: string) => void,
-  state: IState,
-  setState: (state: IState) => void,
+  sharedState: ISharedState,
+  setState: (sharedState: ISharedState) => void,
   globalState: IGlobalState,
   setGlobalState: ISetGlobalState,
   generateTask: IGenerateTask,
@@ -56,14 +56,14 @@ export interface IProps {
 }
 
 export type ITaskInfo = { [key: string]: ITask };
-export type IGenerateTask = (pkg: string, page?: string, initState?: IState) => void;
+export type IGenerateTask = (pkg: string, page?: string, initState?: ISharedState) => void;
 export type IDestoryTask = (id: string) => void;
 export type ISetPage = (id: string, page: string) => void;
-export type ISetState = (id: string, state: IState) => void;
+export type ISetSharedState = (id: string, state: ISharedState) => void;
 export type ISetWindowInfo = (id: string, info: Partial<IWindowInfo>) => void;
 export type ISetActiveTask = (id: string) => void;
 export type IPropsGenerator = (
-  key: string, page: string, state: IState
+  key: string, page: string, sharedState: ISharedState
 ) => IProps;
 
 export interface ITaskManagerContext {
@@ -73,7 +73,7 @@ export interface ITaskManagerContext {
   generateTask: IGenerateTask,
   destoryTask: IDestoryTask,
   setPage: ISetPage,
-  setState: ISetState,
+  setSharedState: ISetSharedState,
   setWindowInfo: ISetWindowInfo,
   setActiveTask: ISetActiveTask,
   propsGenerator: IPropsGenerator
@@ -119,7 +119,7 @@ export function TaskManager({ children }: { children?: any }) {
         }
       }));
     });
-    wsSocket.receive('#destory', _data => { });
+    wsSocket.receive('#destory', _data => void 0);
     wsSocket.receive('#error', data => {
       console.error('WebSocket:', data.msg);
     });
@@ -128,8 +128,8 @@ export function TaskManager({ children }: { children?: any }) {
         ...tasks,
         [id]: {
           ...tasks[id],
-          state: {
-            ...tasks[id].state,
+          sharedState: {
+            ...tasks[id].sharedState,
             ...data
           }
         }
@@ -138,7 +138,7 @@ export function TaskManager({ children }: { children?: any }) {
   }, []);
 
   function generateTask(
-    pkg: string, page?: string, initState?: IState
+    pkg: string, page?: string, initState?: ISharedState
   ) {
     const id = generate();
     wsSocket.send('#init', { id, pkg });
@@ -155,7 +155,7 @@ export function TaskManager({ children }: { children?: any }) {
       [id]: {
         pkg,
         page: page || apps[pkg].defaultPage || 'default',
-        state: {
+        sharedState: {
           ...(initState || {}),
           ...(apps[pkg].defaultState || {})
         },
@@ -221,14 +221,14 @@ export function TaskManager({ children }: { children?: any }) {
     }));
   }
 
-  function setState(id: string, state: IState) {
+  function setSharedState(id: string, sharedState: ISharedState) {
     _setTasks(tasks => ({
       ...tasks,
       [id]: {
         ...tasks[id],
-        state: {
-          ...tasks[id].state,
-          ...state
+        sharedState: {
+          ...tasks[id].sharedState,
+          ...sharedState
         }
       }
     }));
@@ -264,7 +264,7 @@ export function TaskManager({ children }: { children?: any }) {
   }
 
   function propsGenerator(
-    key: string, page: string, state: IState
+    key: string, page: string, sharedState: ISharedState
   ): IProps {
     return {
       mediaMode: media,
@@ -272,8 +272,8 @@ export function TaskManager({ children }: { children?: any }) {
       setWindowInfo(info: IWindowInfo) { setWindowInfo(key, info); },
       page,
       setPage(page: string) { setPage(key, page); },
-      state: tasks[key].state,
-      setState(state: IState) { setState(key, state); },
+      sharedState: tasks[key].sharedState,
+      setState(state: ISharedState) { setSharedState(key, state); },
       globalState,
       setGlobalState,
       generateTask,
@@ -298,7 +298,7 @@ export function TaskManager({ children }: { children?: any }) {
     destoryTask,
     propsGenerator,
     setPage,
-    setState,
+    setSharedState,
     setWindowInfo,
     setActiveTask
   }}>

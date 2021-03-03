@@ -35,7 +35,7 @@ export function TaskViewDesktop() {
   `}>
     {Object.keys(tasks).map((key: string) => {
       const {
-        pkg, page, state,
+        pkg, page, sharedState,
         windowInfo: {
           left, top, width, height, title, priority
         }
@@ -122,7 +122,7 @@ export function TaskViewDesktop() {
                   width: 100%;
                   height: 100%;
                 `}>
-                  {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, state))}
+                  {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState))}
                 </Scrollbars>
               </div>
               <div className={css`
@@ -138,7 +138,7 @@ export function TaskViewDesktop() {
                   width: 100%;
                   height: 100%;
                 `}>
-                  {getAppComponent(pkg, page)(propsGenerator(key, page, state))}
+                  {getAppComponent(pkg, page)(propsGenerator(key, page, sharedState))}
                 </Scrollbars>
               </div>
             </div>

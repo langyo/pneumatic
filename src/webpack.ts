@@ -136,13 +136,13 @@ const serverSideFs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON
 }));
 serverSideFs['join'] = join;
 
-export let serverSideMiddleware = async (
+export let serverRoutes = async (
   _ctx: Koa.BaseContext,
   _next: () => Promise<void>
 ) => {
   log('warn', 'Please wait, the service is not ready now.');
 };
-export let serverSideLongtermMiddleware: {
+export let serverSockets: {
   [pkg: string]: (ctx, emitter: EventEmitter) => Promise<void>
 } = {};
 
@@ -174,7 +174,7 @@ function serverSideCompilerCallback(err: Error, status) {
       exportMiddleware(
         middlewares: ((ctx: Koa.BaseContext, next: () => Promise<void>) => Promise<void>)[]
       ) {
-        serverSideMiddleware = async (
+        serverRoutes = async (
           ctx: Koa.BaseContext, next: () => Promise<void>
         ) => {
           async function nextTask(pos: number) {
@@ -196,7 +196,7 @@ function serverSideCompilerCallback(err: Error, status) {
       exportLongtermMiddleware(
         middlewareMap: { [pkg: string]: (ctx, emitter: EventEmitter) => Promise<void> }
       ) {
-        serverSideLongtermMiddleware = middlewareMap;
+        serverSockets = middlewareMap;
       },
       console, process, require,
       setInterval, setTimeout, clearInterval, clearTimeout

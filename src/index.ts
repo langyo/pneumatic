@@ -8,7 +8,7 @@ import {
   authLoginMiddleware, verifyConnection, terminateConnection
 } from './utils/backend/authVerifyMiddleware';
 import {
-  clientSideMiddleware, serverSideMiddleware, serverSideLongtermMiddleware
+  clientSideMiddleware, serverRoutes,  serverSockets
 } from './webpack';
 import { log } from './utils/backend/logger';
 import { config } from './utils/backend/configLoader';
@@ -21,7 +21,7 @@ app.use(async (
   next: () => Promise<void>
 ) => {
   log('info', `Http(${ctx.ip}):`, ctx.path);
-  await serverSideMiddleware(ctx, async () => {
+  await serverRoutes(ctx, async () => {
     await clientSideMiddleware(ctx, next);
   });
 });
@@ -45,10 +45,11 @@ wss.on('connection', (ws, req) => {
         const { head, data } = JSON.parse(msg);
         log('info', `Ws(${ip}):`, head);
         // TODO - Move to server entry.
+        // TODO - Cannot work.
         if (head === '#init') {
           const { id, pkg } = data;
-          if (!serverSideLongtermMiddleware[pkg]) {
-            throw Error(`Unknown package: '${pkg}'`);
+          if (!serverSockets[pkg]) {
+            throw Error(`Unknown package: '${pkg}'.`);
           }
           if (emitters[id]) {
             ws.send(JSON.stringify({
@@ -63,7 +64,7 @@ wss.on('connection', (ws, req) => {
           ws.send(JSON.stringify({
             head: '#init', data: { status: 'success', id }
           }));
-          serverSideLongtermMiddleware[pkg](req, emitters[id]);
+          serverSockets[pkg](req, emitters[id]);
         } else if (head === '#destory') {
           const { id } = data;
           if (!emitters[id]) {
