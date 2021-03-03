@@ -1,6 +1,6 @@
-import EventEmitter from 'events';
 import React, { createContext, useState } from 'react';
 import useLocalStorage from 'react-use-localstorage';
+import EventEmitter from 'events';
 import axios from 'axios';
 
 import { signSaltPassword } from '../authVerifyTools';

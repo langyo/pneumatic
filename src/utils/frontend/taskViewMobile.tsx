@@ -28,7 +28,7 @@ export function TaskViewMobile() {
     apps, appRegistryStatus, getAppComponent
   }: IApplicationProviderContext = useContext(ApplicationProviderContext);
 
-  useEffect(() => { }, [appRegistryStatus]);
+  useEffect(() => void 0, [appRegistryStatus]);
 
   return <div className={css`
     position: fixed;

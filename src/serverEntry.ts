@@ -11,39 +11,25 @@ declare global {
   ): void;
 };
 
-// TODO - Dynamic construction.
-import { explorerRoute, explorerSocket } from './apps/explorer/backend';
-import { monitorRoute, monitorSocket } from './apps/monitor/backend';
-import { browserRoute, browserSocket } from './apps/browser/backend';
-import { databaseRoute, databaseSocket } from './apps/database/backend';
-import { planRoute, planSocket } from './apps/plan/backend';
-import { terminalRoute, terminalSocket } from './apps/terminal/backend';
-import { themeRoute, themeSocket } from './apps/theme/backend';
-import { marketRoute, marketSocket } from './apps/market/backend';
-import { settingRoute, settingSocket } from './apps/setting/backend';
+const entryMap = require('./id.ts').entryMap;
+let routes: {
+  [pkg: string]: (ctx: Koa.BaseContext, next: () => Promise<unknown>) => Promise<any>
+} = {};
+let sockets: {
+  [pkg: string]: (ctx, emitter: EventEmitter) => Promise<void>
+} = {};
+for (const pkg of Object.keys(entryMap)) {
+  const { route, socket } = entryMap[pkg];
+  if (route) {
+    routes[pkg] = route;
+  }
+  if (socket) {
+    sockets[pkg] = socket;
+  }
+}
 
-exportMiddleware([
-  explorerRoute,
-  monitorRoute,
-  browserRoute,
-  databaseRoute,
-  planRoute,
-  terminalRoute,
-  themeRoute,
-  marketRoute,
-  settingRoute
-]);
+exportMiddleware(Object.keys(routes).map(key => routes[key]));
 
-exportLongtermMiddleware({
-  'pneumatic.explorer': explorerSocket,
-  'pneumatic.monitor': monitorSocket,
-  'pneumatic.browser': browserSocket,
-  'pneumatic.database': databaseSocket,
-  'pneumatic.plan': planSocket,
-  'pneumatic.terminal': terminalSocket,
-  'pneumatic.theme': themeSocket,
-  'pneumatic.market': marketSocket,
-  'pneumatic.setting': settingSocket
-});
+exportLongtermMiddleware(sockets);
 
 log('info', 'Server is ready.');

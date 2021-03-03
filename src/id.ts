@@ -1,0 +1,3 @@
+
+      export const entryMap = {"browser": require("D:\\git\\pneumatic\\src\\apps\\browser\\backend.ts"),"database": require("D:\\git\\pneumatic\\src\\apps\\database\\backend.ts"),"explorer": require("D:\\git\\pneumatic\\src\\apps\\explorer\\backend.ts"),"market": require("D:\\git\\pneumatic\\src\\apps\\market\\backend.ts"),"monitor": require("D:\\git\\pneumatic\\src\\apps\\monitor\\backend.ts"),"plan": require("D:\\git\\pneumatic\\src\\apps\\plan\\backend.ts"),"setting": require("D:\\git\\pneumatic\\src\\apps\\setting\\backend.ts"),"terminal": require("D:\\git\\pneumatic\\src\\apps\\terminal\\backend.ts"),"theme": require("D:\\git\\pneumatic\\src\\apps\\theme\\backend.ts")};
+    

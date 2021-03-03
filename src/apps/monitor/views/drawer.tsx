@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { css } from '@emotion/css';
+import {
+  List, ListItem, ListSubheader, ListItemIcon, ListItemText, Divider
+} from '@material-ui/core';
+import { Icon } from '@mdi/react';
 import {
   mdiDatabase, mdiMemory, mdiMenu, mdiRouterNetwork, mdiServer, mdiWall
 } from '@mdi/js';
@@ -13,27 +16,16 @@ const tagMap = [
   { iconPath: mdiServer, title: 'Load Balance', page: 'loadBalance' }
 ];
 
-import { ToolbarItem } from '../../../utils/frontend/components/toolbarItem';
-
 export function Drawer({ setPage, setWindowInfo }) {
-  return <div className={css`
-    margin: 0px;
-    padding-top: 8px;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    align-content: flex-start;
-    color: rgba(0, 0, 0, 1);
-  `}>
-    {tagMap.map(({ iconPath, title, page }) => <ToolbarItem
-      iconPath={iconPath}
-      title={title}
-      onClick={() => (
-        setPage(page),
-        setWindowInfo({ title })
-      )}
-    />)}
-  </div>;
+  return <List>
+    {tagMap.map(({ iconPath, title, page }) => <ListItem
+      button
+      onClick={() => (setPage(page), setWindowInfo({ title }))}
+    >
+      <ListItemIcon>
+        <Icon path={iconPath} size={1} color='rgba(0, 0, 0, 1' />
+      </ListItemIcon>
+      <ListItemText primary={title} />
+    </ListItem>)}
+  </List>;
 }

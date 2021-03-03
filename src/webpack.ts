@@ -13,7 +13,7 @@ import { EventEmitter } from 'events';
 import { log } from './utils/backend/logger';
 
 const globalConfig = {
-  context: process.cwd(),
+  context: __dirname,
   module: {
     rules: [
       {
@@ -36,26 +36,26 @@ const globalConfig = {
   resolve: {
     extensions: ['.js', '.jsx', '.mjs', '.ts', '.tsx'],
     modules: [
-      join(process.cwd(), './node_modules'),
+      join(__dirname, '../node_modules'),
       'node_modules'
     ]
   },
   resolveLoader: {
     modules: [
-      join(process.cwd(), './node_modules'),
+      join(__dirname, '../node_modules'),
       'node_modules'
     ]
   }
 }
 
-let clientBundleIdMap = {
+let clientBundleIdMap: { [key: string]: string } = {
   main: generateId(),
   vendor: generateId(),
   runtime: generateId()
 };
 
 const clientSideFs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
-  [join(process.cwd(), './main.ts')]: `
+  [join(__dirname, './main.ts')]: `
 import './id';
 
 import { render } from 'react-dom';
@@ -79,12 +79,12 @@ function clientSideCompilerCallback(err: Error, status) {
     let errStr = '';
     if (status.hasErrors()) {
       for (const e of info.errors) {
-        errStr += e.message + '\n';
+        errStr += `${e.message}\n`;
       }
     }
     if (status.hasWarnings()) {
       for (const e of info.warnings) {
-        errStr += e.message + '\n';
+        errStr += `${e.message}\n`;
       }
     }
     console.error(Error(errStr));
@@ -120,7 +120,7 @@ export async function clientSideMiddleware(
     default:
       for (const pkg of Object.keys(clientBundleIdMap)) {
         if (ctx.path === `/${clientBundleIdMap[pkg]}`) {
-          ctx.body = clientSideFs.readFileSync(join(process.cwd(), `/${pkg}.bundle.js`), 'utf8');
+          ctx.body = clientSideFs.readFileSync(join(__dirname, `/${pkg}.bundle.js`), 'utf8');
           ctx.type = 'application/javascript';
           break;
         }
@@ -129,7 +129,11 @@ export async function clientSideMiddleware(
   }
 }
 
-const serverSideFs: IFs = Volume.fromJSON({}) as IFs;
+const serverSideFs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
+  [join(__dirname, './main.ts')]: `require('${join(
+    __dirname, './serverEntry.ts'
+  ).split('\\').join('\\\\')}');`
+}));
 serverSideFs['join'] = join;
 
 export let serverSideMiddleware = async (
@@ -150,12 +154,12 @@ function serverSideCompilerCallback(err: Error, status) {
     let errStr = '';
     if (status.hasErrors()) {
       for (const e of info.errors) {
-        errStr += e.message + '\n';
+        errStr += `${e.message}\n`;
       }
     }
     if (status.hasWarnings()) {
       for (const e of info.warnings) {
-        errStr += e.message + '\n';
+        errStr += `${e.message}\n`;
       }
     }
     console.error(Error(errStr));
@@ -163,7 +167,7 @@ function serverSideCompilerCallback(err: Error, status) {
     log('info', 'Compiled the service part.');
 
     const script = new Script(
-      serverSideFs.readFileSync(join(process.cwd(), '/main.js'), 'utf8') as string, {
+      serverSideFs.readFileSync(join(__dirname, '/main.js'), 'utf8') as string, {
       filename: 'serverEntry.js'
     });
     const context = createContext({
@@ -182,7 +186,11 @@ function serverSideCompilerCallback(err: Error, status) {
               }
             });
           }
-          await nextTask(0);
+          if (middlewares.length > 0) {
+            await nextTask(0);
+          } else {
+            await next();
+          }
         };
       },
       exportLongtermMiddleware(
@@ -190,7 +198,8 @@ function serverSideCompilerCallback(err: Error, status) {
       ) {
         serverSideLongtermMiddleware = middlewareMap;
       },
-      console, process, require, setInterval, setTimeout, clearInterval, clearTimeout
+      console, process, require,
+      setInterval, setTimeout, clearInterval, clearTimeout
     });
     try {
       script.runInContext(context);
@@ -205,58 +214,56 @@ let watcherWaitingState = {
   continueChange: false
 };
 
-function clientVirtualEntryGenerator() {
-  for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
-    let externalFilename = '';
-    for (const ex of ['.js', '.jsx', '.mjs', '.ts', '.tsx']) {
-      if (realFs.existsSync(join(__dirname, 'apps', pkgName, 'frontend' + ex))) {
-        externalFilename = ex;
-      }
-    }
-    if (externalFilename !== '') {
-      const id = clientBundleIdMap[`pneumatic.${pkgName}`] = generateId();
-      const path = join(
-        __dirname, 'apps', pkgName, 'frontend' + externalFilename
-      ).split('\\').join('\\\\');
-      const body = `
-        if (window.__applications) {
-          window.__applications['${id}'] = require("${path}");
-        } else {
-          throw Error('Cannot register the application.');
-        }
-      `;
-      clientSideFs.writeFileSync(join(process.cwd(), `pneumatic.${pkgName}.ts`), body);
-    }
-  }
-
-  clientSideFs.writeFileSync(join(process.cwd(), 'id.ts'), `
-    window.__applicationIdMap = ${JSON.stringify(clientBundleIdMap)};
-    window.__applications = {};
-  `);
-}
-
 function watcherTrigger() {
   if (!watcherWaitingState.continueChange) {
     log('info', 'Compiling the codes.');
     watcherWaitingState.firstChange = false;
     watcherWaitingState.continueChange = false;
 
-    clientVirtualEntryGenerator();
+    for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
+      let externalFilename = '';
+      for (const ex of ['.js', '.jsx', '.mjs', '.ts', '.tsx']) {
+        if (realFs.existsSync(join(__dirname, 'apps', pkgName, 'frontend' + ex))) {
+          externalFilename = `frontend${ex}`;
+          break;
+        }
+      }
+      if (externalFilename !== '') {
+        const id = clientBundleIdMap[`pneumatic.${pkgName}`] = generateId();
+        const path = join(
+          __dirname, 'apps', pkgName, externalFilename
+        ).split('\\').join('\\\\');
+        const body = `
+          if (window.__applications) {
+            window.__applications['${id}'] = require("${path}");
+          } else {
+            throw Error('Cannot register the application.');
+          }
+        `;
+        clientSideFs.writeFileSync(join(__dirname, `pneumatic.${pkgName}.ts`), body);
+      }
+    }
+
+    clientSideFs.writeFileSync(join(__dirname, 'id.ts'), `
+      window.__applicationIdMap = ${JSON.stringify(clientBundleIdMap)};
+      window.__applications = {};
+    `);
+
     const clientSideCompiler = webpack({
       ...globalConfig,
       entry: {
-        main: join(process.cwd(), './main.ts'),
+        main: join(__dirname, './main.ts'),
         ...(Object.keys(clientBundleIdMap).filter(
           n => ['main', 'vendor', 'runtime'].indexOf(n) < 0
         ).reduce((obj, pkg) => ({
           ...obj,
-          [pkg]: join(process.cwd(), `${pkg}.ts`)
+          [pkg]: join(__dirname, `${pkg}.ts`)
         }), {}))
       },
       mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
       output: {
         filename: '[name].bundle.js',
-        path: process.cwd()
+        path: __dirname
       },
       optimization: {
         splitChunks: {
@@ -279,17 +286,36 @@ function watcherTrigger() {
     clientSideCompiler.outputFileSystem = clientSideFs;
     clientSideCompiler.run(clientSideCompilerCallback);
 
+    let serverEntryMap: { [pkg: string]: string } = {};
+    for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
+      let externalFilename = '';
+      for (const ex of ['.js', '.jsx', '.mjs', '.ts', '.tsx']) {
+        if (realFs.existsSync(join(__dirname, 'apps', pkgName, 'backend' + ex))) {
+          externalFilename = `backend${ex}`;
+          break;
+        }
+      }
+      if (externalFilename !== '') {
+        serverEntryMap[pkgName] = join(__dirname, 'apps', pkgName, externalFilename).split('\\').join('\\\\');
+      }
+    }
+
+    serverSideFs.writeFileSync(join(__dirname, 'id.ts'), `
+      export const entryMap = {${Object.keys(serverEntryMap).map(pkg => `"${pkg}": require("${serverEntryMap[pkg]}")`).join(',')}};
+    `);
+
     const serverSideCompiler = webpack({
       ...globalConfig,
-      entry: join(__dirname, './serverEntry.ts'),
+      entry: join(__dirname, './main.ts'),
       mode: 'development',
       target: 'node',
       output: {
         filename: '[name].js',
-        path: process.cwd()
+        path: __dirname
       },
       devtool: 'eval-source-map'
     });
+    serverSideCompiler.inputFileSystem = serverSideFs;
     serverSideCompiler.outputFileSystem = serverSideFs;
     serverSideCompiler.run(serverSideCompilerCallback);
 
