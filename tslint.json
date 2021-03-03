@@ -105,6 +105,7 @@
     "variable-name": [
       true,
       "check-format",
+      "allow-pascal-case",
       "allow-leading-underscore",
       "allow-trailing-underscore",
       "ban-keywords"

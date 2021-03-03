@@ -31,6 +31,7 @@ export interface IApplicationProviderContext {
 }
 
 declare global {
+  // tslint:disable-next-line: interface-name
   interface Window {
     __applications: {
       [id: string]: { [page: string]: (props: any) => React.Component }
