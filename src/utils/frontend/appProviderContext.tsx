@@ -49,11 +49,8 @@ export function ApplicationProvider({ children }: { children?: any }) {
 
   useEffect(() => {
     wsSocket.send('#get-applications');
-    wsSocket.receive('#get-applications', data => {
-      setApps({
-        ...apps,
-        ...data
-      });
+    wsSocket.receive('#get-applications', ({ apps }) => {
+      setApps(apps);
     });
   }, []);
 

@@ -7,10 +7,15 @@ import { signSaltPassword } from '../authVerifyTools';
 
 let wsConnection: WebSocket;
 let wsEventEmitter = new EventEmitter();
+let wsSendMessageBuffer: { head: string, data: any }[] = [];
 export const wsSocket = Object.seal({
   send(head: string, data: { [key: string]: any } = {}) {
-    wsEventEmitter.emit('send', JSON.stringify({ head, data }));
-    console.log('sended', head, data);
+    if (wsConnection?.readyState === 1) {
+      console.log('WebSocket send:', head, data);
+      wsEventEmitter.emit('send', JSON.stringify({ head, data }));
+    } else {
+      wsSendMessageBuffer.push({ head, data });
+    }
   },
   receive(
     inputHead: string | '*',
@@ -19,15 +24,14 @@ export const wsSocket = Object.seal({
     wsEventEmitter.on('message', (input: string) => {
       try {
         const { head, data } = JSON.parse(input);
-        console.log('received', head, data);
         if (inputHead === '*') {
           if (head[0] !== '#') {
+            console.log('WebSocket receive:', head, data);
             callback(data, inputHead);
           }
         } else if (head === inputHead) {
+          console.log('WebSocket receive:', head, data);
           callback(data);
-        } else {
-          console.error(Error(`Unknown WebSocket message head: ${head}`));
         }
       } catch (e) {
         console.error(e);
@@ -62,18 +66,19 @@ export function AuthProvider({ children }: { children?: any }) {
           setAuthToken(data.token);
           wsConnection = new WebSocket(`ws://${window.location.host}/${data.token}`);
           wsConnection.addEventListener('open', () => {
-            wsEventEmitter.on('send', (msg: any) => {
-              console.log('WebSocket send', data);
-              wsConnection.send(JSON.stringify(msg));
-            })
             wsConnection.addEventListener('message', ({ data }) => {
-              console.log('WebSocket receive', data);
               wsEventEmitter.emit('message', data);
             });
             wsConnection.addEventListener('close', () => {
               alert(`The WebSocket connection has closed.\nYou will jump to the login page later.`)
               location.reload();
             });
+            wsEventEmitter.on('send', (msg: string) => {
+              wsConnection.send(msg);
+            });
+            for (const { head, data } of wsSendMessageBuffer) {
+              wsSocket.send(head, data);
+            }
           });
           wsConnection.addEventListener('error', (e) => {
             console.error(e);

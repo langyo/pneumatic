@@ -22,7 +22,7 @@ export function authLoginMiddleware(path: string) {
         ctx.throw(406, 'Json only.');
       } else {
         const { userName, signedPassword } = ctx.request.body;
-        if (config.accounts[userName] && config.accounts[userName] === signedPassword) {
+        if (config.accounts[userName] && config.accounts[userName].password === signedPassword) {
           const token = generateUUID();
           connections[token] = {
             birth: new Date(),

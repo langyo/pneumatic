@@ -78,7 +78,7 @@ wss.on('connection', (ws, req) => {
           }));
         } else if (head === '#get-applications') {
           ws.send(JSON.stringify({
-            head: '#get-applications', data: config.applications
+            head: '#get-applications', data: { apps: config.applications }
           }))
         } else {
           if (!emitters[head]) {
