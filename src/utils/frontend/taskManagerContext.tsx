@@ -110,27 +110,28 @@ export function TaskManager({ children }: { children?: any }) {
   }, [media]);
 
   useEffect(() => {
-    wsSocket.receive('#init', data => {
+    wsSocket.receive('#init', ({ id, sharedState }) => {
       _setTasks(tasks => ({
         ...tasks,
-        [data.id]: {
-          ...tasks[data.id],
-          connection: 'access'
+        [id]: {
+          ...tasks[id],
+          connection: 'access',
+          sharedState: sharedState || tasks[id].sharedState
         }
       }));
     });
     wsSocket.receive('#destory', _data => void 0);
-    wsSocket.receive('#error', data => {
-      console.error('WebSocket:', data.msg);
+    wsSocket.receive('#error', ({ msg }) => {
+      console.error('WebSocket:', msg);
     });
-    wsSocket.receive('*', (data, id) => {
+    wsSocket.receive('*', (sharedState, id) => {
       _setTasks(tasks => ({
         ...tasks,
         [id]: {
           ...tasks[id],
           sharedState: {
             ...tasks[id].sharedState,
-            ...data
+            ...sharedState
           }
         }
       }));
@@ -141,7 +142,12 @@ export function TaskManager({ children }: { children?: any }) {
     pkg: string, page?: string, initState?: ISharedState
   ) {
     const id = generate();
-    wsSocket.send('#init', { id, pkg });
+    const initStateCombined = {
+      ...(initState || {}),
+      ...(apps[pkg].defaultState || {})
+    };
+
+    wsSocket.send('#init', { id, pkg, initState: initStateCombined });
     _setTasks(tasks => Object.keys(tasks).reduce((obj, id: string) => ({
       ...obj,
       [id]: {
@@ -155,17 +161,14 @@ export function TaskManager({ children }: { children?: any }) {
       [id]: {
         pkg,
         page: page || apps[pkg].defaultPage || 'default',
-        sharedState: {
-          ...(initState || {}),
-          ...(apps[pkg].defaultState || {})
-        },
+        sharedState: initStateCombined,
         connection: 'loading',
         windowInfo: {
           status: 'active',
           left: apps[pkg].defaultWindowInfo && apps[pkg].defaultWindowInfo.left ?
-            apps[pkg].defaultWindowInfo.left : 100 + Object.keys(tasks).length * 50,
+            apps[pkg].defaultWindowInfo.left : 100 + Object.keys(tasks).length * 20,
           top: apps[pkg].defaultWindowInfo && apps[pkg].defaultWindowInfo.top ?
-            apps[pkg].defaultWindowInfo.top : 50 + Object.keys(tasks).length * 50,
+            apps[pkg].defaultWindowInfo.top : 50 + Object.keys(tasks).length * 20,
           width: apps[pkg].defaultWindowInfo && apps[pkg].defaultWindowInfo.width ?
             apps[pkg].defaultWindowInfo.width : 600,
           height: apps[pkg].defaultWindowInfo && apps[pkg].defaultWindowInfo.height ?
@@ -264,7 +267,7 @@ export function TaskManager({ children }: { children?: any }) {
   }
 
   function propsGenerator(
-    key: string, page: string, sharedState: ISharedState
+    key: string, page: string, sharedState: ISharedState = {}
   ): IProps {
     return {
       mediaMode: media,
@@ -272,7 +275,7 @@ export function TaskManager({ children }: { children?: any }) {
       setWindowInfo(info: IWindowInfo) { setWindowInfo(key, info); },
       page,
       setPage(page: string) { setPage(key, page); },
-      sharedState: tasks[key].sharedState,
+      sharedState,
       setState(state: ISharedState) { setSharedState(key, state); },
       globalState,
       setGlobalState,

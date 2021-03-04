@@ -8,7 +8,6 @@ import * as realFs from 'fs';
 import { Script, createContext } from 'vm';
 import { v4 as generateId } from 'uuid';
 import { watch as watchFiles } from 'chokidar';
-import { EventEmitter } from 'events';
 
 import { log } from './utils/backend/logger';
 
@@ -142,9 +141,11 @@ export let serverRoutes = async (
 ) => {
   log('warn', 'Please wait, the service is not ready now.');
 };
-export let serverSockets: {
-  [pkg: string]: (ctx, emitter: EventEmitter) => Promise<void>
+import { socketSend } from './index';
+export let serverSocketStaticListeners: {
+  [head: string]: (token: string, data: any) => void
 } = {};
+export let serverSocketListener: (token: string, head: string, data: any) => void = () => void 0;
 
 function serverSideCompilerCallback(err: Error, status) {
   if (err) {
@@ -193,11 +194,16 @@ function serverSideCompilerCallback(err: Error, status) {
           }
         };
       },
-      exportLongtermMiddleware(
-        middlewareMap: { [pkg: string]: (ctx, emitter: EventEmitter) => Promise<void> }
+      socketReceiveStatic(
+        head: string,
+        callback: (token: string, data: any) => void
       ) {
-        serverSockets = middlewareMap;
+        serverSocketStaticListeners[head] = callback;
       },
+      socketReceive(callback: (token: string, head: string, data: any) => void) {
+        serverSocketListener = callback;
+      },
+      socketSend,
       console, process, require,
       setInterval, setTimeout, clearInterval, clearTimeout
     });
@@ -296,7 +302,8 @@ function watcherTrigger() {
         }
       }
       if (externalFilename !== '') {
-        serverEntryMap[pkgName] = join(__dirname, 'apps', pkgName, externalFilename).split('\\').join('\\\\');
+        serverEntryMap[`pneumatic.${pkgName}`] =
+          join(__dirname, 'apps', pkgName, externalFilename).split('\\').join('\\\\');
       }
     }
 

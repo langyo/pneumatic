@@ -8,7 +8,7 @@ import {
   authLoginMiddleware, verifyConnection, terminateConnection
 } from './utils/backend/authVerifyMiddleware';
 import {
-  clientSideMiddleware, serverRoutes,  serverSockets
+  clientSideMiddleware, serverRoutes, serverSocketStaticListeners, serverSocketListener
 } from './webpack';
 import { log } from './utils/backend/logger';
 import { config } from './utils/backend/configLoader';
@@ -31,6 +31,15 @@ const server = createServer(app.callback()).listen(
   process.env.HOST || undefined
 );
 
+const socketSendMiddleware: {
+  [token: string]: (head: string, data: any) => void
+} = {};
+export function socketSend(token: string, head: string, data: any) {
+  if (socketSendMiddleware[token]) {
+    socketSendMiddleware[token](head, data);
+  }
+}
+
 const wss = new ws.Server({ server });
 wss.on('connection', (ws, req) => {
   const ip = req.socket.remoteAddress;
@@ -38,56 +47,15 @@ wss.on('connection', (ws, req) => {
 
   if (verifyConnection(token)) {
     log('info', `New Ws connection(${ip}):`, token);
-    let emitters: { [id: string]: EventEmitter } = {};
-
+    socketSendMiddleware[token] = (head, data) => ws.send(JSON.stringify({ head, data }));
     ws.on('message', (msg: string) => {
       try {
         const { head, data } = JSON.parse(msg);
         log('info', `Ws(${ip}):`, head);
-        // TODO - Move to server entry.
-        // TODO - Cannot work.
-        if (head === '#init') {
-          const { id, pkg } = data;
-          if (!serverSockets[pkg]) {
-            throw Error(`Unknown package: '${pkg}'.`);
-          }
-          if (emitters[id]) {
-            ws.send(JSON.stringify({
-              head: '#init', data: { status: 'fail', id }
-            }));
-            return;
-          }
-          emitters[id] = new EventEmitter();
-          emitters[id].on('send', (msg: any) => {
-            ws.send(JSON.stringify({ head: id, data: msg }));
-          });
-          ws.send(JSON.stringify({
-            head: '#init', data: { status: 'success', id }
-          }));
-          serverSockets[pkg](req, emitters[id]);
-        } else if (head === '#destory') {
-          const { id } = data;
-          if (!emitters[id]) {
-            ws.send(JSON.stringify({
-              head: '#destory', data: { status: 'fail', id }
-            }));
-            return;
-          }
-          emitters[id].emit('close');
-          ws.send(JSON.stringify({
-            head: '#destory', data: { status: 'success', id }
-          }));
-        } else if (head === '#get-applications') {
-          ws.send(JSON.stringify({
-            head: '#get-applications', data: { apps: config.applications }
-          }))
+        if (serverSocketStaticListeners[head]) {
+          serverSocketStaticListeners[head](token, data);
         } else {
-          if (!emitters[head]) {
-            ws.send(JSON.stringify({
-              head: '#error', data: { msg: `Unknown entity '${head}'.` }
-            }));
-          }
-          emitters[head].emit('message', data);
+          serverSocketListener(token, head, data);
         }
       } catch (e) {
         ws.send(JSON.stringify({
