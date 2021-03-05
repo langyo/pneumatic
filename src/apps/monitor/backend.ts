@@ -1,7 +1,9 @@
 import { freemem, totalmem } from 'os';
 
-export async function socket(_token, _data, { registerAutoSender }) {
-  registerAutoSender(1000, () => ({
-    freeMem: freemem(), totalMem: totalmem()
-  }));
+export async function socketAutoSender(token, { registerAutoSender }) {
+  registerAutoSender(1000, () => {
+    return {
+      freeMem: freemem(), totalMem: totalmem()
+    };
+  });
 }

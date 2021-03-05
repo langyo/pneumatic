@@ -13,27 +13,21 @@ declare global {
   function socketSend(token: string, head: string, data: any): void;
 };
 
-const entryMap = require('./id.ts').entryMap;
-let routes: {
-  [pkg: string]: (ctx: Koa.BaseContext, next: () => Promise<unknown>) => Promise<any>
-} = {};
-let sockets: {
-  [pkg: string]: (token: string, data: any, utils: {
-    send: (data: { [key: string]: any }) => void,
-    registerAutoSender: (timeout: number, callback: () => ({ [key: string]: any })) => void
-  }) => Promise<void>
-} = {};
-for (const pkg of Object.keys(entryMap)) {
-  const { route, socket } = entryMap[pkg];
-  if (route) {
-    routes[pkg] = route;
+const entryMap: {
+  [pkg: string]: {
+    route?: (ctx: Koa.BaseContext, next: () => Promise<unknown>) => Promise<any>,
+    socket?: (token: string, data: any, utils: {
+      send: (data: { [key: string]: any }) => void,
+      registerAutoSender: (timeout: number, callback: () => ({ [key: string]: any })) => void
+    }) => Promise<void>,
+    socketAutoSender?: (token: string, utils: {
+      send: (data: { [key: string]: any }) => void,
+      registerAutoSender: (timeout: number, callback: () => ({ [key: string]: any })) => void
+    }) => Promise<void>
   }
-  if (socket) {
-    sockets[pkg] = socket;
-  }
-}
+} = require('./id.ts').entryMap;
 
-exportMiddleware(Object.keys(routes).map(key => routes[key]));
+exportMiddleware(Object.keys(entryMap).map(key => entryMap[key].route).filter(n => !!n));
 
 let activeSocketsMap: {
   [token: string]: {
@@ -53,12 +47,22 @@ socketReceiveStatic('#init', (token, { id, pkg, initState }) => {
     pkg, autoSender: [], data: initState || {}
   };
   socketSend(token, '#init', { status: 'success', id });
+  if (entryMap[pkg].socketAutoSender) {
+    entryMap[pkg].socketAutoSender(token, {
+      send: data => socketSend(token, id, data),
+      registerAutoSender: (timeout, callback) => {
+        activeSocketsMap[token][id].autoSender.push(
+          setInterval(() => socketSend(token, id, callback()), timeout)
+        );
+      }
+    });
+  }
 });
 
 socketReceiveStatic('#destory', (token, { id }) => {
   if (activeSocketsMap[token] && activeSocketsMap[token][id]) {
     for (const timeoutObj of activeSocketsMap[token][id].autoSender) {
-      clearTimeout(timeoutObj);
+      clearInterval(timeoutObj);
     }
     delete activeSocketsMap[token][id];
     socketSend(token, '#destory', { status: 'success', id });
@@ -73,15 +77,14 @@ socketReceiveStatic('#get-applications', (token, _data) => {
 
 socketReceive((token, head, data) => {
   if (activeSocketsMap[token] && activeSocketsMap[token][head]) {
-    if (!sockets[activeSocketsMap[token][head].pkg]) {
+    if (!entryMap[activeSocketsMap[token][head].pkg].socket) {
       socketSend(token, '#error', { msg: `Unknown entity '${head}'` });
     }
-    // TODO - Let the function be called once, or call another function.
-    sockets[activeSocketsMap[token][head].pkg](token, data, {
+    entryMap[activeSocketsMap[token][head].pkg].socket(token, data, {
       send: data => socketSend(token, head, data),
       registerAutoSender: (timeout, callback) => {
         activeSocketsMap[token][head].autoSender.push(
-          setTimeout(() => socketSend(token, head, callback()), timeout)
+          setInterval(() => socketSend(token, head, callback()), timeout)
         );
       }
     });

@@ -125,16 +125,18 @@ export function TaskManager({ children }: { children?: any }) {
       console.error('WebSocket:', msg);
     });
     wsSocket.receive('*', (sharedState, id) => {
-      _setTasks(tasks => ({
-        ...tasks,
-        [id]: {
-          ...tasks[id],
-          sharedState: {
-            ...tasks[id].sharedState,
-            ...sharedState
+      if (tasks[id]) {
+        _setTasks(tasks => ({
+          ...tasks,
+          [id]: {
+            ...tasks[id],
+            sharedState: {
+              ...tasks[id].sharedState,
+              ...sharedState
+            }
           }
-        }
-      }));
+        }));
+      }
     })
   }, []);
 
