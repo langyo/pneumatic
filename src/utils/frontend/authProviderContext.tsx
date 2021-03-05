@@ -18,21 +18,14 @@ export const wsSocket = Object.seal({
     }
   },
   receive(
-    inputHead: string | '*',
+    inputHead: string,
     callback: (data: { [key: string]: any }, id?: string) => void
   ) {
     wsEventEmitter.on('message', (input: string) => {
       try {
         const { head, data } = JSON.parse(input);
-        if (inputHead === '*') {
-          if (head[0] !== '#') {
-            console.log('WebSocket receive:', head, data);
-            callback(data, inputHead);
-          }
-        } else if (head === inputHead) {
-          console.log('WebSocket receive:', head, data);
-          callback(data);
-        }
+        console.log('WebSocket receive:', head, data);
+        callback(data, inputHead);
       } catch (e) {
         console.error(e);
       }

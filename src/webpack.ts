@@ -142,10 +142,9 @@ export let serverRoutes = async (
   log('warn', 'Please wait, the service is not ready now.');
 };
 import { socketSend } from './index';
-export let serverSocketStaticListeners: {
+export let serverSocketListeners: {
   [head: string]: (token: string, data: any) => void
 } = {};
-export let serverSocketListener: (token: string, head: string, data: any) => void = () => void 0;
 
 function serverSideCompilerCallback(err: Error, status) {
   if (err) {
@@ -194,14 +193,11 @@ function serverSideCompilerCallback(err: Error, status) {
           }
         };
       },
-      socketReceiveStatic(
+      socketReceive(
         head: string,
         callback: (token: string, data: any) => void
       ) {
-        serverSocketStaticListeners[head] = callback;
-      },
-      socketReceive(callback: (token: string, head: string, data: any) => void) {
-        serverSocketListener = callback;
+        serverSocketListeners[head] = callback;
       },
       socketSend,
       console, process, require,

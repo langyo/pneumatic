@@ -8,8 +8,7 @@ declare global {
   function exportMiddleware(
     middlewares: ((ctx: Koa.BaseContext, next: () => Promise<void>) => Promise<void>)[]
   ): void;
-  function socketReceiveStatic(head: string, callback: (token: string, data: any) => void): void;
-  function socketReceive(callback: (token: string, head: string, data: any) => void);
+  function socketReceive(head: string, callback: (token: string, data: any) => void): void;
   function socketSend(token: string, head: string, data: any): void;
 };
 
@@ -39,7 +38,7 @@ let activeSocketsMap: {
   }
 } = {};
 
-socketReceiveStatic('#init', (token, { id, pkg, initState }) => {
+socketReceive('#init', (token, { id, pkg, initState }) => {
   if (!activeSocketsMap[token]) {
     activeSocketsMap[token] = {};
   }
@@ -52,14 +51,16 @@ socketReceiveStatic('#init', (token, { id, pkg, initState }) => {
       send: data => socketSend(token, id, data),
       registerAutoSender: (timeout, callback) => {
         activeSocketsMap[token][id].autoSender.push(
-          setInterval(() => socketSend(token, id, callback()), timeout)
+          setInterval(() => socketSend(token, '#set-shared-state', {
+            id, data: callback()
+          }), timeout)
         );
       }
     });
   }
 });
 
-socketReceiveStatic('#destory', (token, { id }) => {
+socketReceive('#destory', (token, { id }) => {
   if (activeSocketsMap[token] && activeSocketsMap[token][id]) {
     for (const timeoutObj of activeSocketsMap[token][id].autoSender) {
       clearInterval(timeoutObj);
@@ -71,26 +72,26 @@ socketReceiveStatic('#destory', (token, { id }) => {
   }
 });
 
-socketReceiveStatic('#get-applications', (token, _data) => {
+socketReceive('#get-applications', (token, _data) => {
   socketSend(token, '#get-applications', { apps: config.applications })
 });
 
-socketReceive((token, head, data) => {
-  if (activeSocketsMap[token] && activeSocketsMap[token][head]) {
-    if (!entryMap[activeSocketsMap[token][head].pkg].socket) {
-      socketSend(token, '#error', { msg: `Unknown entity '${head}'` });
-    }
-    entryMap[activeSocketsMap[token][head].pkg].socket(token, data, {
-      send: data => socketSend(token, head, data),
-      registerAutoSender: (timeout, callback) => {
-        activeSocketsMap[token][head].autoSender.push(
-          setInterval(() => socketSend(token, head, callback()), timeout)
-        );
-      }
-    });
-  } else {
-    socketSend(token, '#error', { msg: `Unknown entity '${head}'` });
+socketReceive('#set-shared-state', (token, { id, data }) => {
+  if (!entryMap[activeSocketsMap[token][id].pkg].socket) {
+    socketSend(token, '#error', { msg: `Unknown entity '${id}'` });
   }
+  entryMap[activeSocketsMap[token][id].pkg].socket(token, data, {
+    send: data => socketSend(token, '#set-shared-state', {
+      id, data
+    }),
+    registerAutoSender: (timeout, callback) => {
+      activeSocketsMap[token][id].autoSender.push(
+        setInterval(() => socketSend(token, '#set-shared-state', {
+          id, data: callback()
+        }), timeout)
+      );
+    }
+  });
 });
 
 log('info', 'Server is ready.');

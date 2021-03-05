@@ -124,7 +124,7 @@ export function TaskManager({ children }: { children?: any }) {
     wsSocket.receive('#error', ({ msg }) => {
       console.error('WebSocket:', msg);
     });
-    wsSocket.receive('*', (sharedState, id) => {
+    wsSocket.receive('#set-shared-state', ({ id, data }) => {
       if (tasks[id]) {
         _setTasks(tasks => ({
           ...tasks,
@@ -132,7 +132,7 @@ export function TaskManager({ children }: { children?: any }) {
             ...tasks[id],
             sharedState: {
               ...tasks[id].sharedState,
-              ...sharedState
+              ...data
             }
           }
         }));

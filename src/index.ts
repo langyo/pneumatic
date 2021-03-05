@@ -8,7 +8,7 @@ import {
   authLoginMiddleware, verifyConnection, terminateConnection
 } from './utils/backend/authVerifyMiddleware';
 import {
-  clientSideMiddleware, serverRoutes, serverSocketStaticListeners, serverSocketListener
+  clientSideMiddleware, serverRoutes, serverSocketListeners
 } from './webpack';
 import { log } from './utils/backend/logger';
 import { config } from './utils/backend/configLoader';
@@ -52,11 +52,7 @@ wss.on('connection', (ws, req) => {
       try {
         const { head, data } = JSON.parse(msg);
         log('info', `Ws(${ip}):`, head);
-        if (serverSocketStaticListeners[head]) {
-          serverSocketStaticListeners[head](token, data);
-        } else {
-          serverSocketListener(token, head, data);
-        }
+        serverSocketListeners[head](token, data);
       } catch (e) {
         ws.send(JSON.stringify({
           head: '#error', data: { msg: `${e}` }
