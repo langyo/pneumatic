@@ -5,16 +5,16 @@ import { TaskViewDesktop } from './utils/frontend/taskViewDesktop';
 
 import { ThemeProvider, ThemeProviderContext } from './utils/frontend/themeProviderContext';
 import { TaskManager } from './utils/frontend/taskManagerContext';
-import { ApplicationProvider } from './utils/frontend/appProviderContext';
+import { AppProvider } from './utils/frontend/appProviderContext';
 import { AuthProvider, AuthProviderContext } from './utils/frontend/authProviderContext';
 import { LoginView } from './utils/frontend/loginView';
 
-export default function () {
+export function entry () {
   return <>
     <style>{`html, body { margin: 0px; padding: 0px; }`}</style>
     <AuthProvider>
       <ThemeProvider>
-        <ApplicationProvider>
+        <AppProvider>
           <TaskManager>
             <AuthProviderContext.Consumer>
               {({ authToken }) => {
@@ -31,7 +31,7 @@ export default function () {
               }}
             </AuthProviderContext.Consumer>
           </TaskManager>
-        </ApplicationProvider>
+        </AppProvider>
       </ThemeProvider>
     </AuthProvider>
   </>;

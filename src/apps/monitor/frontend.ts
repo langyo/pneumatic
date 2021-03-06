@@ -7,7 +7,7 @@ import { LoadBalanceStatus } from './views/loadBalanceStatus';
 
 import { Drawer } from './views/drawer';
 
-export const components = {
+export const pages = {
   hardware: HardwareMonitor,
   firewall: FirewallStatus,
   network: NetworokStatus,
@@ -16,4 +16,13 @@ export const components = {
   loadBalance: LoadBalanceStatus,
 
   drawer: Drawer
-}
+};
+
+export const config = {
+  defaultInfo: {
+    page: 'hardware',
+    windowInfo: {
+      title: (_page, _data) => 'Hardware'
+    }
+  }
+};

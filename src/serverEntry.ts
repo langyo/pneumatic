@@ -71,8 +71,8 @@ socketReceive('#destory', (token, { id }) => {
   }
 });
 
-socketReceive('#get-applications', (token, _data) => {
-  socketSend(token, '#get-applications', { apps: config.applications })
+socketReceive('#get-apps', (token, _data) => {
+  socketSend(token, '#get-apps', { apps: config.apps })
 });
 
 socketReceive('#set-shared-state', (token, { id, data }) => {

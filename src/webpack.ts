@@ -63,7 +63,7 @@ render(
 createElement(
   require('${join(
     __dirname, './clientEntry.tsx'
-  ).split('\\').join('\\\\')}').default
+  ).split('\\').join('\\\\')}').entry
 ),
 document.querySelector('#root')
 );`
@@ -236,10 +236,10 @@ function watcherTrigger() {
           __dirname, 'apps', pkgName, externalFilename
         ).split('\\').join('\\\\');
         const body = `
-          if (window.__applications) {
-            window.__applications['${id}'] = require("${path}");
+          if (window.__apps) {
+            window.__apps['${id}'] = require("${path}");
           } else {
-            throw Error('Cannot register the application.');
+            throw Error('Cannot register the app.');
           }
         `;
         clientSideFs.writeFileSync(join(__dirname, `pneumatic.${pkgName}.ts`), body);
@@ -247,8 +247,8 @@ function watcherTrigger() {
     }
 
     clientSideFs.writeFileSync(join(__dirname, 'id.ts'), `
-      window.__applicationIdMap = ${JSON.stringify(clientBundleIdMap)};
-      window.__applications = {};
+      window.__appIdMap = ${JSON.stringify(clientBundleIdMap)};
+      window.__apps = {};
     `);
 
     const clientSideCompiler = webpack({

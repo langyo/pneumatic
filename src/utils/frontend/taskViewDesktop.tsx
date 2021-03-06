@@ -13,8 +13,18 @@ import {
   TaskManagerContext, ITaskManagerContext
 } from './taskManagerContext';
 import {
-  ApplicationProviderContext, IApplicationProviderContext, IApps, IGetAppComponent
+  AppProviderContext, IAppProviderContext, IApps, IGetAppComponent
 } from './appProviderContext';
+
+const loadingComponent = <div className={css`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`}>
+  <CircularProgress />
+</div>;
 
 export function TaskViewDesktop() {
   const {
@@ -24,7 +34,7 @@ export function TaskViewDesktop() {
   }: ITaskManagerContext = useContext(TaskManagerContext);
   const {
     apps, appRegistryStatus, getAppComponent
-  }: IApplicationProviderContext = useContext(ApplicationProviderContext);
+  }: IAppProviderContext = useContext(AppProviderContext);
 
   useEffect(() => void 0, [appRegistryStatus]);
 
@@ -34,8 +44,12 @@ export function TaskViewDesktop() {
     height: 100%;
   `}>
     {Object.keys(tasks).map((key: string) => {
+      if (tasks[key].connection === 'loading') {
+        return <></>;
+      }
+
       const {
-        pkg, page, sharedState,
+        pkg, page, sharedState, connection,
         windowInfo: {
           left, top, width, height, title, priority
         }
@@ -172,6 +186,10 @@ export function TaskViewDesktop() {
         (left, right) =>
           tasks[left].windowInfo.taskManagerOrder - tasks[right].windowInfo.taskManagerOrder
       ).map(key => {
+        if (tasks[key].connection === 'loading') {
+          return <></>;
+        }
+
         const { icon, name } = apps[tasks[key].pkg];
         const { status, title } = tasks[key].windowInfo;
 

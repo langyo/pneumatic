@@ -15,7 +15,7 @@ export interface IConfig {
       password: string
     }
   },
-  applications: {
+  apps: {
     [pkg: string]: IApp
   }
 }
@@ -29,21 +29,15 @@ if (!existsSync(join(process.cwd(), './pneumatic.config.json'))) {
           password: signSaltPassword('admin', 'admin')
         }
       },
-      applications: {
+      apps: {
         'pneumatic.explorer': {
-          icon: mdiFolderOutline, name: 'Explorer',
-          defaultState: { path: '/' },
-          defaultWindowInfo: { title: (_page, { path }) => path }
+          icon: mdiFolderOutline, name: 'Explorer'
         },
         'pneumatic.monitor': {
-          icon: mdiMemory, name: 'Monitor',
-          defaultPage: 'hardware',
-          defaultWindowInfo: { title: (_page, _data) => 'Hardware' }
+          icon: mdiMemory, name: 'Monitor'
         },
         'pneumatic.browser': {
-          icon: mdiWeb, name: 'Proxy browser',
-          defaultState: { url: 'https://github.com/' },
-          defaultWindowInfo: { title: (_page, { url }) => /^https?:\/\/([^\/]+)\/.*/.exec(url)[1] }
+          icon: mdiWeb, name: 'Proxy browser'
         },
         'pneumatic.database': {
           icon: mdiDatabase, name: 'Database manager'

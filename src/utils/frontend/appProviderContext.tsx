@@ -1,95 +1,130 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { CircularProgress } from '@material-ui/core';
-import { css } from '@emotion/css';
 
 import { wsSocket } from './authProviderContext';
-import { ISharedState, ITaskInfo, IWindowInfo } from './taskManagerContext';
+import { ISharedState, ITaskMap, IWindowInfo } from './taskManagerContext';
 
 export interface IApp {
   icon: string,   // SVG path.
-  name: string,
-  defaultPage?: string,
-  defaultState?: { [key: string]: string }
-  defaultWindowInfo?: {
+  name: string
+}
+
+export interface IAppDefaultInfo {
+  page?: string,
+  state?: (
+    page: string, sharedState: ISharedState, tasks: ITaskMap
+  ) => ({ [key: string]: string }),
+  windowInfo?: {
     [key in keyof IWindowInfo]?: (
-      page: string, sharedState: ISharedState, tasks: ITaskInfo
+      page: string, sharedState: ISharedState, tasks: ITaskMap
     ) => IWindowInfo[key]
   }
 }
 
 export type IApps = { [pkg: string]: IApp };
 export type IGetAppComponent = (pkg: string, page?: string) => (props: any) => React.Component | any;
+export type IGetAppDefaultInfo = (
+  pkg: string, currentPage: string, initState: { [key: string]: any }, tasks: ITaskMap
+) => Partial<IAppDefaultInfo>;
 export type IPushApp = (pkg: string, app: IApp) => void;
 
-export const ApplicationProviderContext = createContext({} as IApplicationProviderContext);
+export const AppProviderContext = createContext({} as IAppProviderContext);
 
-export interface IApplicationProviderContext {
+export interface IAppProviderContext {
   apps: IApps,
   appRegistryStatus: string[],
   getAppComponent: IGetAppComponent,
+  getAppDefaultInfo: IGetAppDefaultInfo,
   pushApp: IPushApp
 }
 
 declare global {
   // tslint:disable-next-line: interface-name
   interface Window {
-    __applications: {
-      [id: string]: { [page: string]: (props: any) => React.Component }
+    __apps: {
+      [id: string]: {
+        pages: {
+          [page: string]: (props: any) => React.Component
+        },
+        config?: {
+          defaultInfo?: IAppDefaultInfo
+        }
+      }
     },
-    __applicationIdMap: {
+    __appIdMap: {
       [pkg: string]: string
     }
   }
 }
 
-export function ApplicationProvider({ children }: { children?: any }) {
+export function AppProvider({ children }: { children?: any }) {
   const [apps, setApps]: [IApps, (apps: IApps) => void] = useState({});
   const [appRegistryStatus, setAppRegistryStatus]: [
     string[], (str: string[]) => void
   ] = useState([]);
 
   useEffect(() => {
-    wsSocket.send('#get-applications');
-    wsSocket.receive('#get-applications', ({ apps }) => {
+    wsSocket.send('#get-apps');
+    wsSocket.receive('#get-apps', ({ apps }) => {
       setApps(apps);
     });
   }, []);
 
-  return <ApplicationProviderContext.Provider value={{
+  return <AppProviderContext.Provider value={{
     apps, appRegistryStatus,
     getAppComponent(pkg: string, page: string = 'default') {
-      const id = window.__applicationIdMap[pkg];
+      const id = window.__appIdMap[pkg];
       if (!id) {
-        throw Error(`Cannot find the application '${pkg}'.`);
+        throw Error(`Cannot find the app '${pkg}'.`);
       }
 
       if (appRegistryStatus.indexOf(pkg) < 0) {
         let node = document.createElement('script');
-        node.src = `/${window.__applicationIdMap[pkg]}`;
+        node.src = `/${window.__appIdMap[pkg]}`;
         document.body.appendChild(node);
 
         const handler = setInterval(() => {
-          if (window.__applications[id]) {
+          if (window.__apps[id]) {
             clearInterval(handler);
             setAppRegistryStatus([...appRegistryStatus, pkg]);
           }
-        }, 1000);
+        }, 200);
 
-        return () => <div className={css`
-          width: 100%;
-          height: 100%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        `}>
-          <CircularProgress />
-        </div>;
+        return;
       } else {
-        return window.__applications[id]?.components[page];
+        return window.__apps[id]?.pages[page];
       }
+    },
+    getAppDefaultInfo(
+      pkg: string,
+      currentPage: string, initState: { [key: string]: any }, tasks: ITaskMap
+    ): IAppDefaultInfo {
+      const id = window.__appIdMap[pkg];
+      if (!id) {
+        throw Error(`Cannot find the app '${pkg}'.`);
+      }
+
+      let { page, state, windowInfo } = window.__apps[id]?.config?.defaultInfo || {};
+      let ret = {};
+      if (page) {
+        ret = { ...ret, page };
+      }
+      if (state) {
+        ret = { ...ret, state: state(currentPage, initState, tasks) };
+      }
+      if (windowInfo) {
+        ret = {
+          ...ret, windowInfo: {
+            ...Object.keys(windowInfo).reduce((obj, key) => ({
+              ...obj,
+              [key]: windowInfo[key](currentPage, initState, tasks)
+            }), {})
+          }
+        };
+      }
+      return ret;
     },
     pushApp(pkg: string, app: IApp) { setApps({ ...apps, [pkg]: app }); }
   }}>
     {children}
-  </ApplicationProviderContext.Provider >;
+  </AppProviderContext.Provider >;
 }

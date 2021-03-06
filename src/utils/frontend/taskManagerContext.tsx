@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { wsSocket } from './authProviderContext';
-import { ApplicationProviderContext, IApp } from './appProviderContext';
-import { ThemeProviderContext } from './themeProviderContext';
+import { AppProviderContext, IAppProviderContext } from './appProviderContext';
+import { IThemeProviderContext, ThemeProviderContext } from './themeProviderContext';
 import { generate } from 'shortid';
 
 export const TaskManagerContext = createContext({} as ITaskManagerContext);
 export interface ITask {
-  pkg: '#merge' | string,    // The embedded package format is 'pneumatic.*'.
-  page: string,   // The default page is 'default'.
+  pkg: '#merge' | string,     // The embedded package format is 'pneumatic.*'.
+  page: string,               // The default page is 'default'.
   sharedState: { [key: string]: string | number | boolean },
   connection: 'loading' | 'access' | 'block',
   windowInfo: IWindowInfo
@@ -19,7 +19,7 @@ export interface IGlobalState {
   taskManagerState: boolean,
   taskManagerPosition: {
     direction: 'left' | 'right',
-    top: number,      // It is invalid on desktop.
+    top: number,              // It is invalid on desktop.
   }
 }
 export type ISetGlobalState = (state: Partial<IGlobalState>) => void;
@@ -48,14 +48,14 @@ export interface IProps {
   page: string,
   setPage: (page: string) => void,
   sharedState: ISharedState,
-  setState: (sharedState: ISharedState) => void,
+  setSharedState: (sharedState: ISharedState) => void,
   globalState: IGlobalState,
   setGlobalState: ISetGlobalState,
   generateTask: IGenerateTask,
   destoryTask: IDestoryTask
 }
 
-export type ITaskInfo = { [key: string]: ITask };
+export type ITaskMap = { [key: string]: ITask };
 export type IGenerateTask = (pkg: string, page?: string, initState?: ISharedState) => void;
 export type IDestoryTask = (id: string) => void;
 export type ISetPage = (id: string, page: string) => void;
@@ -67,7 +67,7 @@ export type IPropsGenerator = (
 ) => IProps;
 
 export interface ITaskManagerContext {
-  tasks: ITaskInfo,
+  tasks: ITaskMap,
   globalState: IGlobalState,
   setGlobalState: ISetGlobalState,
   generateTask: IGenerateTask,
@@ -80,12 +80,14 @@ export interface ITaskManagerContext {
 };
 
 export function TaskManager({ children }: { children?: any }) {
-  const { apps }: { apps: { [pkg: string]: IApp } } = useContext(ApplicationProviderContext);
-  const { media } = useContext(ThemeProviderContext);
-  const [tasks, _setTasks]: [
-    ITaskInfo, (tasks: (tasks: ITaskInfo) => ITaskInfo) => void
+  const {
+    appRegistryStatus, getAppComponent, getAppDefaultInfo
+  }: IAppProviderContext = useContext(AppProviderContext);
+  const { media }: IThemeProviderContext = useContext(ThemeProviderContext);
+  const [tasks, setTasksInside]: [
+    ITaskMap, (tasks: (tasks: ITaskMap) => ITaskMap) => void
   ] = useState({});
-  const [globalState, _setGlobalState]: [
+  const [globalState, setGlobalStateInside]: [
     IGlobalState, (state: (state: IGlobalState) => IGlobalState) => void
   ] = useState({
     drawerState: false,
@@ -97,9 +99,11 @@ export function TaskManager({ children }: { children?: any }) {
     },
     launcherState: media === 'mobile'
   } as IGlobalState);
+  type ITaskGenerateCacheItem = { id: string, pkg: string, sharedState: { [key: string]: any } };
+  const [_generateTaskCache, setGenerateTaskCache] = useState([] as ITaskGenerateCacheItem[]);
 
   useEffect(() => {
-    _setGlobalState(state => ({
+    setGlobalStateInside(state => ({
       ...state,
       launcherState: media === 'mobile',
       taskManagerPosition: {
@@ -110,22 +114,46 @@ export function TaskManager({ children }: { children?: any }) {
   }, [media]);
 
   useEffect(() => {
-    wsSocket.receive('#init', ({ id, sharedState }) => {
-      _setTasks(tasks => ({
-        ...tasks,
-        [id]: {
-          ...tasks[id],
-          connection: 'access',
-          sharedState: sharedState
-        }
-      }));
+    wsSocket.receive('#init', ({ id, sharedState: remoteSharedState }) => {
+      setTasksInside(tasks => {
+        const { pkg, page, sharedState } = tasks[id];
+        const defaultInfo = getAppDefaultInfo(pkg, page, remoteSharedState || sharedState, tasks);
+        console.log(pkg, page, defaultInfo)
+        const initStateCombined = {
+          ...(defaultInfo.state || {}),
+          ...sharedState
+        };
+
+        return {
+          ...tasks,
+          [id]: {
+            ...tasks[id],
+            connection: 'access',
+            page: page || defaultInfo.page || 'default',
+            sharedState: initStateCombined,
+            windowInfo: {
+              status: 'active',
+              left: defaultInfo?.windowInfo?.left || 100 + Object.keys(tasks).length * 20,
+              top: defaultInfo?.windowInfo?.top || 50 + Object.keys(tasks).length * 20,
+              width: defaultInfo?.windowInfo?.width || 600,
+              height: defaultInfo?.windowInfo?.height || 400,
+              title: defaultInfo?.windowInfo?.title || '',
+              priority: Object.keys(tasks).length + 1,
+              taskManagerOrder: Object.keys(tasks).length + 1,
+              mergeGrid: [],
+              subWindow: [],
+              parentWindow: ''
+            }
+          }
+        };
+      });
     });
     wsSocket.receive('#destory', _data => void 0);
     wsSocket.receive('#error', ({ msg }) => {
       console.error('WebSocket:', msg);
     });
     wsSocket.receive('#set-shared-state', ({ id, data }) => {
-      _setTasks(tasks => ({
+      setTasksInside(tasks => ({
         ...tasks,
         [id]: {
           ...tasks[id],
@@ -138,17 +166,24 @@ export function TaskManager({ children }: { children?: any }) {
     })
   }, []);
 
+  useEffect(() => {
+    setGenerateTaskCache(cache => cache.filter(
+      ({ id, pkg, sharedState }) => {
+        if (appRegistryStatus.indexOf(pkg) >= 0) {
+          wsSocket.send('#init', { id, pkg, sharedState });
+          return false;
+        } else {
+          return true;
+        }
+      }));
+  }, [appRegistryStatus]);
+
   function generateTask(
-    pkg: string, page?: string, initState?: ISharedState
+    pkg: string, page?: string, sharedState?: ISharedState
   ) {
     const id = generate();
-    const initStateCombined = {
-      ...(initState || {}),
-      ...(apps[pkg].defaultState || {})
-    };
-
-    wsSocket.send('#init', { id, pkg, initState: initStateCombined });
-    _setTasks(tasks => Object.keys(tasks).reduce((obj, id: string) => ({
+    setGenerateTaskCache(cache => [...cache, { id, pkg, sharedState }]);
+    setTasksInside(tasks => Object.keys(tasks).reduce((obj, id) => ({
       ...obj,
       [id]: {
         ...tasks[id],
@@ -160,37 +195,17 @@ export function TaskManager({ children }: { children?: any }) {
     }), {
       [id]: {
         pkg,
-        page: page || apps[pkg].defaultPage || 'default',
-        sharedState: initStateCombined,
-        connection: 'loading',
-        windowInfo: {
-          status: 'active',
-          left: apps[pkg].defaultWindowInfo && apps[pkg].defaultWindowInfo.left ?
-            apps[pkg].defaultWindowInfo.left : 100 + Object.keys(tasks).length * 20,
-          top: apps[pkg].defaultWindowInfo && apps[pkg].defaultWindowInfo.top ?
-            apps[pkg].defaultWindowInfo.top : 50 + Object.keys(tasks).length * 20,
-          width: apps[pkg].defaultWindowInfo && apps[pkg].defaultWindowInfo.width ?
-            apps[pkg].defaultWindowInfo.width : 600,
-          height: apps[pkg].defaultWindowInfo && apps[pkg].defaultWindowInfo.height ?
-            apps[pkg].defaultWindowInfo.height : 400,
-          title: apps[pkg].defaultWindowInfo && apps[pkg].defaultWindowInfo.title ?
-            apps[pkg].defaultWindowInfo.title(apps[pkg].defaultPage || 'default', {
-              ...(initState || {}),
-              ...(apps[pkg].defaultState || {})
-            }, tasks) : '',
-          priority: Object.keys(tasks).length + 1,
-          taskManagerOrder: Object.keys(tasks).length + 1,
-          mergeGrid: [],
-          subWindow: [],
-          parentWindow: ''
-        }
+        page,
+        sharedState,
+        connection: 'loading'
       }
-    } as ITaskInfo));
+    } as ITaskMap));
+    getAppComponent(pkg, page);
   }
 
   function destoryTask(id: string) {
     wsSocket.send('#destory', { id });
-    _setTasks(tasks => Object.keys(tasks).filter(n => n !== id).reduce(
+    setTasksInside(tasks => Object.keys(tasks).filter(n => n !== id).reduce(
       (obj: { [key: string]: ITask }, key: string) => ({
         ...obj,
         [key]: {
@@ -211,21 +226,21 @@ export function TaskManager({ children }: { children?: any }) {
   }
 
   function setPage(id: string, page: string) {
-    _setTasks(tasks => ({
+    setTasksInside(tasks => ({
       ...tasks,
       [id]: {
         ...tasks[id],
         page
       }
     }));
-    _setGlobalState(globalState => ({
+    setGlobalStateInside(globalState => ({
       ...globalState,
       drawerState: false
     }));
   }
 
   function setSharedState(id: string, sharedState: ISharedState) {
-    _setTasks(tasks => ({
+    setTasksInside(tasks => ({
       ...tasks,
       [id]: {
         ...tasks[id],
@@ -238,7 +253,7 @@ export function TaskManager({ children }: { children?: any }) {
   }
 
   function setWindowInfo(id: string, info: Partial<IWindowInfo>) {
-    _setTasks(tasks => ({
+    setTasksInside(tasks => ({
       ...tasks,
       [id]: {
         ...tasks[id],
@@ -251,7 +266,7 @@ export function TaskManager({ children }: { children?: any }) {
   }
 
   function setActiveTask(id: string) {
-    _setTasks(tasks => Object.keys(tasks).reduce((obj, key: string) => ({
+    setTasksInside(tasks => Object.keys(tasks).reduce((obj, key: string) => ({
       ...obj,
       [key]: {
         ...tasks[key],
@@ -263,7 +278,7 @@ export function TaskManager({ children }: { children?: any }) {
             tasks[key].windowInfo.priority - 1
         }
       }
-    }) as ITaskInfo, {}));
+    }) as ITaskMap, {}));
   }
 
   function propsGenerator(
@@ -276,7 +291,7 @@ export function TaskManager({ children }: { children?: any }) {
       page,
       setPage(page: string) { setPage(key, page); },
       sharedState,
-      setState(state: ISharedState) { setSharedState(key, state); },
+      setSharedState(state: ISharedState) { setSharedState(key, state); },
       globalState,
       setGlobalState,
       generateTask,
@@ -287,7 +302,7 @@ export function TaskManager({ children }: { children?: any }) {
   function setGlobalState(state: {
     drawerState?: boolean, launcherState?: boolean, taskManagerState?: boolean
   }) {
-    _setGlobalState(globalState => ({
+    setGlobalStateInside(globalState => ({
       ...globalState,
       ...state
     }))

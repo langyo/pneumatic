@@ -13,8 +13,18 @@ import {
   TaskManagerContext, IWindowInfo, ITaskManagerContext
 } from './taskManagerContext';
 import {
-  ApplicationProviderContext, IApplicationProviderContext
+  AppProviderContext, IAppProviderContext
 } from './appProviderContext';
+
+const loadingComponent = <div className={css`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`}>
+  <CircularProgress />
+</div>;
 
 export function TaskViewMobile() {
   const {
@@ -26,7 +36,7 @@ export function TaskViewMobile() {
   }: ITaskManagerContext = useContext(TaskManagerContext);
   const {
     apps, appRegistryStatus, getAppComponent
-  }: IApplicationProviderContext = useContext(ApplicationProviderContext);
+  }: IAppProviderContext = useContext(AppProviderContext);
 
   useEffect(() => void 0, [appRegistryStatus]);
 
@@ -169,14 +179,17 @@ export function TaskViewMobile() {
 
     {Object.keys(tasks).map((key) => {
       const {
-        pkg, page, sharedState, windowInfo: { status }
+        pkg, page, sharedState, connection,
+        windowInfo: { status }
       } = tasks[key];
       return <>
         {status === 'active' && !launcherState && <Scrollbars className={css`
           width: 100%;
           height: 100%;
         `}>
-          {getAppComponent(pkg, page)(propsGenerator(key, page, sharedState))}
+          {connection === 'access' ?
+            getAppComponent(pkg, page)(propsGenerator(key, page, sharedState)) :
+            loadingComponent}
         </Scrollbars>}
         {status === 'active' && !launcherState && <Drawer
           anchor='left'
@@ -191,7 +204,9 @@ export function TaskViewMobile() {
               width: 100%;
               height: 100%;
             `}>
-              {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState))}
+              {connection === 'access' ?
+                getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState)) :
+                loadingComponent}
             </Scrollbars>
           </div>
         </Drawer>}
