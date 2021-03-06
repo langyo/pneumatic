@@ -1,5 +1,4 @@
 import * as Koa from 'koa';
-import { EventEmitter } from 'events';
 
 import { config } from './utils/backend/configLoader';
 import { log } from './utils/backend/logger';

@@ -31,7 +31,7 @@ const server = createServer(app.callback()).listen(
   process.env.HOST || undefined
 );
 
-const socketSendMiddleware: {
+let socketSendMiddleware: {
   [token: string]: (head: string, data: any) => void
 } = {};
 export function socketSend(token: string, head: string, data: any) {

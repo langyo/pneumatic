@@ -116,7 +116,7 @@ export function TaskManager({ children }: { children?: any }) {
         [id]: {
           ...tasks[id],
           connection: 'access',
-          sharedState: sharedState || tasks[id].sharedState
+          sharedState: sharedState
         }
       }));
     });
@@ -125,18 +125,16 @@ export function TaskManager({ children }: { children?: any }) {
       console.error('WebSocket:', msg);
     });
     wsSocket.receive('#set-shared-state', ({ id, data }) => {
-      if (tasks[id]) {
-        _setTasks(tasks => ({
-          ...tasks,
-          [id]: {
-            ...tasks[id],
-            sharedState: {
-              ...tasks[id].sharedState,
-              ...data
-            }
+      _setTasks(tasks => ({
+        ...tasks,
+        [id]: {
+          ...tasks[id],
+          sharedState: {
+            ...tasks[id].sharedState,
+            ...data
           }
-        }));
-      }
+        }
+      }));
     })
   }, []);
 
