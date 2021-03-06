@@ -24,8 +24,8 @@ export const wsSocket = Object.seal({
     wsEventEmitter.on('message', (input: string) => {
       try {
         const { head, data } = JSON.parse(input);
-        console.log('WebSocket receive:', head, data);
         if (head === inputHead) {
+          console.log('WebSocket receive:', head, data);
           callback(data);
         }
       } catch (e) {
