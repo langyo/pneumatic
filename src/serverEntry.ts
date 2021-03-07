@@ -25,10 +25,6 @@ const entryMap: {
     socket?: (token: string, data: { [key: string]: any }, utils: {
       send: (data: { [key: string]: any }) => void,
       registerAutoSender: (timeout: number, callback: () => ({ [key: string]: any })) => void
-    }) => Promise<void>,
-    socketAutoRun?: (token: string, data: { [key: string]: any }, utils: {
-      send: (data: { [key: string]: any }) => void,
-      registerAutoSender: (timeout: number, callback: () => ({ [key: string]: any })) => void
     }) => Promise<void>
   }
 } = require('./id.ts').entryMap;
@@ -72,8 +68,8 @@ socketReceive('#init', (token, { id, pkg, page, initState }) => {
       [key]: defaultWindowInfoGenerator[key](page, sharedState)
     }), {}) || {}
   });
-  if (entryMap[pkg].socketAutoRun) {
-    entryMap[pkg].socketAutoRun(token, sharedState, {
+  if (entryMap[pkg].socket) {
+    entryMap[pkg].socket(token, sharedState, {
       send: data => socketSend(token, '#set-shared-state', { id, data }),
       registerAutoSender: (timeout, callback) => {
         activeSocketsMap[token][id].autoSender.push(

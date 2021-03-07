@@ -54,7 +54,7 @@ const fileTypes = Object.keys(fileTypesRaw).reduce((obj, key) => ({
   }), {})
 }), {});
 
-export async function socketAutoRun(_token: string, { path }, { send }) {
+export async function socket(_token: string, { path }, { send }) {
   send({
     baseName: basename(path),
     files: readdirSync(path).reduce((obj, name) => ({
