@@ -43,13 +43,11 @@ export function TaskViewDesktop() {
     width: 100%;
     height: 100%;
   `}>
-    {Object.keys(tasks).map((key: string) => {
-      if (tasks[key].connection === 'loading') {
-        return <></>;
-      }
-
+    {Object.keys(tasks).filter(
+      key => tasks[key].connection !== 'loading'
+    ).map((key: string) => {
       const {
-        pkg, page, sharedState, connection,
+        pkg, page, sharedState,
         windowInfo: {
           left, top, width, height, title, priority
         }
@@ -182,13 +180,12 @@ export function TaskViewDesktop() {
       justify-content: flex-start;
       align-items: center;
     `}>
-      {Object.keys(tasks).sort(
+      {Object.keys(tasks).filter(
+        key => tasks[key].connection === 'access'
+      ).sort(
         (left, right) =>
           tasks[left].windowInfo.taskManagerOrder - tasks[right].windowInfo.taskManagerOrder
       ).map(key => {
-        if (tasks[key].connection === 'loading') {
-          return <></>;
-        }
 
         const { icon, name } = apps[tasks[key].pkg];
         const { status, title } = tasks[key].windowInfo;

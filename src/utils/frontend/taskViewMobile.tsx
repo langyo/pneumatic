@@ -59,7 +59,9 @@ export function TaskViewMobile() {
           {'Tasks'}
         </ListSubheader>
       }>
-        {Object.keys(tasks).sort(
+        {Object.keys(tasks).filter(
+          key => tasks[key].connection === 'access'
+        ).sort(
           (left, right) =>
             tasks[left].windowInfo.taskManagerOrder -
             tasks[right].windowInfo.taskManagerOrder
@@ -112,7 +114,9 @@ export function TaskViewMobile() {
         display: flex;
         flex-direction: row;
       `}>
-        {Object.keys(tasks).map((key) => {
+        {Object.keys(tasks).filter(
+          key => tasks[key].connection === 'access'
+        ).map((key) => {
           const { pkg, windowInfo: { status, title } } = tasks[key];
           return <>
             {status === 'active' && !launcherState && <>

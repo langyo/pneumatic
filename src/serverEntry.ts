@@ -2,6 +2,7 @@ import * as Koa from 'koa';
 
 import { config } from './utils/backend/configLoader';
 import { log } from './utils/backend/logger';
+import { IAppComponent, IAppDefaultInfo } from './utils/frontend/appProviderContext';
 
 declare global {
   function exportMiddleware(
@@ -13,6 +14,13 @@ declare global {
 
 const entryMap: {
   [pkg: string]: {
+    pages?: {
+      [page: string]: IAppComponent
+    },
+    config?: {
+      defaultInfo?: IAppDefaultInfo
+    },
+
     route?: (ctx: Koa.BaseContext, next: () => Promise<unknown>) => Promise<any>,
     socket?: (token: string, data: any, utils: {
       send: (data: { [key: string]: any }) => void,
@@ -37,14 +45,27 @@ let activeSocketsMap: {
   }
 } = {};
 
-socketReceive('#init', (token, { id, pkg, initState }) => {
+socketReceive('#init', (token, { id, pkg, page, initState }) => {
   if (!activeSocketsMap[token]) {
     activeSocketsMap[token] = {};
   }
   activeSocketsMap[token][id] = {
     pkg, autoSender: [], data: initState || {}
   };
-  socketSend(token, '#init', { status: 'success', id });
+
+  let {
+    page: defaultPage, state, windowInfo
+  } = entryMap[pkg]?.config?.defaultInfo || {};
+
+  socketSend(token, '#init', {
+    status: 'success', id,
+    page: page || defaultPage,
+    sharedState: state && state(page, initState) || initState || {},
+    windowInfo: windowInfo && Object.keys(windowInfo).reduce((obj, key) => ({
+      ...obj,
+      [key]: windowInfo[key](page, initState)
+    }), {}) || {}
+  });
   if (entryMap[pkg].socketAutoSender) {
     entryMap[pkg].socketAutoSender(token, {
       send: data => socketSend(token, id, data),
@@ -70,6 +91,26 @@ socketReceive('#destory', (token, { id }) => {
     socketSend(token, '#destory', { status: 'fail', id });
   }
 });
+
+socketReceive('#destory-all', (token, _data) => {
+  if (activeSocketsMap[token]) {
+    for (const id of Object.keys(activeSocketsMap[token])) {
+      for (const timeoutObj of activeSocketsMap[token][id].autoSender) {
+        clearInterval(timeoutObj);
+      }
+    }
+  }
+});
+
+socketReceive('#restart', (_token, _data) => {
+  for (const token of Object.keys(activeSocketsMap)) {
+    for (const id of Object.keys(activeSocketsMap[token])) {
+      for (const timeoutObj of activeSocketsMap[token][id].autoSender) {
+        clearInterval(timeoutObj);
+      }
+    }
+  }
+})
 
 socketReceive('#get-apps', (token, _data) => {
   socketSend(token, '#get-apps', { apps: config.apps })

@@ -8,23 +8,21 @@ export interface IApp {
   name: string
 }
 
+export type IAppComponent = (props: any) => React.Component | any;
 export interface IAppDefaultInfo {
   page?: string,
   state?: (
-    page: string, sharedState: ISharedState, tasks: ITaskMap
+    page: string, sharedState: ISharedState
   ) => ({ [key: string]: string }),
   windowInfo?: {
     [key in keyof IWindowInfo]?: (
-      page: string, sharedState: ISharedState, tasks: ITaskMap
+      page: string, sharedState: ISharedState
     ) => IWindowInfo[key]
   }
 }
 
 export type IApps = { [pkg: string]: IApp };
-export type IGetAppComponent = (pkg: string, page?: string) => (props: any) => React.Component | any;
-export type IGetAppDefaultInfo = (
-  pkg: string, currentPage: string, initState: { [key: string]: any }, tasks: ITaskMap
-) => Partial<IAppDefaultInfo>;
+export type IGetAppComponent = (pkg: string, page?: string) => IAppComponent;
 export type IPushApp = (pkg: string, app: IApp) => void;
 
 export const AppProviderContext = createContext({} as IAppProviderContext);
@@ -33,7 +31,6 @@ export interface IAppProviderContext {
   apps: IApps,
   appRegistryStatus: string[],
   getAppComponent: IGetAppComponent,
-  getAppDefaultInfo: IGetAppDefaultInfo,
   pushApp: IPushApp
 }
 
@@ -93,35 +90,6 @@ export function AppProvider({ children }: { children?: any }) {
       } else {
         return window.__apps[id]?.pages[page];
       }
-    },
-    getAppDefaultInfo(
-      pkg: string,
-      currentPage: string, initState: { [key: string]: any }, tasks: ITaskMap
-    ): IAppDefaultInfo {
-      const id = window.__appIdMap[pkg];
-      if (!id) {
-        throw Error(`Cannot find the app '${pkg}'.`);
-      }
-
-      let { page, state, windowInfo } = window.__apps[id]?.config?.defaultInfo || {};
-      let ret = {};
-      if (page) {
-        ret = { ...ret, page };
-      }
-      if (state) {
-        ret = { ...ret, state: state(currentPage, initState, tasks) };
-      }
-      if (windowInfo) {
-        ret = {
-          ...ret, windowInfo: {
-            ...Object.keys(windowInfo).reduce((obj, key) => ({
-              ...obj,
-              [key]: windowInfo[key](currentPage, initState, tasks)
-            }), {})
-          }
-        };
-      }
-      return ret;
     },
     pushApp(pkg: string, app: IApp) { setApps({ ...apps, [pkg]: app }); }
   }}>

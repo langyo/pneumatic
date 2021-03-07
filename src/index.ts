@@ -54,6 +54,7 @@ wss.on('connection', (ws, req) => {
         log('info', `Ws(${ip}):`, head);
         serverSocketListeners[head](token, data);
       } catch (e) {
+        log('error', e);
         ws.send(JSON.stringify({
           head: '#error', data: { msg: `${e}` }
         }));
@@ -61,6 +62,7 @@ wss.on('connection', (ws, req) => {
     });
 
     ws.on('close', () => {
+      serverSocketListeners['#destory-all'](token, {});
       terminateConnection(token);
     });
   } else {

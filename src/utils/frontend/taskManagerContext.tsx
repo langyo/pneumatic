@@ -81,7 +81,7 @@ export interface ITaskManagerContext {
 
 export function TaskManager({ children }: { children?: any }) {
   const {
-    appRegistryStatus, getAppComponent, getAppDefaultInfo
+    appRegistryStatus, getAppComponent
   }: IAppProviderContext = useContext(AppProviderContext);
   const { media }: IThemeProviderContext = useContext(ThemeProviderContext);
   const [tasks, setTasksInside]: [
@@ -99,8 +99,10 @@ export function TaskManager({ children }: { children?: any }) {
     },
     launcherState: media === 'mobile'
   } as IGlobalState);
-  type ITaskGenerateCacheItem = { id: string, pkg: string, sharedState: { [key: string]: any } };
-  const [_generateTaskCache, setGenerateTaskCache] = useState([] as ITaskGenerateCacheItem[]);
+  type ITaskGenerateCacheItem = {
+    id: string, pkg: string, page: string, initState: { [key: string]: any }
+  };
+  const [generateTaskCache, setGenerateTaskCache] = useState([] as ITaskGenerateCacheItem[]);
 
   useEffect(() => {
     setGlobalStateInside(state => ({
@@ -114,30 +116,22 @@ export function TaskManager({ children }: { children?: any }) {
   }, [media]);
 
   useEffect(() => {
-    wsSocket.receive('#init', ({ id, sharedState: remoteSharedState }) => {
+    wsSocket.receive('#init', ({ id, page, sharedState, windowInfo }) => {
       setTasksInside(tasks => {
-        const { pkg, page, sharedState } = tasks[id];
-        const defaultInfo = getAppDefaultInfo(pkg, page, remoteSharedState || sharedState, tasks);
-        console.log(pkg, page, defaultInfo)
-        const initStateCombined = {
-          ...(defaultInfo.state || {}),
-          ...sharedState
-        };
-
         return {
           ...tasks,
           [id]: {
             ...tasks[id],
             connection: 'access',
-            page: page || defaultInfo.page || 'default',
-            sharedState: initStateCombined,
+            page,
+            sharedState,
             windowInfo: {
               status: 'active',
-              left: defaultInfo?.windowInfo?.left || 100 + Object.keys(tasks).length * 20,
-              top: defaultInfo?.windowInfo?.top || 50 + Object.keys(tasks).length * 20,
-              width: defaultInfo?.windowInfo?.width || 600,
-              height: defaultInfo?.windowInfo?.height || 400,
-              title: defaultInfo?.windowInfo?.title || '',
+              left: windowInfo?.left || 100 + Object.keys(tasks).length * 20,
+              top: windowInfo?.top || 50 + Object.keys(tasks).length * 20,
+              width: windowInfo?.width || 600,
+              height: windowInfo?.height || 400,
+              title: windowInfo?.title || '',
               priority: Object.keys(tasks).length + 1,
               taskManagerOrder: Object.keys(tasks).length + 1,
               mergeGrid: [],
@@ -168,9 +162,9 @@ export function TaskManager({ children }: { children?: any }) {
 
   useEffect(() => {
     setGenerateTaskCache(cache => cache.filter(
-      ({ id, pkg, sharedState }) => {
+      ({ id, pkg, page, initState }) => {
         if (appRegistryStatus.indexOf(pkg) >= 0) {
-          wsSocket.send('#init', { id, pkg, sharedState });
+          wsSocket.send('#init', { id, pkg, page, initState });
           return false;
         } else {
           return true;
@@ -179,10 +173,10 @@ export function TaskManager({ children }: { children?: any }) {
   }, [appRegistryStatus]);
 
   function generateTask(
-    pkg: string, page?: string, sharedState?: ISharedState
+    pkg: string, page: string = 'default', initState: ISharedState = {}
   ) {
     const id = generate();
-    setGenerateTaskCache(cache => [...cache, { id, pkg, sharedState }]);
+    setGenerateTaskCache(cache => [...cache, { id, pkg, page, initState }]);
     setTasksInside(tasks => Object.keys(tasks).reduce((obj, id) => ({
       ...obj,
       [id]: {
@@ -196,7 +190,7 @@ export function TaskManager({ children }: { children?: any }) {
       [id]: {
         pkg,
         page,
-        sharedState,
+        sharedState: initState,
         connection: 'loading'
       }
     } as ITaskMap));
@@ -270,13 +264,15 @@ export function TaskManager({ children }: { children?: any }) {
       ...obj,
       [key]: {
         ...tasks[key],
-        windowInfo: {
-          ...tasks[key].windowInfo,
-          status: id === key ? 'active' : 'hidden',
-          priority: id === key ?
-            Object.keys(tasks).length :
-            tasks[key].windowInfo.priority - 1
-        }
+        ...(tasks[key].connection === 'access' ? {
+          windowInfo: {
+            ...tasks[key].windowInfo,
+            status: id === key ? 'active' : 'hidden',
+            priority: id === key ?
+              Object.keys(tasks).length :
+              tasks[key].windowInfo.priority - 1
+          }
+        } : {})
       }
     }) as ITaskMap, {}));
   }

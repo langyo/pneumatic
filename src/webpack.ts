@@ -144,7 +144,9 @@ export let serverRoutes = async (
 import { socketSend } from './index';
 export let serverSocketListeners: {
   [head: string]: (token: string, data: any) => void
-} = {};
+} = {
+  '#restart': () => void 0
+};
 
 function serverSideCompilerCallback(err: Error, status) {
   if (err) {
@@ -221,6 +223,7 @@ function watcherTrigger() {
     log('info', 'Compiling the codes.');
     watcherWaitingState.firstChange = false;
     watcherWaitingState.continueChange = false;
+    serverSocketListeners['#restart']('', {});
 
     for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
       let externalFilename = '';
@@ -288,23 +291,43 @@ function watcherTrigger() {
     clientSideCompiler.outputFileSystem = clientSideFs;
     clientSideCompiler.run(clientSideCompilerCallback);
 
-    let serverEntryMap: { [pkg: string]: string } = {};
+    let entryMap: {
+      [pkg: string]: {
+        client?: string,
+        server?: string
+      }
+    } = {};
     for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
-      let externalFilename = '';
+      entryMap[`pneumatic.${pkgName}`] = {};
+      let clientFileName = '';
+      let serverFileName = '';
       for (const ex of ['.js', '.jsx', '.mjs', '.ts', '.tsx']) {
-        if (realFs.existsSync(join(__dirname, 'apps', pkgName, 'backend' + ex))) {
-          externalFilename = `backend${ex}`;
+        if (realFs.existsSync(join(__dirname, 'apps', pkgName, 'frontend' + ex))) {
+          clientFileName = `frontend${ex}`;
           break;
         }
       }
-      if (externalFilename !== '') {
-        serverEntryMap[`pneumatic.${pkgName}`] =
-          join(__dirname, 'apps', pkgName, externalFilename).split('\\').join('\\\\');
+      for (const ex of ['.js', '.jsx', '.mjs', '.ts', '.tsx']) {
+        if (realFs.existsSync(join(__dirname, 'apps', pkgName, 'backend' + ex))) {
+          serverFileName = `backend${ex}`;
+          break;
+        }
+      }
+      if (clientFileName !== '') {
+        entryMap[`pneumatic.${pkgName}`].client =
+          join(__dirname, 'apps', pkgName, clientFileName).split('\\').join('\\\\');
+      }
+      if (serverFileName !== '') {
+        entryMap[`pneumatic.${pkgName}`].server =
+          join(__dirname, 'apps', pkgName, serverFileName).split('\\').join('\\\\');
       }
     }
 
     serverSideFs.writeFileSync(join(__dirname, 'id.ts'), `
-      export const entryMap = {${Object.keys(serverEntryMap).map(pkg => `"${pkg}": require("${serverEntryMap[pkg]}")`).join(',')}};
+      export const entryMap = {${Object.keys(entryMap).map(pkg => `"${pkg}": {
+        ${entryMap[pkg].client ? `...require("${entryMap[pkg].client}")` : ''},
+        ${entryMap[pkg].server ? `...require("${entryMap[pkg].server}")` : ''}
+      }`).join(',')}};
     `);
 
     const serverSideCompiler = webpack({
