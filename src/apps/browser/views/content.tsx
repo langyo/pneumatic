@@ -1,24 +1,10 @@
 import React from 'react';
-import { css } from '@emotion/css';
+import { Typography } from '@material-ui/core';
 
 export function Content({ sharedState }) {
-  return <div className={css`
-    color: rgba(0, 0, 0, 1);
-  `}>
-    <div className={css`
-      font-size: 32px;
-      margin: 8px 16px;
-      height: 36px;
-      line-height: 36px;
-      padding: 4px;
-      &:hover {
-        background: rgba(0.5, 0.5, 0.5, 0.2);
-      }
-      display: inline-block;
-      user-select: none;
-      border-radius: 4px;
-    `}>
+  return <>
+    <Typography variant='h4'>
       {'WIP'}
-    </div>
-  </div>;
+    </Typography>
+  </>;
 }

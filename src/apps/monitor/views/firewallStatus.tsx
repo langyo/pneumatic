@@ -1,26 +1,17 @@
 import React, { useState } from 'react';
+import { Typography } from '@material-ui/core';
 import { css } from '@emotion/css';
 
 export function FirewallStatus({ }) {
-  return <div className={css`
-    color: rgba(0, 0, 0, 1);
-  `}>
-    <div className={css`
-      font-size: 32px;
-      margin: 8px 16px;
-      height: 36px;
-      line-height: 36px;
-      padding: 4px;
-      display: inline-block;
-      user-select: none;
-    `}>
+  return <>
+    <Typography variant='h4'>
       {'Firewall Status'}
-    </div>
+    </Typography>
     <div className={css`
       width: calc(100% - 16px);
       margin: 8px;
       display: flex;
       flex-wrap: wrap;
     `}></div>
-  </div>;
+  </>;
 }

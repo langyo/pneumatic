@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ButtonBase, Typography } from '@material-ui/core';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
 import {
@@ -40,34 +41,37 @@ const fileTypeIconMap = {
 };
 
 function ContentItem({ iconPath, title }) {
-  return <div className={css`
-    width: 96px;
-    height: 96px;
-    margin: 8px;
-    padding-top: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 4px;
+  return <ButtonBase focusRipple className={css`
     &:hover {
-      background: rgba(0.5, 0.5, 0.5, 0.2);
+      background: rgba(0, 0, 0, 0.2);
     }
   `}>
-    <Icon path={iconPath} size={2} color='rgba(0, 0, 0, 1)' />
-    <p className={css`
-      margin: 0px;
-      line-height: 24px;
-      font-size: 14px;
-      height: 48px;
-      width: 92px;
-      word-break: break-all;
-      text-align: center;
-      user-select: none;
+    <div className={css`
+      width: 96px;
+      height: 96px;
+      margin: 8px;
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border-radius: 4px;
     `}>
-      {title}
-    </p>
-  </div>;
+      <Icon path={iconPath} size={2} color='rgba(0, 0, 0, 1)' />
+      <p className={css`
+        margin: 0px;
+        line-height: 24px;
+        font-size: 14px;
+        height: 48px;
+        width: 92px;
+        word-break: break-all;
+        text-align: center;
+        user-select: none;
+      `}>
+        {title}
+      </p>
+    </div>
+  </ButtonBase>;
 }
 
 export function Content({ sharedState }) {
@@ -84,73 +88,79 @@ export function Content({ sharedState }) {
     baseName: string
   } = sharedState;
 
-  return <div className={css`
-    color: rgba(0, 0, 0, 1);
-  `}>
-    <div className={css`
-      font-size: 32px;
-      margin: 8px 16px;
-      height: 36px;
-      line-height: 36px;
-      padding: 4px;
-      &:hover {
-        background: rgba(0.5, 0.5, 0.5, 0.2);
-      }
+  return <>
+    <ButtonBase focusRipple className={css`
+      margin: 16px;
+      padding: 8px;
       display: inline-block;
-      user-select: none;
-      border-radius: 4px;
+      &:hover {
+        background: rgba(0, 0, 0, 0.2);
+      }
     `}>
-      {baseName}
-    </div>
+      <div className={css`
+        margin: 4px;
+      `}>
+        <Typography variant='h4'>
+          {baseName}
+        </Typography>
+      </div>
+    </ButtonBase>
     <div className={css`
-      font-size: 16px;
-      height: 20px;
-      margin: 4px 16px;
+      margin: 8px;
       display: flex;
       flex-direction: row;
+      align-items: center;
     `}>
       {parts.map(n => (
-        <div className={css`
-          height: 20px;
-          line-height: 20px;
-          margin: 4px;
-          padding: 4px;
+        <ButtonBase focusRipple className={css`
           &:hover {
-            background: rgba(0.5, 0.5, 0.5, 0.2);
+            background: rgba(0, 0, 0, 0.2);
           }
-          user-select: none;
-          border-radius: 4px;
         `}>
-          {n}
-        </div>
+          <div className={css`
+            margin: 4px;
+          `}>
+            <Typography variant='body1'>
+              {n}
+            </Typography>
+          </div>
+        </ButtonBase>
       ))
         .reduceRight(
           (arr, next) => [
             ...arr,
             next,
             <div className={css`
-              height: 20px;
-              margin: 6px 0px;
-              padding: 2px;
-              border-radius: 4px;
-              &:hover {
-                background: rgba(0.5, 0.5, 0.5, 0.2);
-              }
+              margin: 0px 4px;
             `}>
-              <Icon path={mdiMenuRight} size={0.8} color='rgba(0, 0, 0, 1)' />
+              <ButtonBase focusRipple className={css`
+                &:hover {
+                  background: rgba(0, 0, 0, 0.2);
+                }
+              `}>
+                <div className={css`
+                  margin: 4px;
+                `}>
+                  <Icon path={mdiMenuRight} size={0.8} color='rgba(0, 0, 0, 1)' />
+                </div>
+              </ButtonBase>
             </div>
           ],
           [
             <div className={css`
-              height: 20px;
-              margin: 6px 0px;
-              padding: 2px;
-              border-radius: 4px;
-              &:hover {
-                background: rgba(0.5, 0.5, 0.5, 0.2);
-              }
+              margin: 0px 4px;
             `}>
-              <Icon path={mdiMenuDown} size={0.8} color='rgba(0, 0, 0, 1)' />
+              <ButtonBase focusRipple className={css`
+                &:hover {
+                  background: rgba(0, 0, 0, 0.2);
+                }
+              `}>
+                <div className={css`
+                  margin: 4px;
+                `}>
+                  <Icon path={mdiMenuDown} size={0.8} color='rgba(0, 0, 0, 1)' />
+                </div>
+              </ButtonBase>
             </div>
           ]
         )
@@ -168,5 +178,5 @@ export function Content({ sharedState }) {
         title={name}
       />)}
     </div>
-  </div>;
+  </>;
 }

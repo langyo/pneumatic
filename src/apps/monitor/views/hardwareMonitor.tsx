@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Typography, LinearProgress } from '@material-ui/core';
 import { css } from '@emotion/css';
 
 function UsageBarItem({ title, progress }) {
@@ -11,57 +12,27 @@ function UsageBarItem({ title, progress }) {
       display: flex;
       justify-content: space-between;
     `}>
-      <p className={css`
-        margin: 4px;
-        line-height: 24px;
-        height: 24px;
-        font-size: 20px;
-        user-select: none;
-      `}>
+      <Typography variant='h6'>
         {title}
-      </p>
-      <p className={css`
-        margin: 4px;
-        line-height: 24px;
-        height: 24px;
-        font-size: 20px;
-        user-select: none;
-      `}>
+      </Typography>
+      <Typography variant='subtitle1'>
         {`${Math.round(progress * 10000) / 100}%`}
-      </p>
+      </Typography>
     </div>
-    <div className={css`
-      width: calc(100% - 8px);
-      height: 4px;
-      margin: 4px;
-      background: rgba(0.5, 0.5, 0.5, 0.1);
-    `}>
-      <div className={css`
-        width: ${progress * 100}%;
-        height: 4px;
-        background: rgba(0.5, 0.5, 0.5, 0.4);
-      `} />
-    </div>
+    <LinearProgress
+      variant="determinate"
+      value={progress * 100}
+    />
   </div>;
 }
 
 export function HardwareMonitor({ sharedState }) {
   const { freeMem, totalMem } = sharedState;
 
-  return <div className={css`
-    color: rgba(0, 0, 0, 1);
-  `}>
-    <div className={css`
-      font-size: 32px;
-      margin: 8px 16px;
-      height: 36px;
-      line-height: 36px;
-      padding: 4px;
-      display: inline-block;
-      user-select: none;
-    `}>
+  return <>
+    <Typography variant='h4'>
       {'Hardware Monitor'}
-    </div>
+    </Typography>
     <div className={css`
       width: calc(100% - 16px);
       margin: 8px;
@@ -73,5 +44,5 @@ export function HardwareMonitor({ sharedState }) {
         progress={freeMem / totalMem}
       />}
     </div>
-  </div>;
+  </>;
 }
