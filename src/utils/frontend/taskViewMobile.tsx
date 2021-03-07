@@ -35,7 +35,7 @@ export function TaskViewMobile() {
     }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
   const {
-    apps, appRegistryStatus, getAppComponent
+    apps, appRegistryStatus, loadAppComponent: getAppComponent
   }: IAppProviderContext = useContext(AppProviderContext);
 
   useEffect(() => void 0, [appRegistryStatus]);
@@ -59,9 +59,7 @@ export function TaskViewMobile() {
           {'Tasks'}
         </ListSubheader>
       }>
-        {Object.keys(tasks).filter(
-          key => tasks[key].connection === 'access'
-        ).sort(
+        {Object.keys(tasks).sort(
           (left, right) =>
             tasks[left].windowInfo.taskManagerOrder -
             tasks[right].windowInfo.taskManagerOrder
@@ -114,9 +112,7 @@ export function TaskViewMobile() {
         display: flex;
         flex-direction: row;
       `}>
-        {Object.keys(tasks).filter(
-          key => tasks[key].connection === 'access'
-        ).map((key) => {
+        {Object.keys(tasks).map(key => {
           const { pkg, windowInfo: { status, title } } = tasks[key];
           return <>
             {status === 'active' && !launcherState && <>
@@ -183,7 +179,7 @@ export function TaskViewMobile() {
 
     {Object.keys(tasks).map((key) => {
       const {
-        pkg, page, sharedState, connection,
+        pkg, page, sharedState,
         windowInfo: { status }
       } = tasks[key];
       return <>
@@ -191,7 +187,7 @@ export function TaskViewMobile() {
           width: 100%;
           height: 100%;
         `}>
-          {connection === 'access' ?
+          {getAppComponent(pkg, page) ?
             getAppComponent(pkg, page)(propsGenerator(key, page, sharedState)) :
             loadingComponent}
         </Scrollbars>}
@@ -208,7 +204,7 @@ export function TaskViewMobile() {
               width: 100%;
               height: 100%;
             `}>
-              {connection === 'access' ?
+              {getAppComponent(pkg, 'drawer') ?
                 getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState)) :
                 loadingComponent}
             </Scrollbars>

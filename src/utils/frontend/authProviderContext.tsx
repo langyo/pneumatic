@@ -11,7 +11,6 @@ let wsSendMessageBuffer: { head: string, data: any }[] = [];
 export const wsSocket = Object.seal({
   send(head: string, data: { [key: string]: any } = {}) {
     if (wsConnection?.readyState === 1) {
-      console.log('WebSocket send:', head, data);
       wsEventEmitter.emit('send', JSON.stringify({ head, data }));
     } else {
       wsSendMessageBuffer.push({ head, data });
@@ -25,7 +24,6 @@ export const wsSocket = Object.seal({
       try {
         const { head, data } = JSON.parse(input);
         if (head === inputHead) {
-          console.log('WebSocket receive:', head, data);
           callback(data);
         }
       } catch (e) {

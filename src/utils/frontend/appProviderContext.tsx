@@ -30,7 +30,7 @@ export const AppProviderContext = createContext({} as IAppProviderContext);
 export interface IAppProviderContext {
   apps: IApps,
   appRegistryStatus: string[],
-  getAppComponent: IGetAppComponent,
+  loadAppComponent: IGetAppComponent,
   pushApp: IPushApp
 }
 
@@ -55,9 +55,7 @@ declare global {
 
 export function AppProvider({ children }: { children?: any }) {
   const [apps, setApps]: [IApps, (apps: IApps) => void] = useState({});
-  const [appRegistryStatus, setAppRegistryStatus]: [
-    string[], (str: string[]) => void
-  ] = useState([]);
+  const [appRegistryStatus, setAppRegistryStatus] = useState([] as string[]);
 
   useEffect(() => {
     wsSocket.send('#get-apps');
@@ -68,7 +66,7 @@ export function AppProvider({ children }: { children?: any }) {
 
   return <AppProviderContext.Provider value={{
     apps, appRegistryStatus,
-    getAppComponent(pkg: string, page: string = 'default') {
+    loadAppComponent(pkg: string, page: string = 'default') {
       const id = window.__appIdMap[pkg];
       if (!id) {
         throw Error(`Cannot find the app '${pkg}'.`);

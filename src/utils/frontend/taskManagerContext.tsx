@@ -9,7 +9,6 @@ export interface ITask {
   pkg: '#merge' | string,     // The embedded package format is 'pneumatic.*'.
   page: string,               // The default page is 'default'.
   sharedState: { [key: string]: string | number | boolean },
-  connection: 'loading' | 'access' | 'block',
   windowInfo: IWindowInfo
 };
 
@@ -81,7 +80,7 @@ export interface ITaskManagerContext {
 
 export function TaskManager({ children }: { children?: any }) {
   const {
-    appRegistryStatus, getAppComponent
+    appRegistryStatus, loadAppComponent
   }: IAppProviderContext = useContext(AppProviderContext);
   const { media }: IThemeProviderContext = useContext(ThemeProviderContext);
   const [tasks, setTasksInside]: [
@@ -102,7 +101,7 @@ export function TaskManager({ children }: { children?: any }) {
   type ITaskGenerateCacheItem = {
     id: string, pkg: string, page: string, initState: { [key: string]: any }
   };
-  const [generateTaskCache, setGenerateTaskCache] = useState([] as ITaskGenerateCacheItem[]);
+  const [_generateTaskCache, setGenerateTaskCache] = useState([] as ITaskGenerateCacheItem[]);
 
   useEffect(() => {
     setGlobalStateInside(state => ({
@@ -116,46 +115,52 @@ export function TaskManager({ children }: { children?: any }) {
   }, [media]);
 
   useEffect(() => {
-    wsSocket.receive('#init', ({ id, page, sharedState, windowInfo }) => {
-      setTasksInside(tasks => {
-        return {
-          ...tasks,
-          [id]: {
-            ...tasks[id],
-            connection: 'access',
-            page,
-            sharedState,
-            windowInfo: {
-              status: 'active',
-              left: windowInfo?.left || 100 + Object.keys(tasks).length * 20,
-              top: windowInfo?.top || 50 + Object.keys(tasks).length * 20,
-              width: windowInfo?.width || 600,
-              height: windowInfo?.height || 400,
-              title: windowInfo?.title || '',
-              priority: Object.keys(tasks).length + 1,
-              taskManagerOrder: Object.keys(tasks).length + 1,
-              mergeGrid: [],
-              subWindow: [],
-              parentWindow: ''
-            }
+    wsSocket.receive('#init', ({ id, pkg, page, sharedState, windowInfo }) => {
+      setTasksInside(tasks => Object.keys(tasks).reduce((obj, key) => ({
+        ...obj,
+        [key]: {
+          ...tasks[key],
+          windowInfo: {
+            ...tasks[key].windowInfo,
+            status: 'notActive'
           }
-        };
-      });
+        }
+      }), {
+        [id]: {
+          pkg, page,
+          sharedState,
+          windowInfo: {
+            status: 'active',
+            left: windowInfo?.left || 100 + Object.keys(tasks).length * 20,
+            top: windowInfo?.top || 50 + Object.keys(tasks).length * 20,
+            width: windowInfo?.width || 600,
+            height: windowInfo?.height || 400,
+            title: windowInfo?.title || '',
+            priority: Object.keys(tasks).length + 1,
+            taskManagerOrder: Object.keys(tasks).length + 1,
+            mergeGrid: [],
+            subWindow: [],
+            parentWindow: ''
+          }
+        }
+      }));
     });
     wsSocket.receive('#destory', _data => void 0);
     wsSocket.receive('#error', ({ msg }) => {
-      console.error('WebSocket:', msg);
+      console.error('Remote error:', msg);
     });
     wsSocket.receive('#set-shared-state', ({ id, data }) => {
       setTasksInside(tasks => ({
         ...tasks,
-        [id]: {
-          ...tasks[id],
-          sharedState: {
-            ...tasks[id].sharedState,
-            ...data
+        ...(tasks[id] ? {
+          [id]: {
+            ...tasks[id],
+            sharedState: {
+              ...(tasks[id]?.sharedState || {}),
+              ...(data || {})
+            }
           }
-        }
+        } : {})
       }));
     })
   }, []);
@@ -173,28 +178,15 @@ export function TaskManager({ children }: { children?: any }) {
   }, [appRegistryStatus]);
 
   function generateTask(
-    pkg: string, page: string = 'default', initState: ISharedState = {}
+    pkg: string, page?: string, initState?: ISharedState
   ) {
     const id = generate();
-    setGenerateTaskCache(cache => [...cache, { id, pkg, page, initState }]);
-    setTasksInside(tasks => Object.keys(tasks).reduce((obj, id) => ({
-      ...obj,
-      [id]: {
-        ...tasks[id],
-        windowInfo: {
-          ...tasks[id].windowInfo,
-          status: 'notActive'
-        }
-      }
-    }), {
-      [id]: {
-        pkg,
-        page,
-        sharedState: initState,
-        connection: 'loading'
-      }
-    } as ITaskMap));
-    getAppComponent(pkg, page);
+    if (appRegistryStatus.indexOf(pkg) < 0) {
+      setGenerateTaskCache(cache => [...cache, { id, pkg, page, initState }]);
+    } else {
+      wsSocket.send('#init', { id, pkg, page, initState });
+    }
+    loadAppComponent(pkg, page);
   }
 
   function destoryTask(id: string) {
@@ -264,15 +256,13 @@ export function TaskManager({ children }: { children?: any }) {
       ...obj,
       [key]: {
         ...tasks[key],
-        ...(tasks[key].connection === 'access' ? {
-          windowInfo: {
-            ...tasks[key].windowInfo,
-            status: id === key ? 'active' : 'hidden',
-            priority: id === key ?
-              Object.keys(tasks).length :
-              tasks[key].windowInfo.priority - 1
-          }
-        } : {})
+        windowInfo: {
+          ...tasks[key].windowInfo,
+          status: id === key ? 'active' : 'hidden',
+          priority: id === key ?
+            Object.keys(tasks).length :
+            tasks[key].windowInfo.priority - 1
+        }
       }
     }) as ITaskMap, {}));
   }

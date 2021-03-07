@@ -54,16 +54,20 @@ socketReceive('#init', (token, { id, pkg, page, initState }) => {
   };
 
   let {
-    page: defaultPage, state, windowInfo
+    page: defaultPage, state: defaultStateGenerator, windowInfo: defaultWindowInfoGenerator
   } = entryMap[pkg]?.config?.defaultInfo || {};
+  const sharedState = defaultStateGenerator &&
+    defaultStateGenerator(page, initState) || initState || {};
 
   socketSend(token, '#init', {
-    status: 'success', id,
-    page: page || defaultPage,
-    sharedState: state && state(page, initState) || initState || {},
-    windowInfo: windowInfo && Object.keys(windowInfo).reduce((obj, key) => ({
+    status: 'success', id, pkg,
+    page: page || defaultPage || 'default',
+    sharedState,
+    windowInfo: defaultWindowInfoGenerator && Object.keys(
+      defaultWindowInfoGenerator
+    ).reduce((obj, key) => ({
       ...obj,
-      [key]: windowInfo[key](page, initState)
+      [key]: defaultWindowInfoGenerator[key](page, sharedState)
     }), {}) || {}
   });
   if (entryMap[pkg].socketAutoSender) {

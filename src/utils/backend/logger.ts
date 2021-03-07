@@ -9,10 +9,19 @@ const logLevelMap = {
 }
 
 export function log(type: ILogLevel, message: string | any, ...extraMessage: string[] | any[]) {
-  console.log(
-    bold((new Date()).toLocaleString()),
-    logLevelMap[type],
-    type === 'error' ? red(message) : message,
-    extraMessage.length > 0 ? blue(extraMessage.join(' ')) : ''
-  );
+  if (type === 'warn' || type === 'error') {
+    console.error(
+      bold((new Date()).toLocaleString()),
+      logLevelMap[type],
+      type === 'error' ? red(message) : message,
+      extraMessage.length > 0 ? blue(extraMessage.join(' ')) : ''
+    );
+  } else {
+    console.log(
+      bold((new Date()).toLocaleString()),
+      logLevelMap[type],
+      message,
+      extraMessage.length > 0 ? blue(extraMessage.join(' ')) : ''
+    );
+  }
 }

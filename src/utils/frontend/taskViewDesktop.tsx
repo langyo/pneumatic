@@ -33,7 +33,7 @@ export function TaskViewDesktop() {
     globalState: { launcherState, taskManagerPosition }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
   const {
-    apps, appRegistryStatus, getAppComponent
+    apps, appRegistryStatus, loadAppComponent: getAppComponent
   }: IAppProviderContext = useContext(AppProviderContext);
 
   useEffect(() => void 0, [appRegistryStatus]);
@@ -43,9 +43,7 @@ export function TaskViewDesktop() {
     width: 100%;
     height: 100%;
   `}>
-    {Object.keys(tasks).filter(
-      key => tasks[key].connection !== 'loading'
-    ).map((key: string) => {
+    {Object.keys(tasks).map((key: string) => {
       const {
         pkg, page, sharedState,
         windowInfo: {
@@ -134,7 +132,9 @@ export function TaskViewDesktop() {
                   width: 100%;
                   height: 100%;
                 `}>
-                  {getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState))}
+                  {getAppComponent(pkg, 'drawer') ?
+                    getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState)) :
+                    loadingComponent}
                 </Scrollbars>
               </div>
               <div className={css`
@@ -150,7 +150,9 @@ export function TaskViewDesktop() {
                   width: 100%;
                   height: 100%;
                 `}>
-                  {getAppComponent(pkg, page)(propsGenerator(key, page, sharedState))}
+                  {getAppComponent(pkg, page) ?
+                    getAppComponent(pkg, page)(propsGenerator(key, page, sharedState)) :
+                    loadingComponent}
                 </Scrollbars>
               </div>
             </div>
@@ -180,9 +182,7 @@ export function TaskViewDesktop() {
       justify-content: flex-start;
       align-items: center;
     `}>
-      {Object.keys(tasks).filter(
-        key => tasks[key].connection === 'access'
-      ).sort(
+      {Object.keys(tasks).sort(
         (left, right) =>
           tasks[left].windowInfo.taskManagerOrder - tasks[right].windowInfo.taskManagerOrder
       ).map(key => {

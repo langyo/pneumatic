@@ -55,6 +55,7 @@ wss.on('connection', (ws, req) => {
         serverSocketListeners[head](token, data);
       } catch (e) {
         log('error', e);
+        console.error(e);
         ws.send(JSON.stringify({
           head: '#error', data: { msg: `${e}` }
         }));
