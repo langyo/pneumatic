@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { css } from '@emotion/css';
 
-export function Content({ }) {
+export function Content({ sharedState }) {
   return <div className={css`
     color: rgba(0, 0, 0, 1);
   `}>

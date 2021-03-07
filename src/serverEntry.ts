@@ -22,11 +22,11 @@ const entryMap: {
     },
 
     route?: (ctx: Koa.BaseContext, next: () => Promise<unknown>) => Promise<any>,
-    socket?: (token: string, data: any, utils: {
+    socket?: (token: string, data: { [key: string]: any }, utils: {
       send: (data: { [key: string]: any }) => void,
       registerAutoSender: (timeout: number, callback: () => ({ [key: string]: any })) => void
     }) => Promise<void>,
-    socketAutoSender?: (token: string, utils: {
+    socketAutoRun?: (token: string, data: { [key: string]: any }, utils: {
       send: (data: { [key: string]: any }) => void,
       registerAutoSender: (timeout: number, callback: () => ({ [key: string]: any })) => void
     }) => Promise<void>
@@ -56,8 +56,10 @@ socketReceive('#init', (token, { id, pkg, page, initState }) => {
   let {
     page: defaultPage, state: defaultStateGenerator, windowInfo: defaultWindowInfoGenerator
   } = entryMap[pkg]?.config?.defaultInfo || {};
-  const sharedState = defaultStateGenerator &&
-    defaultStateGenerator(page, initState) || initState || {};
+  const sharedState = {
+    ...(initState || {}),
+    ...(defaultStateGenerator ? defaultStateGenerator(page, initState) : {})
+  };
 
   socketSend(token, '#init', {
     status: 'success', id, pkg,
@@ -70,9 +72,9 @@ socketReceive('#init', (token, { id, pkg, page, initState }) => {
       [key]: defaultWindowInfoGenerator[key](page, sharedState)
     }), {}) || {}
   });
-  if (entryMap[pkg].socketAutoSender) {
-    entryMap[pkg].socketAutoSender(token, {
-      send: data => socketSend(token, id, data),
+  if (entryMap[pkg].socketAutoRun) {
+    entryMap[pkg].socketAutoRun(token, sharedState, {
+      send: data => socketSend(token, '#set-shared-state', { id, data }),
       registerAutoSender: (timeout, callback) => {
         activeSocketsMap[token][id].autoSender.push(
           setInterval(() => socketSend(token, '#set-shared-state', {
@@ -80,6 +82,9 @@ socketReceive('#init', (token, { id, pkg, page, initState }) => {
           }), timeout)
         );
       }
+    }).catch(e => {
+      log('error', e);
+      console.error(e);
     });
   }
 });
@@ -125,9 +130,7 @@ socketReceive('#set-shared-state', (token, { id, data }) => {
     socketSend(token, '#error', { msg: `Unknown entity '${id}'` });
   }
   entryMap[activeSocketsMap[token][id].pkg].socket(token, data, {
-    send: data => socketSend(token, '#set-shared-state', {
-      id, data
-    }),
+    send: data => socketSend(token, '#set-shared-state', { id, data }),
     registerAutoSender: (timeout, callback) => {
       activeSocketsMap[token][id].autoSender.push(
         setInterval(() => socketSend(token, '#set-shared-state', {

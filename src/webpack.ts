@@ -225,6 +225,13 @@ function watcherTrigger() {
     watcherWaitingState.continueChange = false;
     serverSocketListeners['#restart']('', {});
 
+    serverRoutes = async (
+      _ctx: Koa.BaseContext,
+      _next: () => Promise<void>
+    ) => {
+      log('warn', 'Please wait, the service is not ready now.');
+    };
+
     for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
       let externalFilename = '';
       for (const ex of ['.js', '.jsx', '.mjs', '.ts', '.tsx']) {

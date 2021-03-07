@@ -8,7 +8,7 @@ export const pages = {
 
 export const config = {
   defaultInfo: {
-    state: () => ({ path: '/' }),
+    state: () => ({ path: process.cwd(), files: {}, baseName: '' }),
     windowInfo: {
       title: (_page, { path }) => path
     }

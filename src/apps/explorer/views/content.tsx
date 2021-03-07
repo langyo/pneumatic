@@ -6,8 +6,38 @@ import {
   mdiMenuRight,
   mdiMenuDown,
   mdiFileOutline,
-  mdiFileDocumentOutline
+  mdiFileDocumentOutline,
+  mdiFileCogOutline,
+  mdiFileClockOutline,
+  mdiFileImageOutline,
+  mdiPackage,
+  mdiFileVideoOutline,
+  mdiFileMusicOutline,
+  mdiFileExcelOutline,
+  mdiFilePowerpointOutline,
+  mdiFileLinkOutline,
+  mdiDisc,
+  mdiFileCodeOutline,
+  mdiCogs
 } from '@mdi/js';
+
+const fileTypeIconMap = {
+  'folder': mdiFolderOutline,
+  'process': mdiFileCogOutline,
+  'shell': mdiFileClockOutline,
+  'image': mdiDisc,
+  'picture': mdiFileImageOutline,
+  'audio': mdiFileMusicOutline,
+  'video': mdiFileVideoOutline,
+  'document': mdiFileDocumentOutline,
+  'excel': mdiFileExcelOutline,
+  'powerpoint': mdiFilePowerpointOutline,
+  'webpage': mdiFileLinkOutline,
+  'package': mdiPackage,
+  'code': mdiFileCodeOutline,
+  'configure': mdiCogs,
+  'file': mdiFileOutline
+};
 
 function ContentItem({ iconPath, title }) {
   return <div className={css`
@@ -40,7 +70,20 @@ function ContentItem({ iconPath, title }) {
   </div>;
 }
 
-export function Content({ }) {
+export function Content({ sharedState }) {
+  const parts: string[] = sharedState?.path.split(/[\\\/]/) || [];
+  const { files, baseName }: {
+    files: {
+      [name: string]: {
+        media: 'folder' | 'process' | 'shell' | 'image' |
+        'picture' | 'audio' | 'video' |
+        'document' | 'excel' | 'powerpoint' |
+        'webpage' | 'package' | 'code' | 'configure' | 'normal'
+      }
+    },
+    baseName: string
+  } = sharedState;
+
   return <div className={css`
     color: rgba(0, 0, 0, 1);
   `}>
@@ -57,7 +100,7 @@ export function Content({ }) {
       user-select: none;
       border-radius: 4px;
     `}>
-      {'nickelcat'}
+      {baseName}
     </div>
     <div className={css`
       font-size: 16px;
@@ -66,22 +109,21 @@ export function Content({ }) {
       display: flex;
       flex-direction: row;
     `}>
-      {['~', 'git', 'nickelcat']
-        .map((n) => (
-          <div className={css`
-            height: 20px;
-            line-height: 20px;
-            margin: 4px;
-            padding: 4px;
-            &:hover {
-              background: rgba(0.5, 0.5, 0.5, 0.2);
-            }
-            user-select: none;
-            border-radius: 4px;
-          `}>
-            {n}
-          </div>
-        ))
+      {parts.map(n => (
+        <div className={css`
+          height: 20px;
+          line-height: 20px;
+          margin: 4px;
+          padding: 4px;
+          &:hover {
+            background: rgba(0.5, 0.5, 0.5, 0.2);
+          }
+          user-select: none;
+          border-radius: 4px;
+        `}>
+          {n}
+        </div>
+      ))
         .reduceRight(
           (arr, next) => [
             ...arr,
@@ -121,12 +163,10 @@ export function Content({ }) {
       display: flex;
       flex-wrap: wrap;
     `}>
-      <ContentItem iconPath={mdiFolderOutline} title='.git' />
-      <ContentItem iconPath={mdiFolderOutline} title='node_modules' />
-      <ContentItem iconPath={mdiFolderOutline} title='packages' />
-      <ContentItem iconPath={mdiFileOutline} title='.gitignore' />
-      <ContentItem iconPath={mdiFileDocumentOutline} title='package.json' />
-      <ContentItem iconPath={mdiFileDocumentOutline} title='README.md' />
+      {Object.keys(files).map(name => <ContentItem
+        iconPath={fileTypeIconMap[files[name].media || 'file']}
+        title={name}
+      />)}
     </div>
   </div>;
 }

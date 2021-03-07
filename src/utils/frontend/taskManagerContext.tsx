@@ -225,17 +225,18 @@ export function TaskManager({ children }: { children?: any }) {
     }));
   }
 
-  function setSharedState(id: string, sharedState: ISharedState) {
+  function setSharedState(id: string, state: ISharedState) {
     setTasksInside(tasks => ({
       ...tasks,
       [id]: {
         ...tasks[id],
         sharedState: {
           ...tasks[id].sharedState,
-          ...sharedState
+          ...state
         }
       }
     }));
+    wsSocket.send('#set-shared-state', { id, state });
   }
 
   function setWindowInfo(id: string, info: Partial<IWindowInfo>) {
