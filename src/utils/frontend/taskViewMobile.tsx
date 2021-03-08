@@ -194,7 +194,7 @@ export function TaskViewMobile() {
           onClose={() => setGlobalState({ drawerState: false })}
         >
           <div className={css`
-            width: ${window.innerHeight * 0.4};
+            width: ${document.body.clientWidth * 0.4};
             height: 100%;
           `}>
             <Scrollbars className={css`
