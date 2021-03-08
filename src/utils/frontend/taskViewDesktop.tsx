@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import {
-  Paper, Typography, Tooltip, IconButton, Button, Grid,
+  Box, Typography, Tooltip, IconButton, Button, Grid,
   Dialog, DialogTitle, DialogContent, CircularProgress
 } from '@material-ui/core';
 import Draggable, { DraggableData } from 'react-draggable';
@@ -59,129 +59,121 @@ export function TaskViewDesktop() {
           top: state.y
         })}
       >
-        <div className={css`
-          position: fixed;
-          z-index: ${5000 + priority};
-        `}>
-          <Paper
-            className={css`
-              width: ${width}px;
-              height: ${height}px;
-            `}
-            elevation={3}
+        <Box
+          position='fixed'
+          width={width}
+          height={height}
+          boxShadow={3}
+          borderRadius={4}
+          bgcolor='rgba(255, 255, 255, 0.8)'
+          zIndex={5000 + priority}
+        >
+          <div className={css`
+            width: 100%;
+            height: 100%;
+          `}
+            onMouseDown={() => setActiveTask(key)}
           >
+            <div className={cx(css`
+              position: absolute;
+              width: calc(100% - 4px);
+              left: 4px;
+              height: 32px;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              user-select: none;
+            `, 'drag-handle-tag')}>
+              <Icon className={css`
+                margin: 4px;
+              `}
+                path={apps[pkg].icon} size={1} color='rgba(0, 0, 0, 1)'
+              />
+              <div className={css`
+                margin: 4px;
+              `}>
+                <Typography variant='subtitle1'>
+                  {apps[pkg].name}
+                </Typography>
+              </div>
+              <div className={css`
+                margin: 4px;
+              `}>
+                <Typography variant='subtitle2'>
+                  {title || ''}
+                </Typography>
+              </div>
+              <div className={css`
+                position: absolute;
+                top: 0px;
+                right: 0px;
+              `}>
+                <div className={css`
+                  margin: 4px;
+                `}>
+                  <IconButton size='small' onClick={() => destoryTask(key)}>
+                    <Icon path={mdiClose} size={1} color='rgba(0, 0, 0, 1)' />
+                  </IconButton>
+                </div>
+              </div>
+            </div>
             <div className={css`
-              width: 100%;
-              height: 100%;
+              position: absolute;
+              bottom: 4px;
+              left: 4px;
+              width: calc(40% - 4px);
+              height: calc(100% - 32px - 4px - 4px);
             `}
               onMouseDown={() => setActiveTask(key)}
             >
-              <div className={cx(css`
-                position: absolute;
-                width: calc(100% - 4px);
-                left: 4px;
-                height: 32px;
-                display: flex;
-                flex-direction: row;
-                align-items: center;
-                user-select: none;
-              `, 'drag-handle-tag')}>
-                <Icon className={css`
-                  margin: 4px;
-                `}
-                  path={apps[pkg].icon} size={1} color='rgba(0, 0, 0, 1)'
-                />
-                <div className={css`
-                  margin: 4px;
-                `}>
-                  <Typography variant='subtitle1'>
-                    {apps[pkg].name}
-                  </Typography>
-                </div>
-                <div className={css`
-                  margin: 4px;
-                `}>
-                  <Typography variant='subtitle2'>
-                    {title || ''}
-                  </Typography>
-                </div>
-                <div className={css`
-                  position: absolute;
-                  top: 0px;
-                  right: 0px;
-                `}>
-                  <div className={css`
-                    margin: 4px;
-                  `}>
-                    <IconButton size='small' onClick={() => destoryTask(key)}>
-                      <Icon path={mdiClose} size={1} color='rgba(0, 0, 0, 1)' />
-                    </IconButton>
-                  </div>
-                </div>
-              </div>
-              <div className={css`
-                position: absolute;
-                bottom: 4px;
-                left: 4px;
-                width: calc(40% - 4px);
-                height: calc(100% - 32px - 4px - 4px);
-              `}
-                onMouseDown={() => setActiveTask(key)}
-              >
-                <Scrollbars className={css`
-                  width: 100%;
-                  height: 100%;
-                `}>
-                  {getAppComponent(pkg, 'drawer') ?
-                    getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState)) :
-                    loadingComponent}
-                </Scrollbars>
-              </div>
-              <div className={css`
-                position: absolute;
-                bottom: 4px;
-                right: 4px;
-                width: calc(60% - 4px);
-                height: calc(100% - 32px - 4px - 4px);
-              `}
-                onMouseDown={() => setActiveTask(key)}
-              >
-                <Scrollbars className={css`
-                  width: 100%;
-                  height: 100%;
-                `}>
-                  {getAppComponent(pkg, page) ?
-                    getAppComponent(pkg, page)(propsGenerator(key, page, sharedState)) :
-                    loadingComponent}
-                </Scrollbars>
-              </div>
+              <Scrollbars className={css`
+                width: 100%;
+                height: 100%;
+              `}>
+                {getAppComponent(pkg, 'drawer') ?
+                  getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState)) :
+                  loadingComponent}
+              </Scrollbars>
             </div>
-          </Paper>
-        </div>
+            <div className={css`
+              position: absolute;
+              bottom: 4px;
+              right: 4px;
+              width: calc(60% - 4px);
+              height: calc(100% - 32px - 4px - 4px);
+            `}
+              onMouseDown={() => setActiveTask(key)}
+            >
+              <Scrollbars className={css`
+                width: 100%;
+                height: 100%;
+                `}>
+                {getAppComponent(pkg, page) ?
+                  getAppComponent(pkg, page)(propsGenerator(key, page, sharedState)) :
+                  loadingComponent}
+              </Scrollbars>
+            </div>
+          </div>
+        </Box>
       </Draggable>;
     })}
-    <div className={css`
-      position: fixed;
-      top: 10%;
-      ${taskManagerPosition.direction === 'left' ?
-        'left: 0px;' : 'right: 0px;'}
-      width: 48px;
-      height: calc(80% - 8px);
-      padding: 4px;
-      z-index: 9000;
-      background: rgba(255, 255, 255, 1);
-      border: 1px solid rgba(240, 240, 240, 1);
-      ${taskManagerPosition.direction === 'left' ?
-        'border-left: none;' : 'border-right: none;'}
-      border-radius: ${taskManagerPosition.direction === 'left' ?
-        '0px 2px 2px 0px' : '2px 0px 0px 2px'};
-      box-shadow: ${taskManagerPosition.direction === 'left' ?
-        '1px 1px' : '-1px 1px'} 2px rgba(0, 0, 0, 0.5);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      align-items: center;
-    `}>
+    <Box
+      position='fixed'
+      top='10%'
+      {...(taskManagerPosition.direction === 'left' ? { left: 4 } : { right: 4 })}
+      width={48}
+      height='80%'
+      bgcolor='rgba(255, 255, 255, 0.8)'
+      borderRadius={4}
+      boxShadow={3}
+      zIndex={9000}
+      className={css`
+        padding: 4px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+      `}>
       {Object.keys(tasks).sort(
         (left, right) =>
           tasks[left].windowInfo.taskManagerOrder - tasks[right].windowInfo.taskManagerOrder
@@ -241,6 +233,6 @@ export function TaskViewDesktop() {
           </DialogContent>
         </Dialog>
       </div>
-    </div>
+    </Box>
   </div >;
 }
