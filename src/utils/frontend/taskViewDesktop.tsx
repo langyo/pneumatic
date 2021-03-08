@@ -66,8 +66,24 @@ export function TaskViewDesktop() {
           boxShadow={3}
           borderRadius={4}
           bgcolor='rgba(255, 255, 255, 0.8)'
-          zIndex={5000 + priority}
+          zIndex={5000 + priority * 2}
         >
+          <Draggable
+            axis='x'
+            handle='.drag-handle-tag-right'
+            onDrag={(_e, state: DraggableData) => setWindowInfo(key, {
+              width: width + state.deltaX
+            })}
+          >
+            {/* TODO - Not done; will use the native way. */}
+            <div className={cx(css`
+              position: absolute;
+              right: 0px;
+              width: 2px;
+              height: 100%;
+              z-index: ${5000 + priority * 2 + 1}
+            `, 'drag-handle-tag-right')} />
+          </Draggable>
           <div className={css`
             width: 100%;
             height: 100%;
