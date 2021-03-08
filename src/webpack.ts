@@ -292,11 +292,16 @@ function watcherTrigger() {
         },
         runtimeChunk: 'single'
       },
+      cache: {
+        type: 'memory'
+      },
       devtool: process.env.NODE_ENV === 'production' ? 'none' : 'inline-source-map'
     });
     clientSideCompiler.inputFileSystem = clientSideFs;
     clientSideCompiler.outputFileSystem = clientSideFs;
-    clientSideCompiler.run(clientSideCompilerCallback);
+    setTimeout(
+      () => clientSideCompiler.run(clientSideCompilerCallback), 0
+    );
 
     let entryMap: {
       [pkg: string]: {
@@ -346,12 +351,16 @@ function watcherTrigger() {
         filename: '[name].js',
         path: __dirname
       },
+      cache: {
+        type: 'memory'
+      },
       devtool: 'eval-source-map'
     });
     serverSideCompiler.inputFileSystem = serverSideFs;
     serverSideCompiler.outputFileSystem = serverSideFs;
-    serverSideCompiler.run(serverSideCompilerCallback);
-
+    setTimeout(
+      () => serverSideCompiler.run(serverSideCompilerCallback), 0
+    );
   } else {
     watcherWaitingState.continueChange = false;
     setTimeout(watcherTrigger, 3000);
