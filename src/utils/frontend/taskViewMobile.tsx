@@ -6,7 +6,7 @@ import {
 } from '@material-ui/core';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
-import { mdiArrowRight, mdiClose, mdiFullscreen } from '@mdi/js';
+import { mdiClose, mdiFullscreen } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import {
@@ -67,21 +67,18 @@ export function TaskViewMobile() {
           const pkg = tasks[key].pkg;
           const { title }: IWindowInfo = tasks[key].windowInfo;
 
-          return <ListItem>
+          return <ListItem button onClick={() => (
+            setActiveTask(key),
+            setGlobalState({
+              launcherState: false,
+              taskManagerState: false
+            })
+          )}>
             <ListItemText
               primary={apps[pkg].name}
               secondary={title}
             />
             <ListItemSecondaryAction>
-              <IconButton onClick={() => (
-                setActiveTask(key),
-                setGlobalState({
-                  launcherState: false,
-                  taskManagerState: false
-                })
-              )}>
-                <Icon path={mdiArrowRight} size={1} color='rgba(0, 0, 0, 1)' />
-              </IconButton>
               <IconButton onClick={() => {
                 if (tasks[key].windowInfo.status === 'active') {
                   setGlobalState({
@@ -167,7 +164,7 @@ export function TaskViewMobile() {
           return <Grid item xs={6}>
             <Button
               size='large'
-              onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
+              onClick={() => generateTask(pkg)}
               startIcon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
             >
               {name}

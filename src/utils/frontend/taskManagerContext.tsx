@@ -144,6 +144,10 @@ export function TaskManager({ children }: { children?: any }) {
           }
         }
       }));
+      setGlobalStateInside(state => ({
+        ...state,
+        launcherState: false
+      }));
     });
     wsSocket.receive('#destory', _data => void 0);
     wsSocket.receive('#error', ({ msg }) => {
