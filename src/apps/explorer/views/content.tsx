@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { ButtonBase, Typography } from '@material-ui/core';
+import { Button, IconButton, Typography } from '@material-ui/core';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
 import {
-  mdiFolderOutline,
   mdiMenuRight,
   mdiMenuDown,
+  mdiDotsHorizontal,
+  mdiFolderOutline,
   mdiFileOutline,
   mdiFileDocumentOutline,
   mdiFileCogOutline,
@@ -41,11 +42,7 @@ const fileTypeIconMap = {
 };
 
 function ContentItem({ iconPath, title }) {
-  return <ButtonBase focusRipple className={css`
-    &:hover {
-      background: rgba(0, 0, 0, 0.2);
-    }
-  `}>
+  return <Button>
     <div className={css`
       width: 96px;
       height: 96px;
@@ -67,11 +64,12 @@ function ContentItem({ iconPath, title }) {
         word-break: break-all;
         text-align: center;
         user-select: none;
+        text-transform: none;
       `}>
         {title}
       </p>
     </div>
-  </ButtonBase>;
+  </Button>;
 }
 
 export function Content({ sharedState }) {
@@ -89,83 +87,57 @@ export function Content({ sharedState }) {
   } = sharedState;
 
   return <>
-    <ButtonBase focusRipple className={css`
+    <Button size='large' className={css`
       margin: 16px;
       padding: 8px;
       display: inline-block;
-      &:hover {
-        background: rgba(0, 0, 0, 0.2);
-      }
     `}>
-      <div className={css`
-        margin: 4px;
+      <Typography variant='h4' className={css`
+        text-transform: none;
       `}>
-        <Typography variant='h4'>
-          {baseName}
-        </Typography>
-      </div>
-    </ButtonBase>
+        {baseName}
+      </Typography>
+    </Button>
     <div className={css`
       margin: 8px;
       display: flex;
       flex-direction: row;
       align-items: center;
+      flex-shrink: 0;
     `}>
-      {parts.map(n => (
-        <ButtonBase focusRipple className={css`
-          &:hover {
-            background: rgba(0, 0, 0, 0.2);
-          }
-        `}>
-          <div className={css`
-            margin: 4px;
-          `}>
-            <Typography variant='body1'>
+      {parts.filter(n => n !== '')
+        .splice(
+          parts.filter(n => n !== '').length > 3 ?
+            parts.filter(n => n !== '').length - 3 : 0
+        ).map(n => (
+          <Button fullWidth>
+            <div className={css`
+              text-transform: none;
+            `}>
               {n}
-            </Typography>
-          </div>
-        </ButtonBase>
-      ))
-        .reduceRight(
+            </div>
+          </Button>
+        )).reduceRight(
           (arr, next) => [
             ...arr,
             next,
-            <div className={css`
-              margin: 0px 4px;
-            `}>
-              <ButtonBase focusRipple className={css`
-                &:hover {
-                  background: rgba(0, 0, 0, 0.2);
-                }
-              `}>
-                <div className={css`
-                  margin: 4px;
-                `}>
-                  <Icon path={mdiMenuRight} size={0.8} color='rgba(0, 0, 0, 1)' />
-                </div>
-              </ButtonBase>
-            </div>
+            <IconButton size='small'>
+              <Icon path={mdiMenuRight} size={0.8} color='rgba(0, 0, 0, 1)' />
+            </IconButton>
           ],
           [
-            <div className={css`
-              margin: 0px 4px;
-            `}>
-              <ButtonBase focusRipple className={css`
-                &:hover {
-                  background: rgba(0, 0, 0, 0.2);
-                }
-              `}>
-                <div className={css`
-                  margin: 4px;
-                `}>
-                  <Icon path={mdiMenuDown} size={0.8} color='rgba(0, 0, 0, 1)' />
-                </div>
-              </ButtonBase>
-            </div>
+            <IconButton size='small'>
+              <Icon path={mdiMenuDown} size={0.8} color='rgba(0, 0, 0, 1)' />
+            </IconButton>
           ]
-        )
-        .reverse()
-        .splice(1)}
+        ).reverse().splice(1).reverse().concat(
+          parts.filter(n => n !== '').length > 3 ?
+            [
+              <IconButton size='small'>
+                <Icon path={mdiDotsHorizontal} size={0.8} color='rgba(0, 0, 0, 1)' />
+              </IconButton>
+            ] : []
+        ).reverse()}
     </div>
     <div className={css`
       width: 90%;
