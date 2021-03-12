@@ -35,7 +35,12 @@ export function TaskViewDesktop() {
   const {
     apps, appRegistryStatus, loadAppComponent: getAppComponent
   }: IAppProviderContext = useContext(AppProviderContext);
-  const [draggingWindow, setDraggingWindow] = useState('');
+  const [draggingWindow, setDraggingWindow] = useState(
+    { id: '', direction: 'leftBottom' } as {
+      id: string,
+      direction: 'leftTop' | 'leftBottom' | 'rightTop' | 'rightBottom'
+    }
+  );
 
   useEffect(() => void 0, [appRegistryStatus]);
 
@@ -44,10 +49,42 @@ export function TaskViewDesktop() {
     width: 100vw;
     height: 100vh;
   `}
-    onMouseMove={e => draggingWindow && setWindowInfo(draggingWindow, {
-      width: tasks[draggingWindow].windowInfo.width + e.movementX
-    })}
-    onMouseUp={() => setDraggingWindow('')}
+    onMouseMove={e => {
+      if (draggingWindow.id !== '') {
+        const { left, top, width, height } = tasks[draggingWindow.id].windowInfo;
+        switch (draggingWindow.direction) {
+          case 'leftTop':
+            setWindowInfo(draggingWindow.id, {
+              left: left + e.movementX,
+              width: width - e.movementX,
+              top: top + e.movementY,
+              height: height - e.movementY
+            });
+            break;
+          case 'leftBottom':
+            setWindowInfo(draggingWindow.id, {
+              left: left + e.movementX,
+              width: width - e.movementX,
+              height: height + e.movementY
+            });
+            break;
+          case 'rightTop':
+            setWindowInfo(draggingWindow.id, {
+              width: width + e.movementX,
+              top: top + e.movementY,
+              height: height - e.movementY
+            });
+            break;
+          case 'rightBottom':
+            setWindowInfo(draggingWindow.id, {
+              width: width + e.movementX,
+              height: height + e.movementY
+            });
+            break;
+        }
+      }
+    }}
+    onMouseUp={() => setDraggingWindow({ id: '', direction: 'leftBottom' })}
   >
     {Object.keys(tasks).map((key: string) => {
       const {
@@ -72,17 +109,8 @@ export function TaskViewDesktop() {
           boxShadow={3}
           borderRadius={4}
           bgcolor='rgba(255, 255, 255, 0.8)'
-          zIndex={5000 + priority}
+          zIndex={5000 + priority * 2}
         >
-          <div className={cx(css`
-            position: absolute;
-            right: 0px;
-            width: 2px;
-            height: 100%;
-            cursor: w-resize;
-          `)}
-            onMouseDown={() => setDraggingWindow(key)}
-          />
           <div className={css`
             width: 100%;
             height: 100%;
@@ -169,6 +197,54 @@ export function TaskViewDesktop() {
               </Scrollbars>
             </div>
           </div>
+          <div className={cx(css`
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            height: 8px;
+            width: 8px;
+            cursor: se-resize;
+          `)}
+            onMouseDown={() => setDraggingWindow({
+              id: key, direction: 'leftTop'
+            })}
+          />
+          <div className={cx(css`
+            position: absolute;
+            bottom: -4px;
+            left: -4px;
+            height: 8px;
+            width: 8px;
+            cursor: ne-resize;
+          `)}
+            onMouseDown={() => setDraggingWindow({
+              id: key, direction: 'leftBottom'
+            })}
+          />
+          <div className={cx(css`
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            height: 8px;
+            width: 8px;
+            cursor: ne-resize;
+          `)}
+            onMouseDown={() => setDraggingWindow({
+              id: key, direction: 'rightTop'
+            })}
+          />
+          <div className={cx(css`
+            position: absolute;
+            bottom: -4px;
+            right: -4px;
+            height: 8px;
+            width: 8px;
+            cursor: se-resize;
+          `)}
+            onMouseDown={() => setDraggingWindow({
+              id: key, direction: 'rightBottom'
+            })}
+          />
         </Box>
       </Draggable>;
     })}
