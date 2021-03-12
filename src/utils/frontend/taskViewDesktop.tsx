@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   Box, Typography, Tooltip, IconButton, Button, Grid,
   Dialog, DialogTitle, DialogContent, CircularProgress
@@ -35,6 +35,7 @@ export function TaskViewDesktop() {
   const {
     apps, appRegistryStatus, loadAppComponent: getAppComponent
   }: IAppProviderContext = useContext(AppProviderContext);
+  const [draggingWindow, setDraggingWindow] = useState('');
 
   useEffect(() => void 0, [appRegistryStatus]);
 
@@ -42,7 +43,12 @@ export function TaskViewDesktop() {
     position: fixed;
     width: 100vw;
     height: 100vh;
-  `}>
+  `}
+    onMouseMove={e => draggingWindow && setWindowInfo(draggingWindow, {
+      width: tasks[draggingWindow].windowInfo.width + e.movementX
+    })}
+    onMouseUp={() => setDraggingWindow('')}
+  >
     {Object.keys(tasks).map((key: string) => {
       const {
         pkg, page, sharedState,
@@ -66,24 +72,17 @@ export function TaskViewDesktop() {
           boxShadow={3}
           borderRadius={4}
           bgcolor='rgba(255, 255, 255, 0.8)'
-          zIndex={5000 + priority * 2}
+          zIndex={5000 + priority}
         >
-          <Draggable
-            axis='x'
-            handle='.drag-handle-tag-right'
-            onDrag={(_e, state: DraggableData) => setWindowInfo(key, {
-              width: width + state.deltaX
-            })}
-          >
-            {/* TODO - Not done; will use the native way. */}
-            <div className={cx(css`
-              position: absolute;
-              right: 0px;
-              width: 2px;
-              height: 100%;
-              z-index: ${5000 + priority * 2 + 1}
-            `, 'drag-handle-tag-right')} />
-          </Draggable>
+          <div className={cx(css`
+            position: absolute;
+            right: 0px;
+            width: 2px;
+            height: 100%;
+            cursor: w-resize;
+          `)}
+            onMouseDown={() => setDraggingWindow(key)}
+          />
           <div className={css`
             width: 100%;
             height: 100%;
