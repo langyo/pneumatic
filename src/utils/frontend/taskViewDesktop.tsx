@@ -40,8 +40,8 @@ export function TaskViewDesktop() {
 
   return <div className={css`
     position: fixed;
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
   `}>
     {Object.keys(tasks).map((key: string) => {
       const {

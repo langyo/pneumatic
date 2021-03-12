@@ -17,8 +17,8 @@ import {
 } from './appProviderContext';
 
 const loadingComponent = <div className={css`
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -104,55 +104,60 @@ export function TaskViewMobile() {
       </List>
     </Drawer>
 
-    <AppBar position='sticky'>
-      <Toolbar className={css`
-        display: flex;
-        flex-direction: row;
-      `}>
-        {Object.keys(tasks).map(key => {
-          const { pkg, windowInfo: { status, title } } = tasks[key];
-          return <>
-            {status === 'active' && !launcherState && <>
-              <div className={css`
-                margin-right: 8px;
-              `}>
-                <IconButton onClick={() => setGlobalState({
-                  drawerState: true
-                })}>
-                  <Icon path={apps[pkg].icon} size={1} color='rgba(255, 255, 255, 1)' />
-                </IconButton>
-              </div>
-              {title !== '' && <div className={css`
-                display: flex;
-                flex-direction: column;
-              `}>
-                <Typography variant='subtitle1'>
-                  {apps[pkg].name}
-                </Typography>
-                <Typography variant='subtitle2'>
-                  {title}
-                </Typography>
-              </div>}
-              {title === '' && <Typography variant='h6'>
+    <div className={css`
+      position: sticky;
+      height: 48px;
+      padding: 0px 8px;
+      background: rgba(0, 0, 0, 0.2);
+      color: white;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+    `}>
+      {Object.keys(tasks).map(key => {
+        const { pkg, windowInfo: { status, title } } = tasks[key];
+        return <>
+          {status === 'active' && !launcherState && <>
+            <div className={css`
+              margin-right: 8px;
+            `}>
+              <IconButton onClick={() => setGlobalState({
+                drawerState: true
+              })}>
+                <Icon path={apps[pkg].icon} size={1} color='rgba(255, 255, 255, 1)' />
+              </IconButton>
+            </div>
+            {title !== '' && <div className={css`
+              display: flex;
+              flex-direction: column;
+            `}>
+              <Typography variant='subtitle1'>
                 {apps[pkg].name}
-              </Typography>}
-            </>}
-          </>;
-        })}
-        {launcherState && <Typography variant='h6'>
-          {'Launcher'}
-        </Typography>}
-        {Object.keys(tasks).length > 0 && <div className={css`
+              </Typography>
+              <Typography variant='subtitle2'>
+                {title}
+              </Typography>
+            </div>}
+            {title === '' && <Typography variant='h6'>
+              {apps[pkg].name}
+            </Typography>}
+          </>}
+        </>;
+      })}
+      {launcherState && <Typography variant='h6'>
+        {'Launcher'}
+      </Typography>}
+      {Object.keys(tasks).length > 0 && <div className={css`
           margin-left: auto;
         `}>
-          <IconButton onClick={() => setGlobalState({
-            taskManagerState: true
-          })} >
-            <Icon path={mdiFullscreen} size={1} color='rgba(255, 255, 255, 1)' />
-          </IconButton>
-        </div>}
-      </Toolbar>
-    </AppBar>
+        <IconButton onClick={() => setGlobalState({
+          taskManagerState: true
+        })} >
+          <Icon path={mdiFullscreen} size={1} color='rgba(255, 255, 255, 1)' />
+        </IconButton>
+      </div>}
+    </div>
 
     {launcherState && <div className={css`
       width: 100%;
