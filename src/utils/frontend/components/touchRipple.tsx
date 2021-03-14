@@ -68,7 +68,7 @@ function Ripple({
 }
 
 export const TouchRipple = forwardRef(function TouchRipple({ className }: {
-  className: string
+  className?: string
 }, ref) {
   const [ripples, setRipples] = useState([]);
   const nextKey = useRef(0);
