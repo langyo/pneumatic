@@ -20,7 +20,7 @@ function UsageBarItem({ title, progress }) {
       </Typography>
     </div>
     <LinearProgress
-      variant="determinate"
+      variant='determinate'
       value={progress * 100}
     />
   </div>;
