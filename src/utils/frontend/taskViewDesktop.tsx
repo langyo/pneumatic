@@ -7,7 +7,7 @@ import Draggable, { DraggableData } from 'react-draggable';
 import { css, cx } from '@emotion/css';
 import Icon from '@mdi/react';
 import { mdiClose, mdiMenu } from '@mdi/js';
-import { Scrollbars } from 'react-custom-scrollbars';
+import { Dialog as Window } from './components/dialog';
 
 import {
   TaskManagerContext, ITaskManagerContext
@@ -94,159 +94,21 @@ export function TaskViewDesktop() {
         }
       } = tasks[key];
 
-      return <Draggable
-        position={{ x: left, y: top }}
-        handle='.drag-handle-tag'
-        onStop={(_e, state: DraggableData) => setWindowInfo(key, {
-          left: state.x,
-          top: state.y
-        })}
-      >
-        <Box
-          position='fixed'
-          width={width}
-          height={height}
-          boxShadow={3}
-          borderRadius={4}
-          bgcolor='rgba(255, 255, 255, 0.8)'
-          zIndex={5000 + priority * 2}
-        >
-          <div className={css`
-            width: 100%;
-            height: 100%;
-          `}
-            onMouseDown={() => setActiveTask(key)}
-          >
-            <div className={cx(css`
-              position: absolute;
-              width: calc(100% - 4px);
-              left: 4px;
-              height: 32px;
-              display: flex;
-              flex-direction: row;
-              align-items: center;
-              user-select: none;
-            `, 'drag-handle-tag')}>
-              <Icon className={css`
-                margin: 4px;
-              `}
-                path={apps[pkg].icon} size={1} color='rgba(0, 0, 0, 1)'
-              />
-              <div className={css`
-                margin: 4px;
-              `}>
-                <Typography variant='subtitle1'>
-                  {apps[pkg].name}
-                </Typography>
-              </div>
-              <div className={css`
-                margin: 4px;
-              `}>
-                <Typography variant='subtitle2'>
-                  {title || ''}
-                </Typography>
-              </div>
-              <div className={css`
-                position: absolute;
-                top: 0px;
-                right: 0px;
-              `}>
-                <div className={css`
-                  margin: 4px;
-                `}>
-                  <IconButton size='small' onClick={() => destoryTask(key)}>
-                    <Icon path={mdiClose} size={1} color='rgba(0, 0, 0, 1)' />
-                  </IconButton>
-                </div>
-              </div>
-            </div>
-            <div className={css`
-              position: absolute;
-              bottom: 4px;
-              left: 4px;
-              width: calc(40% - 4px);
-              height: calc(100% - 32px - 4px - 4px);
-            `}
-              onMouseDown={() => setActiveTask(key)}
-            >
-              <Scrollbars className={css`
-                width: 100%;
-                height: 100%;
-              `}>
-                {getAppComponent(pkg, 'drawer') ?
-                  getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState)) :
-                  loadingComponent}
-              </Scrollbars>
-            </div>
-            <div className={css`
-              position: absolute;
-              bottom: 4px;
-              right: 4px;
-              width: calc(60% - 4px);
-              height: calc(100% - 32px - 4px - 4px);
-            `}
-              onMouseDown={() => setActiveTask(key)}
-            >
-              <Scrollbars className={css`
-                width: 100%;
-                height: 100%;
-                `}>
-                {getAppComponent(pkg, page) ?
-                  getAppComponent(pkg, page)(propsGenerator(key, page, sharedState)) :
-                  loadingComponent}
-              </Scrollbars>
-            </div>
-          </div>
-          <div className={cx(css`
-            position: absolute;
-            top: -4px;
-            left: -4px;
-            height: 8px;
-            width: 8px;
-            cursor: se-resize;
-          `)}
-            onMouseDown={() => setDraggingWindow({
-              id: key, direction: 'leftTop'
-            })}
-          />
-          <div className={cx(css`
-            position: absolute;
-            bottom: -4px;
-            left: -4px;
-            height: 8px;
-            width: 8px;
-            cursor: ne-resize;
-          `)}
-            onMouseDown={() => setDraggingWindow({
-              id: key, direction: 'leftBottom'
-            })}
-          />
-          <div className={cx(css`
-            position: absolute;
-            top: -4px;
-            right: -4px;
-            height: 8px;
-            width: 8px;
-            cursor: ne-resize;
-          `)}
-            onMouseDown={() => setDraggingWindow({
-              id: key, direction: 'rightTop'
-            })}
-          />
-          <div className={cx(css`
-            position: absolute;
-            bottom: -4px;
-            right: -4px;
-            height: 8px;
-            width: 8px;
-            cursor: se-resize;
-          `)}
-            onMouseDown={() => setDraggingWindow({
-              id: key, direction: 'rightBottom'
-            })}
-          />
-        </Box>
-      </Draggable>;
+      return <Window
+        left={left} top={top} width={width} height={height}
+        icon={apps[pkg].icon}
+        title={apps[pkg].name} subTitle={title} priority={priority}
+        bodyComponent={
+          getAppComponent(pkg, page) &&
+          getAppComponent(pkg, page)(propsGenerator(key, page, sharedState))
+        }
+        drawerComponent={
+          getAppComponent(pkg, 'drawer') &&
+          getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState))
+        }
+        setWindowInfo={obj => setWindowInfo(key, obj)}
+        setActive={() => setActiveTask(key)}
+      />;
     })}
     <Box
       position='fixed'

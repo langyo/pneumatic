@@ -4,6 +4,7 @@ import Draggable, { DraggableData } from 'react-draggable';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
+import { shadowBorderMap } from './shadowBorder';
 
 const loadingComponent = <div className={css`
   width: 100%;
@@ -51,6 +52,7 @@ export function Dialog({
       border-radius: 4px;
       background: rgba(255, 255, 255, 0.8);
       z-index: ${5000 + priority * 2};
+      box-shadow: ${shadowBorderMap[3]};
     `}>
       <div className={css`
         width: 100%;
