@@ -88,8 +88,7 @@ export const TouchRipple = forwardRef(function TouchRipple({ className }: {
         />
       ]);
       nextKey.current += 1;
-    },
-    []
+    }, []
   );
 
   const start = useCallback(
@@ -169,10 +168,10 @@ export const TouchRipple = forwardRef(function TouchRipple({ className }: {
           pointer-events: none;
           position: absolute;
           z-index: 0;
-          top: 0px;
-          right: 0px;
-          bottom: 0px;
-          left: 0px;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
         `,
         className
       )}

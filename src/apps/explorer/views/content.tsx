@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, IconButton, Typography } from '@material-ui/core';
+import { Typography } from '@material-ui/core';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
 import {
@@ -22,6 +22,7 @@ import {
   mdiFileCodeOutline,
   mdiCogs
 } from '@mdi/js';
+import { Button, IconButton } from '../../../utils/frontend/components/button';
 
 const fileTypeIconMap = {
   'folder': mdiFolderOutline,
@@ -87,7 +88,7 @@ export function Content({ sharedState }) {
   } = sharedState;
 
   return <>
-    <Button size='large' className={css`
+    <Button className={css`
       margin: 16px;
       padding: 8px;
       display: inline-block;
@@ -110,7 +111,7 @@ export function Content({ sharedState }) {
           parts.filter(n => n !== '').length > 3 ?
             parts.filter(n => n !== '').length - 3 : 0
         ).map(n => (
-          <Button fullWidth>
+          <Button>
             <div className={css`
               text-transform: none;
             `}>
@@ -121,21 +122,15 @@ export function Content({ sharedState }) {
           (arr, next) => [
             ...arr,
             next,
-            <IconButton size='small'>
-              <Icon path={mdiMenuRight} size={0.8} color='rgba(0, 0, 0, 1)' />
-            </IconButton>
+            <IconButton path={mdiMenuRight} size={0.8} />
           ],
           [
-            <IconButton size='small'>
-              <Icon path={mdiMenuDown} size={0.8} color='rgba(0, 0, 0, 1)' />
-            </IconButton>
+            <IconButton path={mdiMenuDown} size={0.8} />
           ]
         ).reverse().splice(1).reverse().concat(
           parts.filter(n => n !== '').length > 3 ?
             [
-              <IconButton size='small'>
-                <Icon path={mdiDotsHorizontal} size={0.8} color='rgba(0, 0, 0, 1)' />
-              </IconButton>
+              <IconButton path={mdiDotsHorizontal} size={0.8} />
             ] : []
         ).reverse()}
     </div>
