@@ -2,37 +2,45 @@ import React, { createContext, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { css } from '@emotion/css';
 
-export const ThemeProviderContext = createContext({} as IThemeProviderContext);
-
-export interface IThemeProviderContext {
+export interface ITheme {
+  palette: {
+    background: string,
+    primary: string,
+    secondary: string,
+    text: string
+  },
   media: 'desktop' | 'mobile'
 }
 
+export const ThemeProviderContext = createContext({} as ITheme & {
+  setTheme: (inputTheme: Partial<ITheme>) => void
+});
+
 export function ThemeProvider({ children }: { children?: any }) {
-  const media = useMediaQuery({
-    query: '(min-width: 992px)'
-  }) ? 'desktop' : 'mobile';
-  const [basicTheme, setBasicTheme] = useState({
-    background: {
-      type: 'color',
-      value: 'rgba(0, 0, 0, 0.6)'
-    }
-  });
+  const [theme, setTheme] = useState({
+    palette: {
+      background: '#1C304A',
+      primary: '#046B99',
+      secondary: '#B3EFFF',
+      text: '#FFF'
+    },
+    media: useMediaQuery({
+      query: '(min-width: 992px)'
+    }) ? 'desktop' : 'mobile'
+  } as ITheme);
 
   return <ThemeProviderContext.Provider value={{
-    media
+    ...theme,
+    setTheme(inputTheme: Partial<ITheme>) {
+      setTheme({ ...theme, ...inputTheme });
+    }
   }}>
     <div className={css`
       z-index: -1;
       position: fixed;
       width: 100%;
       height: 100%;
-      ${basicTheme.background && basicTheme.background.type === 'url' ?
-        `background: url(${basicTheme.background.value}) no-repeat top left scroll;` :
-        ''}
-      ${basicTheme.background && basicTheme.background.type === 'color' ?
-        `background: ${basicTheme.background.value};` :
-        ''}
+      background: ${theme.palette.background};
       background-size: cover;
       opacity: 0.5;
     `} />

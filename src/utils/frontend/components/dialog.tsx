@@ -1,4 +1,4 @@
-import React, { Children, Component, useState } from 'react';
+import React, { Children, Component, useState, useContext } from 'react';
 import { css, cx, keyframes } from '@emotion/css';
 import Draggable, { DraggableData } from 'react-draggable';
 import Icon from '@mdi/react';
@@ -6,6 +6,7 @@ import { mdiClose } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { IconButton } from './button';
 import { IWindowInfo } from '../taskManagerContext';
+import { ITheme, ThemeProviderContext } from '../themeProviderContext';
 
 type IDragType = 'none' | 'move' |
   'dragLeftTop' | 'dragLeftBottom' |
@@ -26,6 +27,7 @@ export function Dialog({
   setActive: () => void,
   setDestory: () => void
 }) {
+  const { palette } = useContext(ThemeProviderContext);
   const [dragging, setDragging] = useState('none');
 
   return <Draggable
@@ -166,12 +168,12 @@ export function Dialog({
         width: 8px;
         z-index: 1;
         cursor: e-resize;
-        filter: drop-shadow(0 0 16px #000);
+        filter: drop-shadow(0 0 4px ${palette.secondary});
       `)}
         onMouseDown={() => void 0}
       >
         <div className={css`
-          border: 1px solid #6cf;
+          border: 1px solid ${palette.primary};
           height: 100%;
           width: 0px;
           margin: 0px 3px;
@@ -185,12 +187,12 @@ export function Dialog({
         width: 8px;
         z-index: 1;
         cursor: e-resize;
-        filter: drop-shadow(0 0 16px #000);
+        filter: drop-shadow(0 0 4px ${palette.secondary});
       `)}
         onMouseDown={() => void 0}
       >
         <div className={css`
-          border: 1px solid #6cf;
+          border: 1px solid ${palette.primary};
           height: 100%;
           width: 0px;
           margin: 0px 3px;
@@ -204,12 +206,12 @@ export function Dialog({
         height: 8px;
         z-index: 1;
         cursor: s-resize;
-        filter: drop-shadow(0 0 16px #000);
+        filter: drop-shadow(0 0 4px ${palette.secondary});
       `)}
         onMouseDown={() => void 0}
       >
         <div className={css`
-          border: 1px solid #6cf;
+          border: 1px solid ${palette.primary};
           height: 0px;
           width: 100%;
           margin: 3px 0px;
@@ -223,12 +225,12 @@ export function Dialog({
         height: 8px;
         z-index: 1;
         cursor: s-resize;
-        filter: drop-shadow(0 0 16px #000);
+        filter: drop-shadow(0 0 4px ${palette.secondary});
       `)}
         onMouseDown={() => void 0}
       >
         <div className={css`
-          border: 1px solid #6cf;
+          border: 1px solid ${palette.primary};
           height: 0px;
           width: 100%;
           margin: 3px 0px;
@@ -242,17 +244,17 @@ export function Dialog({
         width: 20px;
         z-index: 1;
         cursor: se-resize;
-        filter: drop-shadow(0 0 16px #000);
+        filter: drop-shadow(0 0 4px ${palette.secondary});
       `)}
         onMouseDown={() => void 0}
       >
         <div className={css`
           margin-left: 4px;
           margin-top: 4px;
-          background: #6cf;
+          background: ${palette.primary};
           width: 16px;
           height: 16px;
-          clip-path: polygon(calc(100% - 1px) 0px, 100% 1px, 1px 100%, 0px calc(100% - 1px));
+          clip-path: polygon(calc(100% - 2px) 0px, 100% 0px, 100% 1px, 1px 100%, 0px 100%, 0px calc(100% - 2px));
         `} />
       </div>
       <div className={cx(css`
@@ -263,17 +265,17 @@ export function Dialog({
         width: 20px;
         z-index: 1;
         cursor: ne-resize;
-        filter: drop-shadow(0 0 16px #000);
+        filter: drop-shadow(0 0 4px ${palette.secondary});
       `)}
         onMouseDown={() => void 0}
       >
         <div className={css`
           margin-bottom: 4px;
           margin-left: 4px;
-          background: #6cf;
+          background: ${palette.primary};
           width: 16px;
           height: 16px;
-          clip-path: polygon(0px 1px, 1px 0px, 100% calc(100% - 1px), calc(100% - 1px) 100%);
+          clip-path: polygon(0px 2px, 0px 0px, 1px 0px, 100% calc(100% - 1px), 100% 100%, calc(100% - 2px) 100%);
         `} />
       </div>
       <div className={cx(css`
@@ -284,17 +286,17 @@ export function Dialog({
         width: 20px;
         z-index: 1;
         cursor: ne-resize;
-        filter: drop-shadow(0 0 16px #000);
+        filter: drop-shadow(0 0 4px ${palette.secondary});
       `)}
         onMouseDown={() => void 0}
       >
         <div className={css`
           margin-top: 4px;
           margin-right: 4px;
-          background: #6cf;
+          background: ${palette.primary};
           width: 16px;
           height: 16px;
-          clip-path: polygon(0px 1px, 1px 0px, 100% calc(100% - 1px), calc(100% - 1px) 100%);
+          clip-path: polygon(0px 1px, 0px 0px, 2px 0px, 100% calc(100% - 2px), 100% 100%, calc(100% - 1px) 100%);
         `} />
       </div>
       <div className={cx(css`
@@ -305,17 +307,17 @@ export function Dialog({
         width: 20px;
         z-index: 1;
         cursor: se-resize;
-        filter: drop-shadow(0 0 16px #000);
+        filter: drop-shadow(0 0 4px ${palette.secondary});
       `)}
         onMouseDown={() => void 0}
       >
         <div className={css`
           margin-bottom: 4px;
           margin-right: 4px;
-          background: #6cf;
+          background: ${palette.primary};
           width: 16px;
           height: 16px;
-          clip-path: polygon(calc(100% - 1px) 0px, 100% 1px, 1px 100%, 0px calc(100% - 1px));
+          clip-path: polygon(calc(100% - 1px) 0px, 100% 0px, 100% 2px, 2px 100%, 0px 100%, 0px calc(100% - 1px));
         `} />
       </div>
     </div>
