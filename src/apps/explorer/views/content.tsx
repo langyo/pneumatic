@@ -89,7 +89,7 @@ export function Content({ sharedState }) {
     baseName: string
   } = sharedState;
 
-  return <>
+  return [
     <Button className={css`
       margin: 16px;
       padding: 8px;
@@ -100,9 +100,9 @@ export function Content({ sharedState }) {
       `}>
         {baseName}
       </Typography>
-    </Button>
+    </Button>,
     <div className={css`
-      margin: 8px;
+      margin: 16px;
       display: flex;
       flex-direction: row;
       align-items: center;
@@ -135,7 +135,7 @@ export function Content({ sharedState }) {
               <IconButton path={mdiDotsHorizontal} size={0.8} />
             ] : []
         ).reverse()}
-    </div>
+    </div>,
     <div className={css`
       width: 90%;
       margin: 8px;
@@ -147,5 +147,5 @@ export function Content({ sharedState }) {
         title={name}
       />)}
     </div>
-  </>;
+  ];
 }

@@ -14,8 +14,8 @@ export function ThemeProvider({ children }: { children?: any }) {
   }) ? 'desktop' : 'mobile';
   const [basicTheme, setBasicTheme] = useState({
     background: {
-      type: 'url',
-      value: 'https://i.loli.net/2021/02/09/8vaVgHdnXtEwQDs.jpg'
+      type: 'color',
+      value: 'rgba(0, 0, 0, 0.6)'
     }
   });
 
@@ -29,6 +29,9 @@ export function ThemeProvider({ children }: { children?: any }) {
       height: 100%;
       ${basicTheme.background && basicTheme.background.type === 'url' ?
         `background: url(${basicTheme.background.value}) no-repeat top left scroll;` :
+        ''}
+      ${basicTheme.background && basicTheme.background.type === 'color' ?
+        `background: ${basicTheme.background.value};` :
         ''}
       background-size: cover;
       opacity: 0.5;
