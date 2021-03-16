@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { Component, useState } from 'react';
 import { css, cx } from '@emotion/css';
 import Draggable, { DraggableData } from 'react-draggable';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { generateShadow } from './shadowBorder';
+import { IconButton } from './button';
+import { IWindowInfo } from '../taskManagerContext';
 
 const loadingComponent = <div className={css`
   width: 100%;
@@ -33,7 +35,14 @@ export function Dialog({
   width, height, left, top, priority,
   icon, title, subTitle,
   bodyComponent, drawerComponent,
-  setWindowInfo, setActive
+  setWindowInfo, setActive, setDestory
+}: {
+  width: number, height: number, left: number, top: number, priority: number,
+  icon: string, title: string, subTitle: string,
+  bodyComponent: Component, drawerComponent: Component,
+  setWindowInfo: (info: Partial<IWindowInfo>) => void,
+  setActive: () => void,
+  setDestory: () => void
 }) {
   const [dragging, setDragging] = useState('none');
 
@@ -105,7 +114,7 @@ export function Dialog({
             <div className={css`
               margin: 4px;
             `}>
-              <Icon path={mdiClose} size={1} color='rgba(0, 0, 0, 1)' />
+              <IconButton path={mdiClose} onClick={setDestory} />
             </div>
           </div>
         </div>

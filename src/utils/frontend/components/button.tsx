@@ -12,7 +12,6 @@ export function Button({ children, className, onClick }: {
 
   return <div className={cx(css`
     position: relative;
-    margin: 4px;
     padding: 4px;
     font-size: 16px;
     user-select: none;
@@ -50,7 +49,6 @@ export function IconButton({ className, path, size, color, onClick }: {
 
   return <div className={cx(css`
     position: relative;
-    margin: 4px;
     padding: 4px;
     height: ${24 * (size || 1)}px;
     width: ${24 * (size || 1)}px;

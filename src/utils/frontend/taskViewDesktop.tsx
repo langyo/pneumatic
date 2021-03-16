@@ -108,6 +108,7 @@ export function TaskViewDesktop() {
         }
         setWindowInfo={obj => setWindowInfo(key, obj)}
         setActive={() => setActiveTask(key)}
+        setDestory={() => destoryTask(key)}
       />;
     })}
     <Box

@@ -43,7 +43,9 @@ const fileTypeIconMap = {
 };
 
 function ContentItem({ iconPath, title }) {
-  return <Button>
+  return <Button className={css`
+    margin: 4px;
+  `}>
     <div className={css`
       width: 96px;
       height: 96px;
