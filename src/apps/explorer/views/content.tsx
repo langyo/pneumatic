@@ -57,7 +57,7 @@ function ContentItem({ iconPath, title }) {
       align-items: center;
       border-radius: 4px;
     `}>
-      <Icon path={iconPath} size={2} color='rgba(0, 0, 0, 1)' />
+      <Icon path={iconPath} size={2} color='#fff' />
       <p className={css`
         margin: 0px;
         line-height: 24px;
@@ -97,6 +97,7 @@ export function Content({ sharedState }) {
     `}>
       <Typography variant='h4' className={css`
         text-transform: none;
+        color: #fff;
       `}>
         {baseName}
       </Typography>
@@ -107,6 +108,7 @@ export function Content({ sharedState }) {
       flex-direction: row;
       align-items: center;
       flex-shrink: 0;
+      color: #fff;
     `}>
       {parts.filter(n => n !== '')
         .splice(
@@ -124,15 +126,15 @@ export function Content({ sharedState }) {
           (arr, next) => [
             ...arr,
             next,
-            <IconButton path={mdiMenuRight} size={0.8} />
+            <IconButton path={mdiMenuRight} color='#fff' size={0.8} />
           ],
           [
-            <IconButton path={mdiMenuDown} size={0.8} />
+            <IconButton path={mdiMenuDown} color='#fff' size={0.8} />
           ]
         ).reverse().splice(1).reverse().concat(
           parts.filter(n => n !== '').length > 3 ?
             [
-              <IconButton path={mdiDotsHorizontal} size={0.8} />
+              <IconButton path={mdiDotsHorizontal} color='#fff' size={0.8} />
             ] : []
         ).reverse()}
     </div>,
@@ -141,6 +143,7 @@ export function Content({ sharedState }) {
       margin: 8px;
       display: flex;
       flex-wrap: wrap;
+      color: #fff;
     `}>
       {Object.keys(files).map(name => <ContentItem
         iconPath={fileTypeIconMap[files[name].media || 'file']}

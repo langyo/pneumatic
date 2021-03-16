@@ -51,55 +51,54 @@ export function Dialog({
       `}
         onMouseDown={setActive}
       >
+        <div className={css`
+          position: absolute;
+          width: 100%;
+          height: calc(100% + 30px);
+          top: -30px;
+          z-index: -1;
+          background: repeating-linear-gradient(0deg, ${palette.primary}, transparent 4px);
+          filter: blur(1px);
+          clip-path: polygon(16px 30px, 20% 30px, calc(20% + 32px) 0px, calc(80% - 32px) 0px, 80% 30px, calc(100% - 16px) 30px, 100% 46px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0px calc(100% - 16px), 0px 46px);
+        `} />
         <div className={cx(css`
           position: absolute;
-          width: calc(100% - 4px);
-          left: 4px;
-          height: 32px;
+          width: 60%;
+          left: 20%;
+          top: -30px;
+          height: 60px;
+          z-index: 2;
+          clip-path: polygon(32px 0px, calc(100% - 32px) 0px, 100% 30px, calc(100% - 32px) 100%, 32px 100%, 0px 30px);
           display: flex;
-          flex-direction: row;
+          flex-direction: column;
+          justify-content: center;
           align-items: center;
           user-select: none;
+          color: ${palette.text};
         `, 'drag-handle-tag')}>
-          <Icon className={css`
-            margin: 4px;
-          `}
-            path={icon} size={1} color='rgba(0, 0, 0, 1)'
-          />
-          <div className={css`
-            margin: 4px;
+          <p className={css`
+            margin: 10px;
+            margin-bottom: 0px;
+            line-height: 24px;
+            font-size: 16px;
           `}>
-            <p className={css`
-              height: 24px;
-              line-height: 24px;
-              font-size: 16px;
-            `}>
-              {title}
-            </p>
-          </div>
-          <div className={css`
-            margin: 4px;
+            {title}
+          </p>
+          <p className={css`
+            margin-top: 0px;
+            margin-bottom: 10px;
+            line-height: 16px;
+            font-size: 12px;
           `}>
-            <p className={css`
-              height: 20px;
-              line-height: 20px;
-              font-size: 12px;
-            `}>
-              {subTitle || ''}
-            </p>
-          </div>
-          <div className={css`
-            position: absolute;
-            top: 0px;
-            right: 0px;
-          `}>
-            <div className={css`
-              margin: 4px;
-              margin-right: 12px;
-            `}>
-              <IconButton size={0.5} path={mdiClose} onClick={setDestory} />
-            </div>
-          </div>
+            {subTitle || ''}
+          </p>
+        </div>
+        <div className={css`
+          position: absolute;
+          top: 4px;
+          right: 16px;
+        `}>
+          <IconButton size={0.8} color={palette.text} path={mdiClose} onClick={setDestory} />
         </div>
         <div className={css`
           position: absolute;
@@ -211,9 +210,19 @@ export function Dialog({
         onMouseDown={() => void 0}
       >
         <div className={css`
+          position: absolute;
+          left: 0px;
           border: 1px solid ${palette.primary};
           height: 0px;
-          width: 100%;
+          width: calc(20% - 12px);
+          margin: 3px 0px;
+        `} />
+        <div className={css`
+          position: absolute;
+          right: 0px;
+          border: 1px solid ${palette.primary};
+          height: 0px;
+          width: calc(20% - 12px);
           margin: 3px 0px;
         `} />
       </div>
