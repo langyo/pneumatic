@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import {
-  List, ListItem, ListSubheader, ListItemIcon, ListItemText, Divider
-} from '@material-ui/core';
+import { List } from '../../../utils/frontend/components/list';
 import { css } from '@emotion/css';
 import { Icon } from '@mdi/react';
 import {
@@ -9,33 +7,51 @@ import {
 } from '@mdi/js';
 
 export function Drawer({ }) {
-  return <List className={css`
-    color: #fff;
-  `}>
-    <ListSubheader>
-      {'Device'}
-    </ListSubheader>
-    <ListItem>
-      <ListItemIcon>
-        <Icon path={mdiServerNetwork} size={1} color='#fff' />
-      </ListItemIcon>
-      <ListItemText primary='All' />
-    </ListItem>
-    <Divider />
-    <ListSubheader>
-      {'Fast forward'}
-    </ListSubheader>
-    <ListItem>
-      <ListItemIcon>
-        <Icon path={mdiFolderOutline} size={1} color='#fff' />
-      </ListItemIcon>
-      <ListItemText primary='nickelcat' />
-    </ListItem>
-    <ListItem>
-      <ListItemIcon>
-        <Icon path={mdiFolderOutline} size={1} color='#fff' />
-      </ListItemIcon>
-      <ListItemText primary='pneumatic' />
-    </ListItem>
-  </List>;
+  return <List items={[
+    'Device',
+    <div className={css`
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    `}>
+      <Icon path={mdiServerNetwork} size={1} color='#fff' />
+      <div className={css`
+        line-height: 24px;
+        height: 24px;
+        margin-left: 8px;
+      `}>
+        {'All'}
+      </div>
+    </div>,
+    '------',
+    'Fast forward',
+    <div className={css`
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    `}>
+      <Icon path={mdiFolderOutline} size={1} color='#fff' />
+      <div className={css`
+        line-height: 24px;
+        height: 24px;
+        margin-left: 8px;
+      `}>
+        {'nickelcat'}
+      </div>
+    </div>,
+    <div className={css`
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    `}>
+      <Icon path={mdiFolderOutline} size={1} color='#fff' />
+      <div className={css`
+        line-height: 24px;
+        height: 24px;
+        margin-left: 8px;
+      `}>
+        {'pneumatic'}
+      </div>
+    </div>
+  ]} />;
 }
