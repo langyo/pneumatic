@@ -10,48 +10,48 @@ export function Drawer({ }) {
   return <List items={[
     'Device',
     <div className={css`
+      height: 32px;
+      line-height: 32px;
       display: flex;
       flex-direction: row;
       align-items: center;
     `}>
-      <Icon path={mdiServerNetwork} size={1} color='#fff' />
       <div className={css`
-        line-height: 24px;
-        height: 24px;
-        margin-left: 8px;
+        margin: 0px 12px;
       `}>
-        {'All'}
+        <Icon path={mdiServerNetwork} size={1} color='#fff' />
       </div>
+      {'All'}
     </div>,
     '------',
     'Fast forward',
     <div className={css`
+      height: 32px;
+      line-height: 32px;
       display: flex;
       flex-direction: row;
       align-items: center;
     `}>
-      <Icon path={mdiFolderOutline} size={1} color='#fff' />
       <div className={css`
-        line-height: 24px;
-        height: 24px;
-        margin-left: 8px;
+        margin: 0px 12px;
       `}>
-        {'nickelcat'}
+        <Icon path={mdiFolderOutline} size={1} color='#fff' />
       </div>
+      {'nickelcat'}
     </div>,
     <div className={css`
+      height: 32px;
+      line-height: 32px;
       display: flex;
       flex-direction: row;
       align-items: center;
     `}>
-      <Icon path={mdiFolderOutline} size={1} color='#fff' />
       <div className={css`
-        line-height: 24px;
-        height: 24px;
-        margin-left: 8px;
+        margin: 0px 12px;
       `}>
-        {'pneumatic'}
+        <Icon path={mdiFolderOutline} size={1} color='#fff' />
       </div>
+      {'pneumatic'}
     </div>
   ]} />;
 }

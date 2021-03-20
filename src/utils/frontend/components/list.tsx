@@ -19,14 +19,14 @@ export function List({ items }: {
             height: 0px;
             border: 1px solid ${palette.text};
             opacity: 0.8;
-            margin: 8px 10%;
+            margin: 16px 10%;
           `} />
         } else {
           return <div className={css`
             width: 80%;
             height: 20px;
             line-height: 20px;
-            font-width: 14px;
+            font-width: 12px;
             color: ${palette.text};
             margin: 8px 10%;
             user-select: none;
@@ -37,9 +37,6 @@ export function List({ items }: {
       } else {
         return <Button className={css`
           width: 80%;
-          height: 24px;
-          line-height: 24px;
-          font-width: 16px;
           color: ${palette.text};
           margin: 8px 10%;
         `}>
