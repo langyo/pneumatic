@@ -42,9 +42,9 @@ export function Dialog({
       position: fixed;
       width: ${width};
       height: ${height};
-      background: ${palette.primary};
+      background: ${palette(0.8).primary};
       border-radius: 4px;
-      box-shadow: 0 0 4px ${palette.primary};
+      box-shadow: 2px 2px 4px ${palette(0.6).primary};
       z-index: ${5000 + priority};
     `}>
       <div className={css`
@@ -64,7 +64,7 @@ export function Dialog({
           justify-content: center;
           align-items: center;
           user-select: none;
-          background: rgba(0, 0, 0, 0.2);
+          background: ${palette(0.2).secondary};
           border-radius: 4px;
           color: ${palette.text};
         `, 'drag-handle-tag')}>

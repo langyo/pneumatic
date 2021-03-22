@@ -16,8 +16,11 @@ export interface ITheme {
 export const ThemeProviderContext = createContext({} as {
   palette: ({
     [key in keyof ITheme['palette']]: string
-  } & ((type: keyof ITheme['palette'], opacity: number) => string)),
-  setTheme: (inputTheme: Partial<ITheme>) => void
+  } & ((opacity: number) => ({
+    [key in keyof ITheme['palette']]: string
+  }))),
+  setTheme: (inputTheme: Partial<ITheme>) => void,
+  media: 'desktop' | 'mobile'
 });
 
 export function ThemeProvider({ children }: { children?: any }) {
@@ -34,20 +37,21 @@ export function ThemeProvider({ children }: { children?: any }) {
   } as ITheme);
 
   return <ThemeProviderContext.Provider value={{
-    palette: new Proxy(theme.palette, {
-      get(obj: ITheme['palette'], key: string) {
-        if (Object.keys(obj).indexOf(key) >= 0) {
-          return `rgb(${obj[key].join(', ')})`;
+    palette: new Proxy(() => void 0, {
+      get(_obj, key: string) {
+        if (Object.keys(theme.palette).indexOf(key) >= 0) {
+          return `rgb(${theme.palette[key].join(', ')})`;
         }
         throw new Error(`Unknown palette type ${key}.`);
       },
-      apply(obj: ITheme['palette'], _this, opacity: [number]) {
-        return Object.keys(obj).reduce((obj, key) => ({
+      apply(_obj, _this, opacity: [number]) {
+        return Object.keys(theme.palette).reduce((obj, key) => ({
           ...obj,
-          [key]: `rgba(${obj[key].join(', ')}, ${opacity})`
+          [key]: `rgba(${theme.palette[key].join(', ')}, ${opacity})`
         }), {});
       }
     }) as any,
+    media: theme.media,
     setTheme(inputTheme: Partial<ITheme>) {
       setTheme({ ...theme, ...inputTheme });
     }
@@ -57,7 +61,7 @@ export function ThemeProvider({ children }: { children?: any }) {
       position: fixed;
       width: 100%;
       height: 100%;
-      background: ${theme.palette.background};
+      background: rgb(${theme.palette.background.join(', ')});
       background-size: cover;
       opacity: 0.5;
     `} />
