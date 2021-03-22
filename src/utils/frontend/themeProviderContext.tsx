@@ -2,27 +2,31 @@ import React, { createContext, useState } from 'react';
 import { useMediaQuery } from 'react-responsive';
 import { css } from '@emotion/css';
 
+export type IRGBColor = [number, number, number];
 export interface ITheme {
   palette: {
-    background: string,
-    primary: string,
-    secondary: string,
-    text: string
+    background: IRGBColor,
+    primary: IRGBColor,
+    secondary: IRGBColor,
+    text: IRGBColor
   },
   media: 'desktop' | 'mobile'
 }
 
-export const ThemeProviderContext = createContext({} as ITheme & {
+export const ThemeProviderContext = createContext({} as {
+  palette: ({
+    [key in keyof ITheme['palette']]: string
+  } & ((type: keyof ITheme['palette'], opacity: number) => string)),
   setTheme: (inputTheme: Partial<ITheme>) => void
 });
 
 export function ThemeProvider({ children }: { children?: any }) {
   const [theme, setTheme] = useState({
     palette: {
-      background: '#1C304A',
-      primary: '#046B99',
-      secondary: '#B3EFFF',
-      text: '#FFF'
+      background: [28, 48, 74],
+      primary: [4, 107, 153],
+      secondary: [179, 239, 255],
+      text: [255, 255, 255]
     },
     media: useMediaQuery({
       query: '(min-width: 992px)'
@@ -30,7 +34,20 @@ export function ThemeProvider({ children }: { children?: any }) {
   } as ITheme);
 
   return <ThemeProviderContext.Provider value={{
-    ...theme,
+    palette: new Proxy(theme.palette, {
+      get(obj: ITheme['palette'], key: string) {
+        if (Object.keys(obj).indexOf(key) >= 0) {
+          return `rgb(${obj[key].join(', ')})`;
+        }
+        throw new Error(`Unknown palette type ${key}.`);
+      },
+      apply(obj: ITheme['palette'], _this, opacity: [number]) {
+        return Object.keys(obj).reduce((obj, key) => ({
+          ...obj,
+          [key]: `rgba(${obj[key].join(', ')}, ${opacity})`
+        }), {});
+      }
+    }) as any,
     setTheme(inputTheme: Partial<ITheme>) {
       setTheme({ ...theme, ...inputTheme });
     }
