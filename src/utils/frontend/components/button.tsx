@@ -16,7 +16,7 @@ export function Button({ children, className, onClick }: {
     font-size: 16px;
     user-select: none;
     border-radius: 4px;
-    transition: background 0.5s;
+    transition: .2s;
     &:hover {
       background: rgba(0, 0, 0, 0.2);
     }
@@ -53,7 +53,7 @@ export function IconButton({ className, path, size, color, onClick }: {
     height: ${24 * (size || 1)}px;
     width: ${24 * (size || 1)}px;
     border-radius: 4px;
-    transition: background 0.5s;
+    transition: .2s;
     &:hover {
       background: rgba(0, 0, 0, 0.2);
     }

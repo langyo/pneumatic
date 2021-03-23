@@ -26,9 +26,9 @@ export const ThemeProviderContext = createContext({} as {
 export function ThemeProvider({ children }: { children?: any }) {
   const [theme, setTheme] = useState({
     palette: {
-      background: [28, 48, 74],
-      primary: [4, 107, 153],
-      secondary: [179, 239, 255],
+      background: [24, 48, 108],
+      primary: [6, 108, 160],
+      secondary: [176, 240, 255],
       text: [255, 255, 255]
     },
     media: useMediaQuery({

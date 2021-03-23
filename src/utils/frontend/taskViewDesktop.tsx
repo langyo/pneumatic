@@ -1,30 +1,18 @@
 import React, { useState, useContext, useEffect } from 'react';
-import {
-  Box, Typography, Tooltip, IconButton, Button, Grid,
-  Dialog, DialogTitle, DialogContent, CircularProgress
-} from '@material-ui/core';
-import Draggable, { DraggableData } from 'react-draggable';
+import { Tooltip } from '@material-ui/core';
 import { css, cx } from '@emotion/css';
 import Icon from '@mdi/react';
-import { mdiClose, mdiMenu } from '@mdi/js';
-import { Dialog as Window } from './components/dialog';
+import { mdiMenu } from '@mdi/js';
+import { Dialog } from './components/dialog';
+import { Button, IconButton } from './components/button';
 
 import {
   TaskManagerContext, ITaskManagerContext
 } from './taskManagerContext';
 import {
-  AppProviderContext, IAppProviderContext, IApps, IGetAppComponent
+  AppProviderContext, IAppProviderContext
 } from './appProviderContext';
-
-const loadingComponent = <div className={css`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`}>
-  <CircularProgress />
-</div>;
+import { ThemeProviderContext } from './themeProviderContext';
 
 export function TaskViewDesktop() {
   const {
@@ -35,6 +23,7 @@ export function TaskViewDesktop() {
   const {
     apps, appRegistryStatus, loadAppComponent: getAppComponent
   }: IAppProviderContext = useContext(AppProviderContext);
+  const { palette } = useContext(ThemeProviderContext);
   const [draggingWindow, setDraggingWindow] = useState(
     { id: '', direction: 'leftBottom' } as {
       id: string,
@@ -94,7 +83,7 @@ export function TaskViewDesktop() {
         }
       } = tasks[key];
 
-      return <Window
+      return <Dialog
         left={left} top={top} width={width} height={height}
         icon={apps[pkg].icon}
         title={apps[pkg].name} subTitle={title} priority={priority}
@@ -111,23 +100,22 @@ export function TaskViewDesktop() {
         setDestory={() => destoryTask(key)}
       />;
     })}
-    <Box
-      position='fixed'
-      top='10%'
-      {...(taskManagerPosition.direction === 'left' ? { left: 4 } : { right: 4 })}
-      width={48}
-      height='80%'
-      bgcolor='rgba(255, 255, 255, 0.8)'
-      borderRadius={4}
-      boxShadow={3}
-      zIndex={9000}
-      className={css`
-        padding: 4px;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-      `}>
+    <div className={css`
+      position: fixed;
+      top: 10%;
+      ${taskManagerPosition.direction === 'left' ? 'left: 4px;' : 'right: 4px;'}
+      width: 40px;
+      height: 80%;
+      background: ${palette(0.6).primary};
+      border-radius: 4px;
+      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+      z-index: 9000;
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+    `}>
       {Object.keys(tasks).sort(
         (left, right) =>
           tasks[left].windowInfo.taskManagerOrder - tasks[right].windowInfo.taskManagerOrder
@@ -141,13 +129,13 @@ export function TaskViewDesktop() {
           title={`${name}${title !== '' ? ` - ${title}` : ''}`}
         >
           <IconButton
+            className={css`
+              margin: 4px;
+            `}
+            path={icon}
+            color={status === 'active' ? palette.text : palette(0.3).text}
             onClick={() => setActiveTask(key)}
-          >
-            <Icon
-              path={icon} size={1}
-              color={status === 'active' ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.3)'}
-            />
-          </IconButton>
+          />
         </Tooltip>
       })}
       <div className={css`
@@ -159,34 +147,57 @@ export function TaskViewDesktop() {
           title={`Launcher`}
         >
           <IconButton
+            className={css`
+              margin: 4px;
+            `}
+            path={mdiMenu}
+            color={palette.text}
             onClick={() => setGlobalState({ launcherState: !launcherState })}
-          >
-            <Icon path={mdiMenu} size={1} color='rgba(0, 0, 0, 1)' />
-          </IconButton>
+          />
         </Tooltip>
-        <Dialog
-          open={launcherState}
-          onClose={() => setGlobalState({ launcherState: false })}
+        <div className={css`
+          position: fixed;
+          left: 0px;
+          top: 0px;
+          right: 0px;
+          bottom: 0px;
+          background: rgba(0, 0, 0, 0.8);
+          display: ${launcherState ? '' : 'none'};
+          z-index: 9001;
+        `}
+          onClick={() => setGlobalState({ launcherState: false })}
         >
-          <DialogTitle>{'Launcher'}</DialogTitle>
-          <DialogContent>
-            <Grid container>
-              {Object.keys(apps).map(pkg => {
-                const { icon, name } = apps[pkg];
-                return <Grid item xs={6} xl={4}>
-                  <Button
-                    size='large'
-                    onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
-                    startIcon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
-                  >
-                    {name}
-                  </Button>
-                </Grid>;
-              })}
-            </Grid>
-          </DialogContent>
-        </Dialog>
+          <div className={css`
+            position: absolute;
+            left: 20%;
+            top: 30%;
+            width: 60%;
+            height: 40%;
+            display: grid;
+            grid-template-columns: repeat(3, 33.3%);
+            grid-template-rows: repeat(auto-fill, 40px);
+            grid-gap: 4px;
+          `}>
+            {Object.keys(apps).map(pkg => {
+              const { icon, name } = apps[pkg];
+              return <Button
+                className={css`
+                  display: flex;
+                  align-items: center;
+                  height: 32px;
+                  line-height: 32px;
+                  font-size: 16px;
+                  color: ${palette.text}
+                `}
+                onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
+              >
+                <Icon path={icon} size={1} color={palette.text} />
+                {name}
+              </Button>;
+            })}
+          </div>
+        </div>
       </div>
-    </Box>
+    </div>
   </div >;
 }
