@@ -65,9 +65,15 @@ export function Dialog({
           align-items: center;
           user-select: none;
           background: ${palette(0.2).secondary};
-          border-radius: 4px;
+          border-radius: 4px 4px 0px 0px;
           color: ${palette.text};
         `, 'drag-handle-tag')}>
+          <div className={css`
+            position: absolute;
+            left: 4px;
+          `}>
+            <Icon path={icon} size={1} color={palette.text} />
+          </div>
           <p className={css`
             margin-left: 8px;
             line-height: 24px;

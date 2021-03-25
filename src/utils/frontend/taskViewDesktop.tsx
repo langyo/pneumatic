@@ -1,10 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Tooltip } from '@material-ui/core';
-import { css, cx } from '@emotion/css';
+import { css } from '@emotion/css';
 import Icon from '@mdi/react';
-import { mdiMenu } from '@mdi/js';
+import { mdiClose, mdiMenu } from '@mdi/js';
+import { CSSTransition } from 'react-transition-group';
 import { Dialog } from './components/dialog';
 import { Button, IconButton } from './components/button';
+import { ToolTip } from './components/toolTip';
 
 import {
   TaskManagerContext, ITaskManagerContext
@@ -124,79 +125,125 @@ export function TaskViewDesktop() {
         const { icon, name } = apps[tasks[key].pkg];
         const { status, title } = tasks[key].windowInfo;
 
-        return <Tooltip
-          placement='right'
-          title={`${name}${title !== '' ? ` - ${title}` : ''}`}
-        >
-          <IconButton
-            className={css`
-              margin: 4px;
-            `}
-            path={icon}
-            color={status === 'active' ? palette.text : palette(0.3).text}
-            onClick={() => setActiveTask(key)}
-          />
-        </Tooltip>
+        return <div className={css`
+          margin: 4px;
+        `}>
+          <ToolTip
+            position='right'
+            content={<div className={css`
+              display: flex;
+              align-items: center;
+            `}>
+              <IconButton
+                className={css`
+                  margin-right: 4px;
+                `}
+                path={mdiClose} color={palette.text} size={0.5}
+                onClick={() => destoryTask(key)}
+              />
+              {`${name}${title !== '' ? ` - ${title}` : ''}`}
+            </div>}
+          >
+            <IconButton
+              path={icon}
+              color={status === 'active' ? palette.text : palette(0.3).text}
+              onClick={() => setActiveTask(key)}
+            />
+          </ToolTip>
+        </div>
       })}
       <div className={css`
         position: absolute;
         bottom: 4px;
       `}>
-        <Tooltip
-          placement='right'
-          title={`Launcher`}
-        >
-          <IconButton
-            className={css`
-              margin: 4px;
-            `}
-            path={mdiMenu}
-            color={palette.text}
-            onClick={() => setGlobalState({ launcherState: !launcherState })}
-          />
-        </Tooltip>
         <div className={css`
-          position: fixed;
-          left: 0px;
-          top: 0px;
-          right: 0px;
-          bottom: 0px;
-          background: rgba(0, 0, 0, 0.8);
-          display: ${launcherState ? '' : 'none'};
-          z-index: 9001;
-        `}
-          onClick={() => setGlobalState({ launcherState: false })}
-        >
-          <div className={css`
-            position: absolute;
-            left: 20%;
-            top: 30%;
-            width: 60%;
-            height: 40%;
-            display: grid;
-            grid-template-columns: repeat(3, 33.3%);
-            grid-template-rows: repeat(auto-fill, 40px);
-            grid-gap: 4px;
-          `}>
-            {Object.keys(apps).map(pkg => {
-              const { icon, name } = apps[pkg];
-              return <Button
-                className={css`
-                  display: flex;
-                  align-items: center;
-                  height: 32px;
-                  line-height: 32px;
-                  font-size: 16px;
-                  color: ${palette.text}
-                `}
-                onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
-              >
-                <Icon path={icon} size={1} color={palette.text} />
-                {name}
-              </Button>;
-            })}
-          </div>
+          margin: 4px;
+        `}>
+          <ToolTip content='Launcher' position='right'>
+            <IconButton
+              path={mdiMenu}
+              color={palette.text}
+              onClick={() => setGlobalState({ launcherState: !launcherState })}
+            />
+          </ToolTip>
         </div>
+        <CSSTransition in={launcherState} timeout={200} unmountOnExit classNames={{
+          enter: css`
+            opacity: 0;
+          `,
+          enterActive: css`
+            opacity: 1;
+            transition: .2s;
+          `,
+          exit: css`
+            opacity: 1;
+          `,
+          exitActive: css`
+            opacity: 0;
+            transition: .2s;
+          `,
+          exitDone: css`
+            display: none;
+          `
+        }}>
+          <div className={css`
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            right: 0px;
+            bottom: 0px;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9001;
+          `}
+            onClick={() => setGlobalState({ launcherState: false })}
+          >
+            <div className={css`
+              position: absolute;
+              left: 10%;
+              top: 10%;
+              width: 80%;
+              height: 80%;
+            `}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className={css`
+                height: 100%;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+              `}>
+                <div className={css`
+                  display: grid;
+                  grid-template-columns: repeat(6, 160px);
+                  grid-template-rows: repeat(auto-fill, 120px);
+                  grid-gap: 4px;
+                `}>
+                  {Object.keys(apps).map(pkg => {
+                    const { icon, name } = apps[pkg];
+                    return <Button
+                      className={css`
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        height: 120px;
+                        font-size: 16px;
+                        color: ${palette.text}
+                      `}
+                      onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
+                    >
+                      <Icon path={icon} size={2} color={palette.text} />
+                      <div className={css`
+                        height: 8px;
+                      `} />
+                      {name}
+                    </Button>;
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </CSSTransition>
       </div>
     </div>
   </div >;
