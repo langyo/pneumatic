@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { wsSocket } from './authProviderContext';
 import { AppProviderContext, IAppProviderContext } from './appProviderContext';
-import { IThemeProviderContext, ThemeProviderContext } from './themeProviderContext';
+import { ThemeProviderContext } from './themeProviderContext';
 import { generate } from 'shortid';
 
 export const TaskManagerContext = createContext({} as ITaskManagerContext);
@@ -82,7 +82,7 @@ export function TaskManager({ children }: { children?: any }) {
   const {
     appRegistryStatus, loadAppComponent
   }: IAppProviderContext = useContext(AppProviderContext);
-  const { media }: IThemeProviderContext = useContext(ThemeProviderContext);
+  const { media } = useContext(ThemeProviderContext);
   const [tasks, setTasksInside]: [
     ITaskMap, (tasks: (tasks: ITaskMap) => ITaskMap) => void
   ] = useState({});

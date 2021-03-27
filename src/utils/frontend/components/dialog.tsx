@@ -42,9 +42,9 @@ export function Dialog({
       position: fixed;
       width: ${width};
       height: ${height};
-      background: ${palette(0.8).primary};
+      background: ${palette(.8).primary};
       border-radius: 4px;
-      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+      box-shadow: 2px 2px 4px rgba(0, 0, 0, .6);
       z-index: ${5000 + priority};
     `}>
       <div className={css`
@@ -64,7 +64,7 @@ export function Dialog({
           justify-content: center;
           align-items: center;
           user-select: none;
-          background: ${palette(0.2).secondary};
+          background: ${palette(.2).secondary};
           border-radius: 4px 4px 0px 0px;
           color: ${palette.text};
         `, 'drag-handle-tag')}>
@@ -92,7 +92,7 @@ export function Dialog({
             position: absolute;
             right: 4px;
           `}>
-            <IconButton size={0.8} color={palette.text} path={mdiClose} onClick={setDestory} />
+            <IconButton size={.8} color={palette.text} path={mdiClose} onClick={setDestory} />
           </div>
         </div>
         <div className={css`
@@ -112,13 +112,13 @@ export function Dialog({
               animation: ${keyframes`
                 0% {
                   opacity: 0;
-                  scale: 0.5;
+                  scale: .5;
                 }
                 100% {
                   opacity: 1;
                   scale: 1;
                 }
-              `} 0.2s ${index * 0.2}s both;
+              `} .2s ${index * .2}s both;
             `}>
               {component}
             </div>)}
@@ -141,13 +141,13 @@ export function Dialog({
               animation: ${keyframes`
                 0% {
                   opacity: 0;
-                  scale: 0.5;
+                  scale: .5;
                 }
                 100% {
                   opacity: 1;
                   scale: 1;
                 }
-              `} 0.2s ${index * 0.2}s both;
+              `} .2s ${index * .2}s both;
             `}>
               {component}
             </div>)}

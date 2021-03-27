@@ -2,13 +2,13 @@ import React, { useState, useContext, useEffect } from 'react';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
 import { mdiClose, mdiMenu } from '@mdi/js';
-import { CSSTransition } from 'react-transition-group';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Dialog } from './components/dialog';
 import { Button, IconButton } from './components/button';
 import { ToolTip } from './components/toolTip';
 
 import {
-  TaskManagerContext, ITaskManagerContext
+  TaskManagerContext, ITaskManagerContext, ITask
 } from './taskManagerContext';
 import {
   AppProviderContext, IAppProviderContext
@@ -31,6 +31,9 @@ export function TaskViewDesktop() {
       direction: 'leftTop' | 'leftBottom' | 'rightTop' | 'rightBottom'
     }
   );
+  const [taskOnExit, setTaskOnExit] = useState({} as {
+    [key: string]: ITask
+  });
 
   useEffect(() => void 0, [appRegistryStatus]);
 
@@ -76,40 +79,77 @@ export function TaskViewDesktop() {
     }}
     onMouseUp={() => setDraggingWindow({ id: '', direction: 'leftBottom' })}
   >
-    {Object.keys(tasks).map((key: string) => {
-      const {
-        pkg, page, sharedState,
-        windowInfo: {
-          left, top, width, height, title, priority
-        }
-      } = tasks[key];
+    <TransitionGroup>
+      {Object.keys(tasks).map((key: string) => {
+        const {
+          pkg, page, sharedState,
+          windowInfo: {
+            left, top, width, height, title, priority
+          }
+        } = Object.keys(taskOnExit).indexOf(key) >= 0 ? taskOnExit[key] : tasks[key];
 
-      return <Dialog
-        left={left} top={top} width={width} height={height}
-        icon={apps[pkg].icon}
-        title={apps[pkg].name} subTitle={title} priority={priority}
-        bodyComponent={
-          getAppComponent(pkg, page) &&
-          getAppComponent(pkg, page)(propsGenerator(key, page, sharedState))
-        }
-        drawerComponent={
-          getAppComponent(pkg, 'drawer') &&
-          getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState))
-        }
-        setWindowInfo={obj => setWindowInfo(key, obj)}
-        setActive={() => setActiveTask(key)}
-        setDestory={() => destoryTask(key)}
-      />;
-    })}
+        return <CSSTransition key={key} timeout={200} classNames={{
+          enter: css`
+            opacity: 0;
+            transform: translateY(5%) scale(.9);
+          `,
+          enterActive: css`
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            transition: .2s;
+          `,
+          exit: css`
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          `,
+          exitActive: css`
+            opacity: 0;
+            transform: translateY(5%) scale(.9);
+            transition: .2s;
+          `
+        }}>
+          <div className={css`
+            z-index: ${5000 + priority}
+          `}>
+            <Dialog
+              left={left} top={top} width={width} height={height}
+              icon={apps[pkg].icon}
+              title={apps[pkg].name} subTitle={title} priority={priority}
+              bodyComponent={
+                getAppComponent(pkg, page) &&
+                getAppComponent(pkg, page)(propsGenerator(key, page, sharedState))
+              }
+              drawerComponent={
+                getAppComponent(pkg, 'drawer') &&
+                getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState))
+              }
+              setWindowInfo={obj => setWindowInfo(key, obj)}
+              setActive={() => setActiveTask(key)}
+              setDestory={() => (
+                setTaskOnExit(taskOnExit => ({
+                  [key]: tasks[key]
+                })),
+                setTimeout(() => (
+                  destoryTask(key),
+                  setTaskOnExit(taskOnExit => Object.keys(taskOnExit).filter(n => n !== key).reduce(
+                    (obj, key) => ({ ...obj, [key]: taskOnExit[key] }), {}
+                  ))
+                ), 200)
+              )}
+            />
+          </div>
+        </CSSTransition>
+      })}
+    </TransitionGroup>
     <div className={css`
       position: fixed;
       top: 10%;
       ${taskManagerPosition.direction === 'left' ? 'left: 4px;' : 'right: 4px;'}
       width: 40px;
       height: 80%;
-      background: ${palette(0.6).primary};
+      background: ${palette(.6).primary};
       border-radius: 4px;
-      box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+      box-shadow: 2px 2px 4px rgba(0, 0, 0, .6);
       z-index: 9000;
       padding: 4px;
       display: flex;
@@ -141,14 +181,14 @@ export function TaskViewDesktop() {
                 right: 0px;
                 height: 100%;
                 width: 32px;
-                background: linear-gradient(to right, transparent, ${palette(0.6).primary});
+                background: linear-gradient(to right, transparent, ${palette(.6).primary});
               }
             `}>
               <IconButton
                 className={css`
                   margin-right: 4px;
                 `}
-                path={mdiClose} color={palette.text} size={0.5}
+                path={mdiClose} color={palette.text} size={.5}
                 onClick={() => destoryTask(key)}
               />
               {`${name}${title !== '' ? ` - ${title}` : ''}`}
@@ -156,7 +196,7 @@ export function TaskViewDesktop() {
           >
             <IconButton
               path={icon}
-              color={status === 'active' ? palette.text : palette(0.3).text}
+              color={status === 'active' ? palette.text : palette(.3).text}
               onClick={() => setActiveTask(key)}
             />
           </ToolTip>
@@ -202,7 +242,7 @@ export function TaskViewDesktop() {
             top: 0px;
             right: 0px;
             bottom: 0px;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, .8);
             z-index: 9001;
           `}
             onClick={() => setGlobalState({ launcherState: false })}

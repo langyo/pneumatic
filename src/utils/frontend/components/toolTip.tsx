@@ -36,12 +36,12 @@ export function ToolTip({
         color: ${palette.text};
         margin: 4px;
         padding: 0px 8px;
-        background: ${palette(0.6).primary};
+        background: ${palette(.6).primary};
         border-radius: 4px;
       `}
       style={{
         '--translateX': hover ? '0px' : '-4px',
-        '--scale': hover ? '1' : '0.9',
+        '--scale': hover ? '1' : '.9',
         '--opacity': hover ? '1' : '0'
       } as any}>
       {content}

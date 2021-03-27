@@ -108,7 +108,7 @@ export function TaskViewMobile() {
       position: sticky;
       height: 48px;
       padding: 0px 8px;
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, .2);
       color: white;
       display: flex;
       flex-direction: row;
@@ -199,7 +199,7 @@ export function TaskViewMobile() {
           onClose={() => setGlobalState({ drawerState: false })}
         >
           <div className={css`
-            width: ${document.body.clientWidth * 0.4};
+            width: ${document.body.clientWidth * .4};
             height: 100%;
           `}>
             <Scrollbars className={css`

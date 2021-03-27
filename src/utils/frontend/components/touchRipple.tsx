@@ -27,18 +27,18 @@ function Ripple({
       className={css`
         opacity: 0;
         position: absolute;
-        opacity: 0.3;
+        opacity: .3;
         transform: scale(1);
         animation: ${keyframes`
           0% {
             transform: scale(0);
-            opacity: 0.1;
+            opacity: .1;
           }
           100% {
             transform: scale(1);
-            opacity: 0.3;
+            opacity: .3;
           }
-        `} 0.5s;
+        `} .5s;
       `}
       style={rippleStyles}
     >
@@ -60,7 +60,7 @@ function Ripple({
             100% {
               opacity: 0;
             }
-          `} 0.5s;
+          `} .5s;
         `)}
       />
     </span>

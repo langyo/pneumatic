@@ -18,7 +18,7 @@ export function LoginView() {
     position: fixed;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, .2);
     display: flex;
     flex-direction: column;
     justify-content: center;

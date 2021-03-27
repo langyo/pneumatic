@@ -18,7 +18,7 @@ export function Button({ children, className, onClick }: {
     border-radius: 4px;
     transition: .2s;
     &:hover {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, .2);
     }
   `, className || '')}
     onMouseDown={event => {
@@ -55,7 +55,7 @@ export function IconButton({ className, path, size, color, onClick }: {
     border-radius: 4px;
     transition: .2s;
     &:hover {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, .2);
     }
   `, className || '')}
     onMouseDown={event => {

@@ -18,7 +18,7 @@ export function List({ items }: {
             width: 80%;
             height: 0px;
             border: 1px solid ${palette.text};
-            opacity: 0.8;
+            opacity: .8;
             margin: 16px 10%;
           `} />
         } else {

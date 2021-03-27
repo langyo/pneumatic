@@ -126,15 +126,15 @@ export function Content({ sharedState }) {
           (arr, next) => [
             ...arr,
             next,
-            <IconButton path={mdiMenuRight} color='#fff' size={0.5} />
+            <IconButton path={mdiMenuRight} color='#fff' size={.5} />
           ],
           [
-            <IconButton path={mdiMenuDown} color='#fff' size={0.5} />
+            <IconButton path={mdiMenuDown} color='#fff' size={.5} />
           ]
         ).reverse().splice(1).reverse().concat(
           parts.filter(n => n !== '').length > 3 ?
             [
-              <IconButton path={mdiDotsHorizontal} color='#fff' size={0.5} />
+              <IconButton path={mdiDotsHorizontal} color='#fff' size={.5} />
             ] : []
         ).reverse()}
     </div>,
