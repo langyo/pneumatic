@@ -108,9 +108,7 @@ export function TaskViewDesktop() {
             transition: .2s;
           `
         }}>
-          <div className={css`
-            z-index: ${5000 + priority}
-          `}>
+          <div>
             <Dialog
               left={left} top={top} width={width} height={height}
               icon={apps[pkg].icon}
@@ -253,9 +251,7 @@ export function TaskViewDesktop() {
               top: 10%;
               width: 80%;
               height: 80%;
-            `}
-              onClick={e => e.stopPropagation()}
-            >
+            `}>
               <div className={css`
                 height: 100%;
                 width: 100%;
@@ -280,7 +276,11 @@ export function TaskViewDesktop() {
                         font-size: 16px;
                         color: ${palette.text}
                       `}
-                      onClick={() => (generateTask(pkg), setGlobalState({ launcherState: false }))}
+                      onClick={event => (
+                        generateTask(pkg),
+                        setGlobalState({ launcherState: false }),
+                        event.stopPropagation()
+                      )}
                     >
                       <Icon path={icon} size={2} color={palette.text} />
                       <div className={css`
