@@ -133,6 +133,16 @@ export function TaskViewDesktop() {
             content={<div className={css`
               display: flex;
               align-items: center;
+              max-width: 192px;
+              &::before {
+                content: '';
+                position: absolute;
+                top: 0px;
+                right: 0px;
+                height: 100%;
+                width: 32px;
+                background: linear-gradient(to right, transparent, ${palette(0.6).primary});
+              }
             `}>
               <IconButton
                 className={css`
