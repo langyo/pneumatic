@@ -36,8 +36,9 @@ export function ToolTip({
         color: ${palette.text};
         margin: 4px;
         padding: 0px 8px;
-        background: ${palette(.6).primary};
+        background: ${palette(.8).primary};
         border-radius: 4px;
+        box-shadow: 2px 2px 4px rgba(0, 0, 0, .6);
       `}
       style={{
         '--translateX': hover ? '0px' : '-4px',
