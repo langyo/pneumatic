@@ -48,49 +48,20 @@ const globalConfig = {
 }
 
 let clientBundleIdMap: { [key: string]: string } = {
-  main: generateId(),
+  '__client': generateId(),
   vendor: generateId(),
   runtime: generateId()
 };
 
-const clientSideFs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
-  [join(__dirname, './main.ts')]: `
-import './id';
-
-import { render } from 'react-dom';
-import { createElement } from 'react';
-render(
-createElement(
-  require('${join(
+const fs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
+  [join(__dirname, './__client.ts')]: `require('${join(
     __dirname, './clientEntry.tsx'
-  ).split('\\').join('\\\\')}').entry
-),
-document.querySelector('#root')
-);`
+  ).split('\\').join('\\\\')}');`,
+  [join(__dirname, './__server.ts')]: `require('${join(
+    __dirname, './serverEntry.ts'
+  ).split('\\').join('\\\\')}');`
 }));
-clientSideFs['join'] = join;
-
-function clientSideCompilerCallback(err: Error, status) {
-  if (err) {
-    console.error(err);
-  } else if (status.hasErrors()) {
-    const info = status.toJson();
-    let errStr = '';
-    if (status.hasErrors()) {
-      for (const e of info.errors) {
-        errStr += `${e.message}\n`;
-      }
-    }
-    if (status.hasWarnings()) {
-      for (const e of info.warnings) {
-        errStr += `${e.message}\n`;
-      }
-    }
-    console.error(Error(errStr));
-  } else {
-    log('info', 'Compiled the client part.');
-  }
-};
+fs['join'] = join;
 
 export async function clientSideMiddleware(
   ctx: Koa.BaseContext,
@@ -111,7 +82,8 @@ export async function clientSideMiddleware(
           ` || ``}
           <script src='/${clientBundleIdMap.vendor}'></script>
           <script src='/${clientBundleIdMap.runtime}'></script>
-          <script src='/${clientBundleIdMap.main}'></script>
+          <script src='/${clientBundleIdMap.__client}'></script>
+          <script src='/124.bundle.js'></script>
         </body>
       </html>`;
       ctx.type = 'text/html';
@@ -119,7 +91,15 @@ export async function clientSideMiddleware(
     default:
       for (const pkg of Object.keys(clientBundleIdMap)) {
         if (ctx.path === `/${clientBundleIdMap[pkg]}`) {
-          ctx.body = clientSideFs.readFileSync(join(__dirname, `/${pkg}.bundle.js`), 'utf8');
+          ctx.body = fs.readFileSync(join(__dirname, `/${pkg}.bundle.js`), 'utf8');
+          ctx.type = 'application/javascript';
+          break;
+        }
+      }
+      // DEBUG
+      for (const name of fs.readdirSync(__dirname)) {
+        if (ctx.path === `/${name}`) {
+          ctx.body = fs.readFileSync(join(__dirname, `/${name}`), 'utf8');
           ctx.type = 'application/javascript';
           break;
         }
@@ -127,13 +107,6 @@ export async function clientSideMiddleware(
       await next();
   }
 }
-
-const serverSideFs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
-  [join(__dirname, './main.ts')]: `require('${join(
-    __dirname, './serverEntry.ts'
-  ).split('\\').join('\\\\')}');`
-}));
-serverSideFs['join'] = join;
 
 export let serverRoutes = async (
   _ctx: Koa.BaseContext,
@@ -146,71 +119,6 @@ export let serverSocketListeners: {
   [head: string]: (token: string, data: any) => void
 } = {
   '#restart': () => void 0
-};
-
-function serverSideCompilerCallback(err: Error, status) {
-  if (err) {
-    console.error(err);
-  } else if (status.hasErrors()) {
-    const info = status.toJson();
-    let errStr = '';
-    if (status.hasErrors()) {
-      for (const e of info.errors) {
-        errStr += `${e.message}\n`;
-      }
-    }
-    if (status.hasWarnings()) {
-      for (const e of info.warnings) {
-        errStr += `${e.message}\n`;
-      }
-    }
-    console.error(Error(errStr));
-  } else {
-    log('info', 'Compiled the service part.');
-
-    const script = new Script(
-      serverSideFs.readFileSync(join(__dirname, '/main.js'), 'utf8') as string, {
-      filename: 'serverEntry.js'
-    });
-    const context = createContext({
-      exportMiddleware(
-        middlewares: ((ctx: Koa.BaseContext, next: () => Promise<void>) => Promise<void>)[]
-      ) {
-        serverRoutes = async (
-          ctx: Koa.BaseContext, next: () => Promise<void>
-        ) => {
-          async function nextTask(pos: number) {
-            await middlewares[pos](ctx, async () => {
-              if (pos + 1 === middlewares.length) {
-                await next();
-              } else {
-                await nextTask(pos + 1);
-              }
-            });
-          }
-          if (middlewares.length > 0) {
-            await nextTask(0);
-          } else {
-            await next();
-          }
-        };
-      },
-      socketReceive(
-        head: string,
-        callback: (token: string, data: any) => void
-      ) {
-        serverSocketListeners[head] = callback;
-      },
-      socketSend,
-      console, process, require,
-      setInterval, setTimeout, clearInterval, clearTimeout
-    });
-    try {
-      script.runInContext(context);
-    } catch (e) {
-      console.error(e);
-    }
-  }
 };
 
 let watcherWaitingState = {
@@ -252,56 +160,9 @@ function watcherTrigger() {
             throw Error('Cannot register the app.');
           }
         `;
-        clientSideFs.writeFileSync(join(__dirname, `pneumatic.${pkgName}.ts`), body);
+        fs.writeFileSync(join(__dirname, `pneumatic.${pkgName}.ts`), body);
       }
     }
-
-    clientSideFs.writeFileSync(join(__dirname, 'id.ts'), `
-      window.__appIdMap = ${JSON.stringify(clientBundleIdMap)};
-      window.__apps = {};
-    `);
-
-    const clientSideCompiler = webpack({
-      ...globalConfig,
-      entry: {
-        main: join(__dirname, './main.ts'),
-        ...(Object.keys(clientBundleIdMap).filter(
-          n => ['main', 'vendor', 'runtime'].indexOf(n) < 0
-        ).reduce((obj, pkg) => ({
-          ...obj,
-          [pkg]: join(__dirname, `${pkg}.ts`)
-        }), {}))
-      },
-      mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
-      output: {
-        filename: '[name].bundle.js',
-        path: __dirname
-      },
-      optimization: {
-        splitChunks: {
-          chunks: 'all',
-          automaticNameDelimiter: '.',
-          cacheGroups: {
-            vendor: {
-              test: /node_modules/,
-              chunks: 'initial',
-              name: 'vendor',
-              enforce: true
-            }
-          }
-        },
-        runtimeChunk: 'single'
-      },
-      cache: {
-        type: 'memory'
-      },
-      devtool: process.env.NODE_ENV === 'production' ? 'none' : 'inline-source-map'
-    });
-    clientSideCompiler.inputFileSystem = clientSideFs;
-    clientSideCompiler.outputFileSystem = clientSideFs;
-    setTimeout(
-      () => clientSideCompiler.run(clientSideCompilerCallback), 0
-    );
 
     let entryMap: {
       [pkg: string]: {
@@ -309,6 +170,7 @@ function watcherTrigger() {
         server?: string
       }
     } = {};
+
     for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
       entryMap[`pneumatic.${pkgName}`] = {};
       let clientFileName = '';
@@ -335,32 +197,136 @@ function watcherTrigger() {
       }
     }
 
-    serverSideFs.writeFileSync(join(__dirname, 'id.ts'), `
+    fs.writeFileSync(join(__dirname, '__client_id.ts'), `
+      window.__appIdMap = ${JSON.stringify(clientBundleIdMap)};
+      window.__apps = {};
+    `);
+    fs.writeFileSync(join(__dirname, '__server_id.ts'), `
       export const entryMap = {${Object.keys(entryMap).map(pkg => `"${pkg}": {
         ${entryMap[pkg].client ? `...require("${entryMap[pkg].client}")` : ''},
         ${entryMap[pkg].server ? `...require("${entryMap[pkg].server}")` : ''}
       }`).join(',')}};
     `);
 
-    const serverSideCompiler = webpack({
+    const compiler = webpack([{
       ...globalConfig,
-      entry: join(__dirname, './main.ts'),
+      entry: {
+        main: join(__dirname, './__client.ts'),
+        ...(Object.keys(clientBundleIdMap).filter(
+          n => ['main', 'vendor', 'runtime'].indexOf(n) < 0
+        ).reduce((obj, pkg) => ({
+          ...obj,
+          [pkg]: join(__dirname, `${pkg}.ts`)
+        }), {}))
+      },
+      mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
+      target: 'web',
+      output: {
+        filename: '[name].bundle.js',
+        path: __dirname
+      },
+      optimization: {
+        splitChunks: {
+          chunks: 'all',
+          automaticNameDelimiter: '.',
+          cacheGroups: {
+            vendor: {
+              test: /node_modules/,
+              chunks: 'initial',
+              name: 'vendor',
+              enforce: true
+            }
+          }
+        },
+        runtimeChunk: 'single'
+      },
+      cache: {
+        type: 'memory'
+      },
+      devtool: process.env.NODE_ENV === 'production' ? 'none' : 'inline-source-map'
+    },
+    {
+      ...globalConfig,
+      entry: join(__dirname, './__server.ts'),
       mode: 'development',
       target: 'node',
       output: {
-        filename: '[name].js',
+        filename: '__server.bundle.js',
         path: __dirname
       },
       cache: {
         type: 'memory'
       },
       devtool: 'eval-source-map'
-    });
-    serverSideCompiler.inputFileSystem = serverSideFs;
-    serverSideCompiler.outputFileSystem = serverSideFs;
-    setTimeout(
-      () => serverSideCompiler.run(serverSideCompilerCallback), 0
-    );
+    }]);
+    compiler.inputFileSystem = fs;
+    compiler.outputFileSystem = fs;
+
+    setTimeout(() => compiler.run((err: Error, status) => {
+      if (err) {
+        console.error(err);
+      } else if (status.hasErrors()) {
+        const info = status.toJson();
+        let errStr = '';
+        if (status.hasErrors()) {
+          for (const e of info.errors) {
+            errStr += `${e.message}\n`;
+          }
+        }
+        if (status.hasWarnings()) {
+          for (const e of info.warnings) {
+            errStr += `${e.message}\n`;
+          }
+        }
+        console.error(Error(errStr));
+      } else {
+        log('info', 'Compiled the codes.');
+        log('debug', fs.readdirSync(__dirname));
+
+        const script = new Script(
+          fs.readFileSync(join(__dirname, '/__server.bundle.js'), 'utf8') as string, {
+          filename: 'serverEntry.js'
+        });
+        const context = createContext({
+          exportMiddleware(
+            middlewares: ((ctx: Koa.BaseContext, next: () => Promise<void>) => Promise<void>)[]
+          ) {
+            serverRoutes = async (
+              ctx: Koa.BaseContext, next: () => Promise<void>
+            ) => {
+              async function nextTask(pos: number) {
+                await middlewares[pos](ctx, async () => {
+                  if (pos + 1 === middlewares.length) {
+                    await next();
+                  } else {
+                    await nextTask(pos + 1);
+                  }
+                });
+              }
+              if (middlewares.length > 0) {
+                await nextTask(0);
+              } else {
+                await next();
+              }
+            };
+          },
+          socketReceive(
+            head: string,
+            callback: (token: string, data: any) => void
+          ) {
+            serverSocketListeners[head] = callback;
+          },
+          socketSend,
+          console, process, require,
+          setInterval, setTimeout, clearInterval, clearTimeout
+        });
+        try {
+          script.runInContext(context);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }), 0);
   } else {
     watcherWaitingState.continueChange = false;
     setTimeout(watcherTrigger, 3000);

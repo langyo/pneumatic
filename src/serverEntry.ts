@@ -27,7 +27,7 @@ const entryMap: {
       registerAutoSender: (timeout: number, callback: () => ({ [key: string]: any })) => void
     }) => Promise<void>
   }
-} = require('./id.ts').entryMap;
+} = require('./__server_id.ts').entryMap;
 
 exportMiddleware(Object.keys(entryMap).map(key => entryMap[key].route).filter(n => !!n));
 
