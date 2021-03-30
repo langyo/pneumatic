@@ -1,12 +1,10 @@
 import React, { useContext, useEffect } from 'react';
-import {
-  Button, IconButton, Drawer, Grid, AppBar, Toolbar, Typography,
-  List, ListItem, ListItemText, ListItemSecondaryAction, ListSubheader,
-  CircularProgress
-} from '@material-ui/core';
+import { Button, IconButton } from './components/button';
+import { Drawer } from './components/drawer';
+import { List } from './components/list';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
-import { mdiClose, mdiFullscreen } from '@mdi/js';
+import { mdiArrowRight, mdiClose, mdiFullscreen } from '@mdi/js';
 import { Scrollbars } from 'react-custom-scrollbars';
 
 import {
@@ -15,16 +13,7 @@ import {
 import {
   AppProviderContext, IAppProviderContext
 } from './appProviderContext';
-
-const loadingComponent = <div className={css`
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`}>
-  <CircularProgress />
-</div>;
+import { ThemeProviderContext } from './themeProviderContext';
 
 export function TaskViewMobile() {
   const {
@@ -37,6 +26,7 @@ export function TaskViewMobile() {
   const {
     apps, appRegistryStatus, loadAppComponent: getAppComponent
   }: IAppProviderContext = useContext(AppProviderContext);
+  const { palette } = useContext(ThemeProviderContext);
 
   useEffect(() => void 0, [appRegistryStatus]);
 
@@ -51,15 +41,11 @@ export function TaskViewMobile() {
   `}>
     <Drawer
       anchor='top'
-      open={taskManagerState}
+      on={taskManagerState}
       onClose={() => setGlobalState({ taskManagerState: false })}
     >
-      <List subheader={
-        <ListSubheader>
-          {'Tasks'}
-        </ListSubheader>
-      }>
-        {Object.keys(tasks).sort(
+      <List items={[
+        ...Object.keys(tasks).sort(
           (left, right) =>
             tasks[left].windowInfo.taskManagerOrder -
             tasks[right].windowInfo.taskManagerOrder
@@ -67,41 +53,76 @@ export function TaskViewMobile() {
           const pkg = tasks[key].pkg;
           const { title }: IWindowInfo = tasks[key].windowInfo;
 
-          return <ListItem button onClick={() => (
-            setActiveTask(key),
-            setGlobalState({
-              launcherState: false,
-              taskManagerState: false
-            })
-          )}>
-            <ListItemText
-              primary={apps[pkg].name}
-              secondary={title}
-            />
-            <ListItemSecondaryAction>
-              <IconButton onClick={() => {
-                if (tasks[key].windowInfo.status === 'active') {
+          return <div className={css`
+            width: 100%;
+            height: 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          `}>
+            <div className={css`
+              margin: 0px 4px;
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            `}>
+              <div className={css`
+                height: 20px;
+                line-height: 20px;
+                font-size: 16px;
+              `}>
+                {apps[pkg].name}
+              </div>
+              {title && <div className={css`
+                height: 12px;
+                line-height: 12px;
+                font-size: 10px;
+              `}>
+                {title}
+              </div>}
+            </div>
+            <div className={css`
+              margin: 4px;
+              display: flex;
+              align-items: center;
+            `}>
+              <IconButton
+                path={mdiArrowRight}
+                onClick={() => (
+                  setActiveTask(key),
                   setGlobalState({
-                    launcherState: true
-                  });
-                }
-                destoryTask(key);
-                setGlobalState({ taskManagerState: false });
-              }}>
-                <Icon path={mdiClose} size={1} color='rgba(0, 0, 0, 1)' />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>;
-        })}
-        <ListItem button onClick={() => setGlobalState({
-          launcherState: true,
-          taskManagerState: false
-        })}>
-          <ListItemText
-            primary={'Back to the launcher'}
-          />
-        </ListItem>
-      </List>
+                    launcherState: false,
+                    taskManagerState: false
+                  })
+                )} />
+              <IconButton
+                path={mdiClose}
+                onClick={() => {
+                  if (tasks[key].windowInfo.status === 'active') {
+                    setGlobalState({
+                      launcherState: true
+                    });
+                  }
+                  destoryTask(key);
+                  setGlobalState({ taskManagerState: false });
+                }} />
+            </div>
+          </div>;
+        }),
+        <Button className={css`
+          margin: 8px;
+          height: 32px;
+          line-height: 32px;
+          font-size: 24px;
+          color: ${palette.text};
+        `}
+          onClick={() => setGlobalState({
+            launcherState: true,
+            taskManagerState: false
+          })}>
+          {'Back to the launcher'}
+        </Button>
+      ]} />
     </Drawer>
 
     <div className={css`
@@ -122,61 +143,97 @@ export function TaskViewMobile() {
             <div className={css`
               margin-right: 8px;
             `}>
-              <IconButton onClick={() => setGlobalState({
-                drawerState: true
-              })}>
-                <Icon path={apps[pkg].icon} size={1} color='rgba(255, 255, 255, 1)' />
-              </IconButton>
+              <IconButton
+                path={apps[pkg].icon}
+                onClick={() => setGlobalState({
+                  drawerState: true
+                })}
+              />
             </div>
             {title !== '' && <div className={css`
+              height: 36px;
               display: flex;
               flex-direction: column;
+              justify-content: space-between;
             `}>
-              <Typography variant='subtitle1'>
+              <div className={css`
+                height: 20px;
+                line-height: 20px;
+                font-size: 16px;
+              `}>
                 {apps[pkg].name}
-              </Typography>
-              <Typography variant='subtitle2'>
+              </div>
+              <div className={css`
+                height: 12px;
+                line-height: 12px;
+                font-size: 10px;
+              `}>
                 {title}
-              </Typography>
+              </div>
             </div>}
-            {title === '' && <Typography variant='h6'>
+            {title === '' && <div className={css`
+              height: 32px;
+              line-height: 32px;
+              font-size: 16px;
+            `}>
               {apps[pkg].name}
-            </Typography>}
+            </div>}
           </>}
         </>;
       })}
-      {launcherState && <Typography variant='h6'>
+      {launcherState && <div className={css`
+        font-size: 24px;
+      `}>
         {'Launcher'}
-      </Typography>}
+      </div>}
       {Object.keys(tasks).length > 0 && <div className={css`
           margin-left: auto;
         `}>
-        <IconButton onClick={() => setGlobalState({
-          taskManagerState: true
-        })} >
-          <Icon path={mdiFullscreen} size={1} color='rgba(255, 255, 255, 1)' />
-        </IconButton>
+        <IconButton
+          path={mdiFullscreen}
+          onClick={() => setGlobalState({
+            taskManagerState: true
+          })}
+        />
       </div>}
     </div>
 
     {launcherState && <div className={css`
       width: 100%;
-      padding: 8px;
     `}>
-      <Grid container>
+      <div className={css`
+        margin: 4px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(auto-fill, 120px);
+        grid-gap: 4px;
+      `}>
         {Object.keys(apps).map(pkg => {
           const { icon, name } = apps[pkg];
-          return <Grid item xs={6}>
-            <Button
-              size='large'
-              onClick={() => generateTask(pkg)}
-              startIcon={<Icon path={icon} size={1} color='rgba(0, 0, 0, 1)' />}
-            >
-              {name}
-            </Button>
-          </Grid>;
+          return <Button
+            className={css`
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 80px;
+            font-size: 16px;
+            color: ${palette.text}
+          `}
+            onClick={event => (
+              generateTask(pkg),
+              setGlobalState({ launcherState: false }),
+              event.stopPropagation()
+            )}
+          >
+            <Icon path={icon} size={1.5} />
+            <div className={css`
+              height: 8px;
+            `} />
+            {name}
+          </Button>;
         })}
-      </Grid>
+      </div>
     </div>}
 
     {Object.keys(tasks).map((key) => {
@@ -189,13 +246,12 @@ export function TaskViewMobile() {
           width: 100%;
           height: 100%;
         `}>
-          {getAppComponent(pkg, page) ?
-            getAppComponent(pkg, page)(propsGenerator(key, page, sharedState)) :
-            loadingComponent}
+          {getAppComponent(pkg, page) &&
+            getAppComponent(pkg, page)(propsGenerator(key, page, sharedState))}
         </Scrollbars>}
         {status === 'active' && !launcherState && <Drawer
           anchor='left'
-          open={drawerState}
+          on={drawerState}
           onClose={() => setGlobalState({ drawerState: false })}
         >
           <div className={css`
@@ -206,9 +262,8 @@ export function TaskViewMobile() {
               width: 100%;
               height: 100%;
             `}>
-              {getAppComponent(pkg, 'drawer') ?
-                getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState)) :
-                loadingComponent}
+              {getAppComponent(pkg, 'drawer') &&
+                getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState))}
             </Scrollbars>
           </div>
         </Drawer>}

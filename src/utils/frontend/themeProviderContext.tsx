@@ -8,7 +8,8 @@ export interface ITheme {
     background: IRGBColor,
     primary: IRGBColor,
     secondary: IRGBColor,
-    text: IRGBColor
+    text: IRGBColor,
+    textReverse: IRGBColor
   },
   media: 'desktop' | 'mobile'
 }
@@ -29,7 +30,8 @@ export function ThemeProvider({ children }: { children?: any }) {
       background: [24, 48, 108],
       primary: [6, 108, 160],
       secondary: [176, 240, 255],
-      text: [255, 255, 255]
+      text: [255, 255, 255],
+      textReverse: [0, 0, 0]
     },
     media: useMediaQuery({
       query: '(min-width: 992px)'

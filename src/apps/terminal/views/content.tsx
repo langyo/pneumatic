@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
-import { Typography } from '@material-ui/core';
+import React, { useContext } from 'react';
+import { css } from '@emotion/css';
+import { ThemeProviderContext } from '../../../utils/frontend/themeProviderContext';
 
-export function Content({ }) {
+export function Content({ sharedState }) {
+  const { palette } = useContext(ThemeProviderContext);
+
   return <>
-    <Typography variant='h4'>
+    <div className={css`
+      margin: 16px;
+      padding: 8px;
+      display: inline-block;
+      text-transform: none;
+      font-size: 24px;
+      color: ${palette.text};
+    `}>
       {'WIP'}
-    </Typography>
+    </div>
   </>;
 }

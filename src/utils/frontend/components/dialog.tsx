@@ -18,14 +18,16 @@ export function Dialog({
   width, height, left, top, priority,
   icon, title, subTitle,
   bodyComponent, drawerComponent,
-  setWindowInfo, setActive, setDestory
+  setWindowInfo, setActive, setDestory,
+  className
 }: {
   width: number, height: number, left: number, top: number, priority: number,
   icon: string, title: string, subTitle: string,
   bodyComponent: Component, drawerComponent: Component,
   setWindowInfo: (info: Partial<IWindowInfo>) => void,
   setActive: () => void,
-  setDestory: () => void
+  setDestory: () => void,
+  className?: string
 }) {
   const { palette } = useContext(ThemeProviderContext);
   const [dragging, setDragging] = useState('none');
@@ -38,7 +40,7 @@ export function Dialog({
       top: state.y
     })}
   >
-    <div className={css`
+    <div className={cx(css`
       position: fixed;
       width: ${width};
       height: ${height};
@@ -46,7 +48,7 @@ export function Dialog({
       border-radius: 4px;
       box-shadow: 2px 2px 4px rgba(0, 0, 0, .6);
       z-index: ${5000 + priority};
-    `}>
+    `, className || '')}>
       <div className={css`
         width: 100%;
         height: 100%;
@@ -72,27 +74,27 @@ export function Dialog({
             position: absolute;
             left: 4px;
           `}>
-            <Icon path={icon} size={1} color={palette.text} />
+            <Icon path={icon} size={1} />
           </div>
-          <p className={css`
+          <div className={css`
             margin-left: 8px;
             line-height: 24px;
             font-size: 16px;
           `}>
             {title}
-          </p>
-          <p className={css`
+          </div>
+          <div className={css`
             margin-left: 8px;
             line-height: 16px;
             font-size: 12px;
           `}>
             {subTitle || ''}
-          </p>
+          </div>
           <div className={css`
             position: absolute;
             right: 4px;
           `}>
-            <IconButton size={.8} color={palette.text} path={mdiClose} onClick={setDestory} />
+            <IconButton size={.8} path={mdiClose} onClick={setDestory} />
           </div>
         </div>
         <div className={css`

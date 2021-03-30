@@ -1,16 +1,15 @@
-import React, { Component, useRef, useContext  } from 'react';
-import { css } from '@emotion/css';
-import { Button } from './button';
+import React, { useContext } from 'react';
+import { css, cx } from '@emotion/css';
 import { ThemeProviderContext } from '../themeProviderContext';
 
-export function List({ items }: {
-  items: (string | any)[]
+export function List({ items, className }: {
+  items: (string | any)[], className?: string
 }) {
   const { palette } = useContext(ThemeProviderContext);
 
-  return <div className={css`
+  return <div className={cx(css`
     width: 100%;
-  `}>
+  `, className || '')}>
     {items.map(component => {
       if (typeof component === 'string') {
         if (/^\-+$/.test(component)) {
@@ -35,13 +34,13 @@ export function List({ items }: {
           </div>
         }
       } else {
-        return <Button className={css`
+        return <div className={css`
           width: 80%;
           color: ${palette.text};
           margin: 8px 10%;
         `}>
           {component}
-        </Button>
+        </div>
       }
     })}
   </div>;

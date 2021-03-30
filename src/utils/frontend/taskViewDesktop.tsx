@@ -42,36 +42,36 @@ export function TaskViewDesktop() {
     width: 100vw;
     height: 100vh;
   `}
-    onMouseMove={e => {
+    onMouseMove={(event: MouseEvent) => {
       if (draggingWindow.id !== '') {
         const { left, top, width, height } = tasks[draggingWindow.id].windowInfo;
         switch (draggingWindow.direction) {
           case 'leftTop':
             setWindowInfo(draggingWindow.id, {
-              left: left + e.movementX,
-              width: width - e.movementX,
-              top: top + e.movementY,
-              height: height - e.movementY
+              left: left + event.movementX,
+              width: width - event.movementX,
+              top: top + event.movementY,
+              height: height - event.movementY
             });
             break;
           case 'leftBottom':
             setWindowInfo(draggingWindow.id, {
-              left: left + e.movementX,
-              width: width - e.movementX,
-              height: height + e.movementY
+              left: left + event.movementX,
+              width: width - event.movementX,
+              height: height + event.movementY
             });
             break;
           case 'rightTop':
             setWindowInfo(draggingWindow.id, {
-              width: width + e.movementX,
-              top: top + e.movementY,
-              height: height - e.movementY
+              width: width + event.movementX,
+              top: top + event.movementY,
+              height: height - event.movementY
             });
             break;
           case 'rightBottom':
             setWindowInfo(draggingWindow.id, {
-              width: width + e.movementX,
-              height: height + e.movementY
+              width: width + event.movementX,
+              height: height + event.movementY
             });
             break;
         }
@@ -186,7 +186,7 @@ export function TaskViewDesktop() {
                 className={css`
                   margin-right: 4px;
                 `}
-                path={mdiClose} color={palette.text} size={.5}
+                path={mdiClose} size={.5}
                 onClick={() => destoryTask(key)}
               />
               {`${name}${title !== '' ? ` - ${title}` : ''}`}
@@ -210,7 +210,6 @@ export function TaskViewDesktop() {
           <ToolTip content='Launcher' position='right'>
             <IconButton
               path={mdiMenu}
-              color={palette.text}
               onClick={() => setGlobalState({ launcherState: !launcherState })}
             />
           </ToolTip>
@@ -253,43 +252,38 @@ export function TaskViewDesktop() {
               height: 80%;
             `}>
               <div className={css`
-                height: 100%;
                 width: 100%;
-                display: flex;
-                justify-content: center;
+                height: 100%;
+                display: grid;
+                grid-template-columns: repeat(6, 1fr);
+                grid-template-rows: repeat(auto-fill, 120px);
+                grid-gap: 4px;
               `}>
-                <div className={css`
-                  display: grid;
-                  grid-template-columns: repeat(6, 160px);
-                  grid-template-rows: repeat(auto-fill, 120px);
-                  grid-gap: 4px;
-                `}>
-                  {Object.keys(apps).map(pkg => {
-                    const { icon, name } = apps[pkg];
-                    return <Button
-                      className={css`
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        height: 120px;
-                        font-size: 16px;
-                        color: ${palette.text}
-                      `}
-                      onClick={event => (
-                        generateTask(pkg),
-                        setGlobalState({ launcherState: false }),
-                        event.stopPropagation()
-                      )}
-                    >
-                      <Icon path={icon} size={2} color={palette.text} />
-                      <div className={css`
+                {Object.keys(apps).map(pkg => {
+                  const { icon, name } = apps[pkg];
+                  return <Button
+                    className={css`
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: center;
+                      align-items: center;
+                      height: 120px;
+                      font-size: 16px;
+                      color: ${palette.text}
+                    `}
+                    onClick={event => (
+                      generateTask(pkg),
+                      setGlobalState({ launcherState: false }),
+                      event.stopPropagation()
+                    )}
+                  >
+                    <Icon path={icon} size={2} />
+                    <div className={css`
                         height: 8px;
                       `} />
-                      {name}
-                    </Button>;
-                  })}
-                </div>
+                    {name}
+                  </Button>;
+                })}
               </div>
             </div>
           </div>

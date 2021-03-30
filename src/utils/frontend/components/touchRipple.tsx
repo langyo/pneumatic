@@ -5,9 +5,9 @@ import { TransitionGroup } from 'react-transition-group';
 import { css, cx, keyframes } from '@emotion/css';
 
 function Ripple({
-  rippleX, rippleY, rippleSize, timeout
+  rippleX, rippleY, rippleSize, timeout, key
 }: {
-  rippleX: number, rippleY: number, rippleSize: number, timeout: number
+  rippleX: number, rippleY: number, rippleSize: number, timeout: number, key: string
 }) {
   const [leaving, setLeaving] = useState(false);
 
@@ -67,7 +67,7 @@ function Ripple({
   );
 }
 
-export const TouchRipple = forwardRef(function TouchRipple({ className }: {
+export const TouchRipple = forwardRef(function ({ className }: {
   className?: string
 }, ref) {
   const [ripples, setRipples] = useState([]);
@@ -92,7 +92,7 @@ export const TouchRipple = forwardRef(function TouchRipple({ className }: {
   );
 
   const start = useCallback(
-    (event = {}) => {
+    (event: MouseEvent & TouchEvent) => {
       const element = container.current;
       const rect = element
         ? element.getBoundingClientRect()
@@ -168,10 +168,10 @@ export const TouchRipple = forwardRef(function TouchRipple({ className }: {
           pointer-events: none;
           position: absolute;
           z-index: 0;
-          top: 0;
-          right: 0;
-          bottom: 0;
-          left: 0;
+          top: 0px;
+          right: 0px;
+          bottom: 0px;
+          left: 0px;
         `,
         className
       )}

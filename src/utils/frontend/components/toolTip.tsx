@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { css } from '@emotion/css';
+import { css, cx } from '@emotion/css';
 import { ThemeProviderContext } from '../themeProviderContext';
 
 export function ToolTip({
@@ -12,11 +12,9 @@ export function ToolTip({
   const [hover, setHover] = useState(false);
 
   return <div
-    className={css`
+    className={cx(css`
       position: relative;
-    `}
-    onMouseEnter={() => setHover(true)}
-    onMouseLeave={() => setHover(false)}
+    `, className || '')}
   >
     <div
       className={css`
@@ -47,6 +45,11 @@ export function ToolTip({
       } as any}>
       {content}
     </div>
-    {children}
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      {children}
+    </div>
   </div>
 }

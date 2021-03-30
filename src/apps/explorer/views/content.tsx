@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Typography } from '@material-ui/core';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
 import {
@@ -58,7 +57,7 @@ function ContentItem({ iconPath, title }) {
       border-radius: 4px;
     `}>
       <Icon path={iconPath} size={2} color='#fff' />
-      <p className={css`
+      <div className={css`
         margin: 0px;
         line-height: 24px;
         font-size: 14px;
@@ -70,7 +69,7 @@ function ContentItem({ iconPath, title }) {
         text-transform: none;
       `}>
         {title}
-      </p>
+      </div>
     </div>
   </Button>;
 }
@@ -95,12 +94,13 @@ export function Content({ sharedState }) {
       padding: 8px;
       display: inline-block;
     `}>
-      <Typography variant='h4' className={css`
+      <div className={css`
         text-transform: none;
+        font-size: 24px;
         color: #fff;
       `}>
         {baseName}
-      </Typography>
+      </div>
     </Button>,
     <div className={css`
       margin: 16px;

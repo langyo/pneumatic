@@ -1,12 +1,13 @@
-import React, { MouseEventHandler, useRef } from 'react';
+import React, { MouseEventHandler, useRef, useContext } from 'react';
 import { cx, css } from '@emotion/css';
 import Icon from '@mdi/react';
+import { ThemeProviderContext } from '../themeProviderContext';
 import { TouchRipple } from './touchRipple';
 
 export function Button({ children, className, onClick }: {
   children?: any,
-  className?: string,
-  onClick?: MouseEventHandler<HTMLDivElement>
+  onClick?: MouseEventHandler<HTMLInputElement>,
+  className?: string
 }) {
   const rippleRef = useRef(undefined);
 
@@ -22,6 +23,7 @@ export function Button({ children, className, onClick }: {
     }
   `, className || '')}
     onMouseDown={event => {
+      event.stopPropagation();
       rippleRef.current.start(event);
       if (onClick) {
         onClick(event);
@@ -43,8 +45,9 @@ export function IconButton({ className, path, size, color, onClick }: {
   path: string,
   size?: number,
   color?: string,
-  onClick?: MouseEventHandler<HTMLDivElement>
+  onClick?: MouseEventHandler<HTMLInputElement>
 }) {
+  const { palette } = useContext(ThemeProviderContext);
   const rippleRef = useRef(undefined);
 
   return <div className={cx(css`
@@ -59,6 +62,7 @@ export function IconButton({ className, path, size, color, onClick }: {
     }
   `, className || '')}
     onMouseDown={event => {
+      event.stopPropagation();
       rippleRef.current.start(event);
       if (onClick) {
         onClick(event);
@@ -66,7 +70,7 @@ export function IconButton({ className, path, size, color, onClick }: {
     }}
     onMouseUp={() => rippleRef.current.stop()}
   >
-    <Icon path={path} size={size || 1} color={color || '#000'} />
+    <Icon path={path} size={size || 1} color={color || palette.text} />
     <TouchRipple className={css`
       border-radius: 4px;
     `}

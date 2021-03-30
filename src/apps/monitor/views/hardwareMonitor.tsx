@@ -1,6 +1,7 @@
-import React from 'react';
-import { Typography, LinearProgress } from '@material-ui/core';
+import React, { useContext } from 'react';
+import { LinearProgress } from '../../../utils/frontend/components/progress';
 import { css } from '@emotion/css';
+import { ThemeProviderContext } from '../../../utils/frontend/themeProviderContext';
 
 function UsageBarItem({ title, progress }) {
   return <div className={css`
@@ -12,36 +13,48 @@ function UsageBarItem({ title, progress }) {
       display: flex;
       justify-content: space-between;
     `}>
-      <Typography variant='h6'>
+      <div className={css`
+        font-size: 16px;
+      `}>
         {title}
-      </Typography>
-      <Typography variant='subtitle1'>
+      </div>
+      <div className={css`
+        font-size: 16px;
+      `}>
         {`${Math.round(progress * 10000) / 100}%`}
-      </Typography>
+      </div>
     </div>
     <LinearProgress
-      variant='determinate'
-      value={progress * 100}
+      value={progress}
     />
   </div>;
 }
 
 export function HardwareMonitor({ sharedState }) {
+  const { palette } = useContext(ThemeProviderContext);
   const { freeMem, totalMem } = sharedState;
 
   return <>
-    <Typography variant='h4'>
+    <div className={css`
+      margin: 16px;
+      padding: 8px;
+      display: inline-block;
+      text-transform: none;
+      font-size: 24px;
+      color: ${palette.text};
+    `}>
       {'Hardware Monitor'}
-    </Typography>
+    </div>
     <div className={css`
       width: calc(100% - 16px);
       margin: 8px;
       display: flex;
       flex-wrap: wrap;
+      color: ${palette.text};
     `}>
-      {freeMem && totalMem && <UsageBarItem
+      {<UsageBarItem
         title='RAM (Own)'
-        progress={freeMem / totalMem}
+        progress={freeMem && totalMem ? freeMem / totalMem : 0}
       />}
     </div>
   </>;

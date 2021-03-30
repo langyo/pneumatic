@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import {
-  List, ListItem, ListSubheader, ListItemIcon, ListItemText, Divider
-} from '@material-ui/core';
+import { List } from '../../../utils/frontend/components/list';
+import { Button } from '../../../utils/frontend/components/button';
+import { css } from '@emotion/css';
 import { Icon } from '@mdi/react';
 import {
   mdiDatabase, mdiMemory, mdiMenu, mdiRouterNetwork, mdiServer, mdiWall
@@ -17,15 +17,20 @@ const tagMap = [
 ];
 
 export function Drawer({ setPage, setWindowInfo }) {
-  return <List>
-    {tagMap.map(({ iconPath, title, page }) => <ListItem
-      button
-      onClick={() => (setPage(page), setWindowInfo({ title }))}
-    >
-      <ListItemIcon>
-        <Icon path={iconPath} size={1} color='rgba(0, 0, 0, 1' />
-      </ListItemIcon>
-      <ListItemText primary={title} />
-    </ListItem>)}
-  </List>;
+  return <List items={tagMap.map(({ iconPath, title, page }) => <Button className={css`
+    height: 32px;
+    line-height: 32px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  `}
+    onClick={() => (setPage(page), setWindowInfo({ title }))}
+  >
+    <div className={css`
+      margin: 0px 12px;
+    `}>
+      <Icon path={iconPath} size={1} color='#fff' />
+    </div>
+    {title}
+  </Button>)} />;
 }
