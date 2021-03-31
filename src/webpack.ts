@@ -47,11 +47,15 @@ const globalConfig = {
   }
 }
 
-let clientBundleIdMap: { [key: string]: string } = {
-  '__client': generateId(),
-  vendor: generateId(),
-  runtime: generateId()
+let clientDepsIdMap: { [key: string]: string } = {
+  ...Object.keys(JSON.parse(realFs.readFileSync(
+    join(__dirname, '../package.json'), 'utf8'
+  )).dependencies).reduce((obj, key) => ({
+    ...obj,
+    [key]: generateId()
+  }), {})
 };
+let appsIdMap: { [key: string]: string } = {};
 
 const fs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
   [join(__dirname, './__client.ts')]: `require('${join(
@@ -80,27 +84,34 @@ export async function clientSideMiddleware(
           ${ctx.query.debug === '1' && `
           <script src='//cdn.jsdelivr.net/npm/eruda'></script><script>eruda.init();</script>
           ` || ``}
-          <script src='/${clientBundleIdMap.vendor}'></script>
-          <script src='/${clientBundleIdMap.runtime}'></script>
-          <script src='/${clientBundleIdMap.__client}'></script>
-          <script src='/124.bundle.js'></script>
+          <script src='//'></script>
+          ${Object.keys(clientDepsIdMap).map(key => `
+            <script src='/${clientDepsIdMap[key]}'></script>
+          `).join('\n')}
         </body>
       </html>`;
       ctx.type = 'text/html';
       break;
+    case '//':
+      ctx.body = fs.readFileSync(join(__dirname, '__client.bundle.js'), 'utf8');
+      ctx.type = 'text/javascript';
+      break;
     default:
-      for (const pkg of Object.keys(clientBundleIdMap)) {
-        if (ctx.path === `/${clientBundleIdMap[pkg]}`) {
-          ctx.body = fs.readFileSync(join(__dirname, `/${pkg}.bundle.js`), 'utf8');
-          ctx.type = 'application/javascript';
+      for (const key of Object.keys(clientDepsIdMap)) {
+        if (ctx.path === `/${clientDepsIdMap[key]}`) {
+          ctx.body = fs.readFileSync(
+            join(__dirname, `/${clientDepsIdMap[key]}.bundle.js`), 'utf8'
+          );
+          ctx.type = 'text/javascript';
           break;
         }
       }
-      // DEBUG
-      for (const name of fs.readdirSync(__dirname)) {
-        if (ctx.path === `/${name}`) {
-          ctx.body = fs.readFileSync(join(__dirname, `/${name}`), 'utf8');
-          ctx.type = 'application/javascript';
+      for (const key of Object.keys(appsIdMap)) {
+        if (ctx.path === `/${appsIdMap[key]}`) {
+          ctx.body = fs.readFileSync(
+            join(__dirname, `/${appsIdMap[key]}.bundle.js`), 'utf8'
+          );
+          ctx.type = 'text/javascript';
           break;
         }
       }
@@ -149,7 +160,7 @@ function watcherTrigger() {
         }
       }
       if (externalFilename !== '') {
-        const id = clientBundleIdMap[`pneumatic.${pkgName}`] = generateId();
+        const id = appsIdMap[`pneumatic.${pkgName}`] = generateId();
         const path = join(
           __dirname, 'apps', pkgName, externalFilename
         ).split('\\').join('\\\\');
@@ -160,11 +171,11 @@ function watcherTrigger() {
             throw Error('Cannot register the app.');
           }
         `;
-        fs.writeFileSync(join(__dirname, `pneumatic.${pkgName}.ts`), body);
+        fs.writeFileSync(join(__dirname, `${appsIdMap[`pneumatic.${pkgName}`]}.ts`), body);
       }
     }
 
-    let entryMap: {
+    let serverEntryMap: {
       [pkg: string]: {
         client?: string,
         server?: string
@@ -172,7 +183,7 @@ function watcherTrigger() {
     } = {};
 
     for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
-      entryMap[`pneumatic.${pkgName}`] = {};
+      serverEntryMap[`pneumatic.${pkgName}`] = {};
       let clientFileName = '';
       let serverFileName = '';
       for (const ex of ['.js', '.jsx', '.mjs', '.ts', '.tsx']) {
@@ -188,77 +199,107 @@ function watcherTrigger() {
         }
       }
       if (clientFileName !== '') {
-        entryMap[`pneumatic.${pkgName}`].client =
+        serverEntryMap[`pneumatic.${pkgName}`].client =
           join(__dirname, 'apps', pkgName, clientFileName).split('\\').join('\\\\');
       }
       if (serverFileName !== '') {
-        entryMap[`pneumatic.${pkgName}`].server =
+        serverEntryMap[`pneumatic.${pkgName}`].server =
           join(__dirname, 'apps', pkgName, serverFileName).split('\\').join('\\\\');
       }
     }
 
     fs.writeFileSync(join(__dirname, '__client_id.ts'), `
-      window.__appIdMap = ${JSON.stringify(clientBundleIdMap)};
+      window.__appIdMap = ${JSON.stringify(appsIdMap)};
       window.__apps = {};
     `);
     fs.writeFileSync(join(__dirname, '__server_id.ts'), `
-      export const entryMap = {${Object.keys(entryMap).map(pkg => `"${pkg}": {
-        ${entryMap[pkg].client ? `...require("${entryMap[pkg].client}")` : ''},
-        ${entryMap[pkg].server ? `...require("${entryMap[pkg].server}")` : ''}
+      export const entryMap = {${Object.keys(serverEntryMap).map(pkg => `"${pkg}": {
+        ${serverEntryMap[pkg].client ? `...require("${serverEntryMap[pkg].client}")` : ''},
+        ${serverEntryMap[pkg].server ? `...require("${serverEntryMap[pkg].server}")` : ''}
       }`).join(',')}};
     `);
 
-    const compiler = webpack([{
-      ...globalConfig,
-      entry: {
-        main: join(__dirname, './__client.ts'),
-        ...(Object.keys(clientBundleIdMap).filter(
-          n => ['main', 'vendor', 'runtime'].indexOf(n) < 0
-        ).reduce((obj, pkg) => ({
-          ...obj,
-          [pkg]: join(__dirname, `${pkg}.ts`)
-        }), {}))
-      },
-      mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
-      target: 'web',
-      output: {
-        filename: '[name].bundle.js',
-        path: __dirname
-      },
-      optimization: {
-        splitChunks: {
-          chunks: 'all',
-          automaticNameDelimiter: '.',
-          cacheGroups: {
-            vendor: {
-              test: /node_modules/,
-              chunks: 'initial',
-              name: 'vendor',
-              enforce: true
-            }
-          }
+    const compiler = webpack([
+      {
+        ...globalConfig,
+        entry: join(__dirname, './__client.ts'),
+        mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
+        target: 'web',
+        output: {
+          filename: '__client.bundle.js',
+          path: __dirname
         },
-        runtimeChunk: 'single'
+        externals: {
+          ...Object.keys(clientDepsIdMap).reduce((
+            obj: { [key: string]: string[] }, key: string
+          ) => ({
+            ...obj,
+            [key]: ['window', `__lib_${key}`]
+          }), {})
+        },
+        cache: {
+          type: 'memory'
+        },
+        devtool: process.env.NODE_ENV === 'production' ? 'none' : 'inline-source-map'
       },
-      cache: {
-        type: 'memory'
+      {
+        ...globalConfig,
+        entry: join(__dirname, './__server.ts'),
+        mode: 'development',
+        target: 'node',
+        output: {
+          filename: '__server.bundle.js',
+          path: __dirname
+        },
+        cache: {
+          type: 'memory'
+        },
+        devtool: 'inline-source-map'
       },
-      devtool: process.env.NODE_ENV === 'production' ? 'none' : 'inline-source-map'
-    },
-    {
-      ...globalConfig,
-      entry: join(__dirname, './__server.ts'),
-      mode: 'development',
-      target: 'node',
-      output: {
-        filename: '__server.bundle.js',
-        path: __dirname
-      },
-      cache: {
-        type: 'memory'
-      },
-      devtool: 'eval-source-map'
-    }]);
+      ...Object.keys(appsIdMap).map(key => ({
+        ...globalConfig,
+        entry: join(__dirname, `./${appsIdMap[key]}.ts`),
+        mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
+        target: 'web',
+        output: {
+          filename: `${appsIdMap[key]}.bundle.js`,
+          path: __dirname
+        },
+        externals: {
+          ...Object.keys(clientDepsIdMap).reduce((
+            obj: { [key: string]: string[] }, key: string
+          ) => ({
+            ...obj,
+            [key]: ['window', `__lib_${key}`]
+          }), {})
+        },
+        cache: {
+          type: 'memory'
+        },
+        devtool: process.env.NODE_ENV === 'production' ? 'none' : 'inline-source-map'
+      } as webpack.Configuration)),
+      ...Object.keys(clientDepsIdMap).map(key => ({
+        ...globalConfig,
+        entry: [key],
+        mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
+        target: 'web',
+        externals: {
+          ...Object.keys(clientDepsIdMap).filter(n => n !== key).reduce((
+            obj: { [key: string]: string[] }, key: string
+          ) => ({
+            ...obj,
+            [key]: ['window', `__lib_${key}`]
+          }), {})
+        },
+        output: {
+          filename: `${clientDepsIdMap[key]}.bundle.js`,
+          path: __dirname,
+          library: `__lib_${key}`,
+          libraryTarget: 'window'
+        },
+        devtool: process.env.NODE_ENV === 'production' ? 'none' : 'inline-source-map'
+      } as webpack.Configuration))
+    ]);
     compiler.inputFileSystem = fs;
     compiler.outputFileSystem = fs;
 
@@ -281,7 +322,6 @@ function watcherTrigger() {
         console.error(Error(errStr));
       } else {
         log('info', 'Compiled the codes.');
-        log('debug', fs.readdirSync(__dirname));
 
         const script = new Script(
           fs.readFileSync(join(__dirname, '/__server.bundle.js'), 'utf8') as string, {
