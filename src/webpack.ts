@@ -6,10 +6,17 @@ import { Volume, IFs } from 'memfs';
 import { Union } from 'unionfs'
 import * as realFs from 'fs';
 import { Script, createContext } from 'vm';
-import { v4 as generateId } from 'uuid';
+import { generate as generateId } from 'shortid';
+import { Keccak } from 'sha3';
 import { watch as watchFiles } from 'chokidar';
 
 import { log } from './utils/backend/logger';
+
+function hash(str: string): string {
+  const shaObj = new Keccak(512);
+  shaObj.update(str);
+  return shaObj.digest('hex');
+}
 
 const globalConfig = {
   context: __dirname,
@@ -47,15 +54,26 @@ const globalConfig = {
   }
 };
 
+const fs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
+  [join(__dirname, './__client.ts')]: `require('${join(
+    __dirname, './clientEntry.tsx'
+  ).split('\\').join('\\\\')}');`,
+  [join(__dirname, './__server.ts')]: `require('${join(
+    __dirname, './serverEntry.ts'
+  ).split('\\').join('\\\\')}');`
+}));
+fs['join'] = join;
+
+let clientDepsList: string[] = Object.keys(JSON.parse(realFs.readFileSync(
+  join(__dirname, '../package.json'), 'utf8'
+)).dependencies);
 let clientDepsIdMap: { [key: string]: string } = {
-  ...Object.keys(JSON.parse(realFs.readFileSync(
-    join(__dirname, '../package.json'), 'utf8'
-  )).dependencies).reduce((obj, key) => ({
+  ...clientDepsList.reduce((obj, key) => ({
     ...obj,
     [key]: generateId().split('-').join('')
   }), {})
 };
-let clientDepsOrder: string[] = Object.keys(clientDepsIdMap).sort((leftName, rightName) => {
+let clientDepsOrder: string[] = clientDepsList.sort((leftName, rightName) => {
   const deps = (obj => [
     ...(obj.dependencies ? Object.keys(obj.dependencies) : []),
     ...(obj.devDependencies ? Object.keys(obj.devDependencies) : []),
@@ -69,25 +87,36 @@ let clientDepsOrder: string[] = Object.keys(clientDepsIdMap).sort((leftName, rig
     return -1;
   }
 });
-log('debug', clientDepsOrder);
 
 let appsIdMap: { [key: string]: string } = {};
-
-const fs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
-  [join(__dirname, './__client.ts')]: `require('${join(
-    __dirname, './clientEntry.tsx'
-  ).split('\\').join('\\\\')}');`,
-  [join(__dirname, './__server.ts')]: `require('${join(
-    __dirname, './serverEntry.ts'
-  ).split('\\').join('\\\\')}');`
-}));
-fs['join'] = join;
+for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
+  let externalFilename = '';
+  for (const ex of ['.js', '.jsx', '.mjs', '.ts', '.tsx']) {
+    if (realFs.existsSync(join(__dirname, 'apps', pkgName, 'frontend' + ex))) {
+      externalFilename = `frontend${ex}`;
+      break;
+    }
+  }
+  if (externalFilename !== '') {
+    const id = appsIdMap[`pneumatic.${pkgName}`] = generateId().split('-').join('');
+    const path = join(
+      __dirname, 'apps', pkgName, externalFilename
+    ).split('\\').join('\\\\');
+    const body = `
+      if (window.__apps) {
+        window.__apps['${id}'] = require("${path}");
+      } else {
+        throw Error('Cannot register the app.');
+      }
+    `;
+    fs.writeFileSync(join(__dirname, `${appsIdMap[`pneumatic.${pkgName}`]}.ts`), body);
+  }
+}
 
 export async function clientSideMiddleware(
-  ctx: Koa.BaseContext,
+  ctx: Koa.Context,
   next: () => Promise<unknown>
 ) {
-
   switch (ctx.path) {
     case '/':
       ctx.body = `<html>
@@ -113,7 +142,7 @@ export async function clientSideMiddleware(
       ctx.type = 'text/javascript';
       break;
     default:
-      for (const key of Object.keys(clientDepsIdMap)) {
+      for (const key of clientDepsList) {
         if (ctx.path === `/${clientDepsIdMap[key]}`) {
           ctx.body = fs.readFileSync(
             join(__dirname, `/${clientDepsIdMap[key]}.bundle.js`), 'utf8'
@@ -136,7 +165,7 @@ export async function clientSideMiddleware(
 }
 
 export let serverRoutes = async (
-  _ctx: Koa.BaseContext,
+  _ctx: Koa.Context,
   _next: () => Promise<void>
 ) => {
   log('warn', 'Please wait, the service is not ready now.');
@@ -161,35 +190,11 @@ function watcherTrigger() {
     serverSocketListeners['#restart']('', {});
 
     serverRoutes = async (
-      _ctx: Koa.BaseContext,
+      _ctx: Koa.Context,
       _next: () => Promise<void>
     ) => {
       log('warn', 'Please wait, the service is not ready now.');
     };
-
-    for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
-      let externalFilename = '';
-      for (const ex of ['.js', '.jsx', '.mjs', '.ts', '.tsx']) {
-        if (realFs.existsSync(join(__dirname, 'apps', pkgName, 'frontend' + ex))) {
-          externalFilename = `frontend${ex}`;
-          break;
-        }
-      }
-      if (externalFilename !== '') {
-        const id = appsIdMap[`pneumatic.${pkgName}`] = generateId().split('-').join('');
-        const path = join(
-          __dirname, 'apps', pkgName, externalFilename
-        ).split('\\').join('\\\\');
-        const body = `
-          if (window.__apps) {
-            window.__apps['${id}'] = require("${path}");
-          } else {
-            throw Error('Cannot register the app.');
-          }
-        `;
-        fs.writeFileSync(join(__dirname, `${appsIdMap[`pneumatic.${pkgName}`]}.ts`), body);
-      }
-    }
 
     let serverEntryMap: {
       [pkg: string]: {
@@ -246,7 +251,7 @@ function watcherTrigger() {
           path: __dirname
         },
         externals: {
-          ...Object.keys(clientDepsIdMap).reduce((
+          ...clientDepsList.reduce((
             obj: { [key: string]: string[] }, key: string
           ) => ({
             ...obj,
@@ -282,7 +287,7 @@ function watcherTrigger() {
           path: __dirname
         },
         externals: {
-          ...Object.keys(clientDepsIdMap).reduce((
+          ...clientDepsList.reduce((
             obj: { [key: string]: string[] }, key: string
           ) => ({
             ...obj,
@@ -294,13 +299,13 @@ function watcherTrigger() {
         },
         devtool: process.env.NODE_ENV === 'production' ? 'none' : 'inline-source-map'
       } as webpack.Configuration)),
-      ...Object.keys(clientDepsIdMap).map(key => ({
+      ...clientDepsList.map(key => ({
         ...globalConfig,
         entry: [key],
         mode: process.env.NODE_ENV === 'development' ? 'development' : 'production',
         target: 'web',
         externals: {
-          ...Object.keys(clientDepsIdMap).filter(n => n !== key).reduce((
+          ...clientDepsList.filter(n => n !== key).reduce((
             obj: { [key: string]: string[] }, key: string
           ) => ({
             ...obj,
@@ -339,16 +344,17 @@ function watcherTrigger() {
       } else {
         log('info', 'Compiled the codes.');
 
+        // Server reboot.
         const script = new Script(
-          fs.readFileSync(join(__dirname, '/__server.bundle.js'), 'utf8') as string, {
+          fs.readFileSync(join(__dirname, './__server.bundle.js'), 'utf8') as string, {
           filename: 'serverEntry.js'
         });
         const context = createContext({
           exportMiddleware(
-            middlewares: ((ctx: Koa.BaseContext, next: () => Promise<void>) => Promise<void>)[]
+            middlewares: ((ctx: Koa.Context, next: () => Promise<void>) => Promise<void>)[]
           ) {
             serverRoutes = async (
-              ctx: Koa.BaseContext, next: () => Promise<void>
+              ctx: Koa.Context, next: () => Promise<void>
             ) => {
               async function nextTask(pos: number) {
                 await middlewares[pos](ctx, async () => {

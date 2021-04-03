@@ -6,7 +6,7 @@ import { IAppComponent, IAppDefaultInfo } from './utils/frontend/appProviderCont
 
 declare global {
   function exportMiddleware(
-    middlewares: ((ctx: Koa.BaseContext, next: () => Promise<void>) => Promise<void>)[]
+    middlewares: ((ctx: Koa.Context, next: () => Promise<void>) => Promise<void>)[]
   ): void;
   function socketReceive(head: string, callback: (token: string, data: any) => void): void;
   function socketSend(token: string, head: string, data: any): void;
@@ -21,7 +21,7 @@ const entryMap: {
       defaultInfo?: IAppDefaultInfo
     },
 
-    route?: (ctx: Koa.BaseContext, next: () => Promise<unknown>) => Promise<any>,
+    route?: (ctx: Koa.Context, next: () => Promise<unknown>) => Promise<any>,
     socket?: (token: string, data: { [key: string]: any }, utils: {
       send: (data: { [key: string]: any }) => void,
       registerAutoSender: (timeout: number, callback: () => ({ [key: string]: any })) => void

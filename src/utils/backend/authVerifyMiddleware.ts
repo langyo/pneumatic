@@ -14,14 +14,14 @@ let connections: { [token: string]: IConnection } = {};
 
 export function authLoginMiddleware(path: string) {
   return async (
-    ctx: Koa.BaseContext,
+    ctx: Koa.Context,
     next: () => Promise<unknown>
   ) => {
     if (ctx.path === path) {
       if (ctx.accepts('json') !== 'json') {
         ctx.throw(406, 'Json only.');
       } else {
-        const { userName, signedPassword } = ctx.request.body;
+        const { userName, signedPassword } = ctx.request['body'];
         if (config.accounts[userName] && config.accounts[userName].password === signedPassword) {
           const token = generateUUID();
           connections[token] = {

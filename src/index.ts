@@ -17,7 +17,7 @@ const app = new Koa();
 app.use(bodyParserMiddleware());
 app.use(authLoginMiddleware('/backend/login'));
 app.use(async (
-  ctx: Koa.BaseContext,
+  ctx: Koa.Context,
   next: () => Promise<void>
 ) => {
   log('info', `Http(${ctx.ip}):`, ctx.path);
