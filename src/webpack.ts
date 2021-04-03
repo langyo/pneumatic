@@ -52,7 +52,7 @@ let clientDepsIdMap: { [key: string]: string } = {
     join(__dirname, '../package.json'), 'utf8'
   )).dependencies).reduce((obj, key) => ({
     ...obj,
-    [key]: generateId()
+    [key]: generateId().split('-').join('')
   }), {})
 };
 let appsIdMap: { [key: string]: string } = {};
@@ -84,15 +84,15 @@ export async function clientSideMiddleware(
           ${ctx.query.debug === '1' && `
           <script src='//cdn.jsdelivr.net/npm/eruda'></script><script>eruda.init();</script>
           ` || ``}
-          <script src='//'></script>
           ${Object.keys(clientDepsIdMap).map(key => `
             <script src='/${clientDepsIdMap[key]}'></script>
           `).join('\n')}
+          <script src='/entry'></script>
         </body>
       </html>`;
       ctx.type = 'text/html';
       break;
-    case '//':
+    case '/entry':
       ctx.body = fs.readFileSync(join(__dirname, '__client.bundle.js'), 'utf8');
       ctx.type = 'text/javascript';
       break;
@@ -160,7 +160,7 @@ function watcherTrigger() {
         }
       }
       if (externalFilename !== '') {
-        const id = appsIdMap[`pneumatic.${pkgName}`] = generateId();
+        const id = appsIdMap[`pneumatic.${pkgName}`] = generateId().split('-').join('');
         const path = join(
           __dirname, 'apps', pkgName, externalFilename
         ).split('\\').join('\\\\');
@@ -234,7 +234,7 @@ function watcherTrigger() {
             obj: { [key: string]: string[] }, key: string
           ) => ({
             ...obj,
-            [key]: ['window', `__lib_${key}`]
+            [key]: `__lib_${clientDepsIdMap[key]}`
           }), {})
         },
         cache: {
@@ -270,7 +270,7 @@ function watcherTrigger() {
             obj: { [key: string]: string[] }, key: string
           ) => ({
             ...obj,
-            [key]: ['window', `__lib_${key}`]
+            [key]: `__lib_${clientDepsIdMap[key]}`
           }), {})
         },
         cache: {
@@ -288,14 +288,14 @@ function watcherTrigger() {
             obj: { [key: string]: string[] }, key: string
           ) => ({
             ...obj,
-            [key]: ['window', `__lib_${key}`]
+            [key]: `__lib_${clientDepsIdMap[key]}`
           }), {})
         },
         output: {
           filename: `${clientDepsIdMap[key]}.bundle.js`,
           path: __dirname,
-          library: `__lib_${key}`,
-          libraryTarget: 'window'
+          library: `__lib_${clientDepsIdMap[key]}`,
+          libraryTarget: 'var'
         },
         devtool: process.env.NODE_ENV === 'production' ? 'none' : 'inline-source-map'
       } as webpack.Configuration))
@@ -303,18 +303,18 @@ function watcherTrigger() {
     compiler.inputFileSystem = fs;
     compiler.outputFileSystem = fs;
 
-    setTimeout(() => compiler.run((err: Error, status) => {
+    setTimeout(() => compiler.run((err: Error, stats) => {
       if (err) {
         console.error(err);
-      } else if (status.hasErrors()) {
-        const info = status.toJson();
+      } else if (stats.hasErrors()) {
+        const info = stats.toJson();
         let errStr = '';
-        if (status.hasErrors()) {
+        if (stats.hasErrors()) {
           for (const e of info.errors) {
             errStr += `${e.message}\n`;
           }
         }
-        if (status.hasWarnings()) {
+        if (stats.hasWarnings()) {
           for (const e of info.warnings) {
             errStr += `${e.message}\n`;
           }
