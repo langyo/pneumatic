@@ -45,7 +45,7 @@ const globalConfig = {
       'node_modules'
     ]
   }
-}
+};
 
 let clientDepsIdMap: { [key: string]: string } = {
   ...Object.keys(JSON.parse(realFs.readFileSync(
@@ -55,6 +55,22 @@ let clientDepsIdMap: { [key: string]: string } = {
     [key]: generateId().split('-').join('')
   }), {})
 };
+let clientDepsOrder: string[] = Object.keys(clientDepsIdMap).sort((leftName, rightName) => {
+  const deps = (obj => [
+    ...(obj.dependencies ? Object.keys(obj.dependencies) : []),
+    ...(obj.devDependencies ? Object.keys(obj.devDependencies) : []),
+    ...(obj.peerDependencies ? Object.keys(obj.peerDependencies) : [])
+  ])(JSON.parse(realFs.readFileSync(join(
+    __dirname, '../node_modules', `./${leftName}/package.json`
+  ), 'utf8')));
+  if (deps.indexOf(rightName) >= 0) {
+    return 1;
+  } else {
+    return -1;
+  }
+});
+log('debug', clientDepsOrder);
+
 let appsIdMap: { [key: string]: string } = {};
 
 const fs: IFs = ((new Union()) as any).use(realFs).use(Volume.fromJSON({
@@ -84,7 +100,7 @@ export async function clientSideMiddleware(
           ${ctx.query.debug === '1' && `
           <script src='//cdn.jsdelivr.net/npm/eruda'></script><script>eruda.init();</script>
           ` || ``}
-          ${Object.keys(clientDepsIdMap).map(key => `
+          ${clientDepsOrder.map(key => `
             <script src='/${clientDepsIdMap[key]}'></script>
           `).join('\n')}
           <script src='/entry'></script>
