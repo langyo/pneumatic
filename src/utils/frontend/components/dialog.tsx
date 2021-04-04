@@ -16,14 +16,12 @@ type IDragType = 'none' | 'move' |
 
 export function Dialog({
   width, height, left, top, priority,
-  icon, title, subTitle,
-  bodyComponent, drawerComponent,
+  icon, title, subTitle, component,
   setWindowInfo, setActive, setDestory,
   className
 }: {
   width: number, height: number, left: number, top: number, priority: number,
-  icon: string, title: string, subTitle: string,
-  bodyComponent: Component, drawerComponent: Component,
+  icon: string, title: string, subTitle: string, component: Component,
   setWindowInfo: (info: Partial<IWindowInfo>) => void,
   setActive: () => void,
   setDestory: () => void,
@@ -100,37 +98,8 @@ export function Dialog({
         <div className={css`
           position: absolute;
           bottom: 4px;
-          left: 4px;
-          width: calc(40% - 4px);
-          height: calc(100% - 32px - 4px - 4px);
-        `}
-          onMouseDown={setActive}
-        >
-          <Scrollbars className={css`
-            width: 100%;
-            height: 100%;
-          `}>
-            {Children.map(drawerComponent, (component, index) => <div className={css`
-              animation: ${keyframes`
-                0% {
-                  opacity: 0;
-                  scale: .5;
-                }
-                100% {
-                  opacity: 1;
-                  scale: 1;
-                }
-              `} .2s ${index * .2}s both;
-            `}>
-              {component}
-            </div>)}
-          </Scrollbars>
-        </div>
-        <div className={css`
-          position: absolute;
-          bottom: 4px;
           right: 4px;
-          width: calc(60% - 4px);
+          width: 100%;
           height: calc(100% - 32px - 4px - 4px);
         `}
           onMouseDown={setActive}
@@ -139,20 +108,7 @@ export function Dialog({
             width: 100%;
             height: 100%;
             `}>
-            {Children.map(bodyComponent, (component, index) => <div className={css`
-              animation: ${keyframes`
-                0% {
-                  opacity: 0;
-                  scale: .5;
-                }
-                100% {
-                  opacity: 1;
-                  scale: 1;
-                }
-              `} .2s ${index * .2}s both;
-            `}>
-              {component}
-            </div>)}
+            {component}
           </Scrollbars>
         </div>
       </div>

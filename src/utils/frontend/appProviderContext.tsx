@@ -1,11 +1,13 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { css } from '@emotion/css';
 
 import { wsSocket } from './authProviderContext';
-import { ISharedState, ITaskMap, IWindowInfo } from './taskManagerContext';
+import { ISharedState, IWindowInfo } from './taskManagerContext';
 
 export interface IApp {
   icon: string,   // SVG path.
-  name: string
+  name: string,
+  id: string
 }
 
 export type IAppComponent = (props: any) => React.Component | any;
@@ -29,65 +31,34 @@ export const AppProviderContext = createContext({} as IAppProviderContext);
 
 export interface IAppProviderContext {
   apps: IApps,
-  appRegistryStatus: string[],
   loadAppComponent: IGetAppComponent,
   pushApp: IPushApp
 }
 
-declare global {
-  // tslint:disable-next-line: interface-name
-  interface Window {
-    __apps: {
-      [id: string]: {
-        pages: {
-          [page: string]: (props: any) => React.Component
-        },
-        config?: {
-          defaultInfo?: IAppDefaultInfo
-        }
-      }
-    },
-    __appIdMap: {
-      [pkg: string]: string
-    }
-  }
-}
-
 export function AppProvider({ children }: { children?: any }) {
   const [apps, setApps]: [IApps, (apps: IApps) => void] = useState({});
-  const [appRegistryStatus, setAppRegistryStatus] = useState([] as string[]);
 
   useEffect(() => {
     wsSocket.send('#get-apps');
-    wsSocket.receive('#get-apps', ({ apps }) => {
-      setApps(apps);
-    });
+    wsSocket.receive('#get-apps', ({ apps }) => setApps(apps));
   }, []);
 
   return <AppProviderContext.Provider value={{
-    apps, appRegistryStatus,
+    apps,
     loadAppComponent(pkg: string, page: string = 'default') {
-      const id = window.__appIdMap[pkg];
+      const id = apps[pkg].id;
       if (!id) {
         throw Error(`Cannot find the app '${pkg}'.`);
       }
-
-      if (appRegistryStatus.indexOf(pkg) < 0) {
-        let node = document.createElement('script');
-        node.src = `/${window.__appIdMap[pkg]}`;
-        document.body.appendChild(node);
-
-        const handler = setInterval(() => {
-          if (window.__apps[id]) {
-            clearInterval(handler);
-            setAppRegistryStatus([...appRegistryStatus, pkg]);
-          }
-        }, 200);
-
-        return;
-      } else {
-        return window.__apps[id]?.pages[page];
-      }
+      return <iframe
+        className={css`
+          border: 0px;
+          margin: 0px;
+          width: 100%;
+          height: 100%;
+        `}
+        src={`/${apps[pkg].id}?page=${page}`}
+      />;
     },
     pushApp(pkg: string, app: IApp) { setApps({ ...apps, [pkg]: app }); }
   }}>

@@ -22,7 +22,7 @@ export function Button({ children, className, onClick }: {
       background: rgba(0, 0, 0, .2);
     }
   `, className || '')}
-    onMouseDown={event => {
+    onMouseDown={(event: MouseEvent) => {
       event.stopPropagation();
       rippleRef.current.start(event);
       if (onClick) {
@@ -61,7 +61,7 @@ export function IconButton({ className, path, size, color, onClick }: {
       background: rgba(0, 0, 0, .2);
     }
   `, className || '')}
-    onMouseDown={event => {
+    onMouseDown={(event: MouseEvent) => {
       event.stopPropagation();
       rippleRef.current.start(event);
       if (onClick) {

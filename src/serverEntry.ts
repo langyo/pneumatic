@@ -1,6 +1,5 @@
 import * as Koa from 'koa';
 
-import { config } from './utils/backend/configLoader';
 import { log } from './utils/backend/logger';
 import { IAppComponent, IAppDefaultInfo } from './utils/frontend/appProviderContext';
 
@@ -20,6 +19,9 @@ const entryMap: {
     config?: {
       defaultInfo?: IAppDefaultInfo
     },
+    name: string,
+    icon: string,
+    id: string,
 
     route?: (ctx: Koa.Context, next: () => Promise<unknown>) => Promise<any>,
     socket?: (token: string, data: { [key: string]: any }, utils: {
@@ -118,7 +120,15 @@ socketReceive('#restart', (_token, _data) => {
 })
 
 socketReceive('#get-apps', (token, _data) => {
-  socketSend(token, '#get-apps', { apps: config.apps })
+  socketSend(token, '#get-apps', {
+    apps: Object.keys(entryMap).reduce((obj, name) => ({
+      ...obj,
+      [name]: ['name', 'icon', 'id'].reduce((obj, key) => ({
+        ...obj,
+        [key]: entryMap[name][key]
+      }), {})
+    }), {})
+  })
 });
 
 socketReceive('#set-shared-state', (token, { id, data }) => {

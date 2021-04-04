@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { css } from '@emotion/css';
 import Icon from '@mdi/react';
 import { mdiClose, mdiMenu } from '@mdi/js';
@@ -22,7 +22,7 @@ export function TaskViewDesktop() {
     globalState: { launcherState, taskManagerPosition }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
   const {
-    apps, appRegistryStatus, loadAppComponent: getAppComponent
+    apps, loadAppComponent: getAppComponent
   }: IAppProviderContext = useContext(AppProviderContext);
   const { palette } = useContext(ThemeProviderContext);
   const [draggingWindow, setDraggingWindow] = useState(
@@ -34,8 +34,6 @@ export function TaskViewDesktop() {
   const [taskOnExit, setTaskOnExit] = useState({} as {
     [key: string]: ITask
   });
-
-  useEffect(() => void 0, [appRegistryStatus]);
 
   return <div className={css`
     position: fixed;
@@ -113,18 +111,12 @@ export function TaskViewDesktop() {
               left={left} top={top} width={width} height={height}
               icon={apps[pkg].icon}
               title={apps[pkg].name} subTitle={title} priority={priority}
-              bodyComponent={
-                getAppComponent(pkg, page) &&
-                getAppComponent(pkg, page)(propsGenerator(key, page, sharedState))
-              }
-              drawerComponent={
-                getAppComponent(pkg, 'drawer') &&
-                getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState))
-              }
+              component={getAppComponent(pkg, page)}
               setWindowInfo={obj => setWindowInfo(key, obj)}
               setActive={() => setActiveTask(key)}
               setDestory={() => (
                 setTaskOnExit(taskOnExit => ({
+                  ...taskOnExit,
                   [key]: tasks[key]
                 })),
                 setTimeout(() => (
@@ -271,7 +263,7 @@ export function TaskViewDesktop() {
                       font-size: 16px;
                       color: ${palette.text}
                     `}
-                    onClick={event => (
+                    onClick={(event: MouseEvent) => (
                       generateTask(pkg),
                       setGlobalState({ launcherState: false }),
                       event.stopPropagation()
@@ -279,8 +271,8 @@ export function TaskViewDesktop() {
                   >
                     <Icon path={icon} size={2} />
                     <div className={css`
-                        height: 8px;
-                      `} />
+                      height: 8px;
+                    `} />
                     {name}
                   </Button>;
                 })}

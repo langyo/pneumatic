@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Button, IconButton } from './components/button';
 import { Drawer } from './components/drawer';
 import { List } from './components/list';
@@ -20,15 +20,13 @@ export function TaskViewMobile() {
     tasks, generateTask, destoryTask,
     propsGenerator, setActiveTask,
     globalState: {
-      drawerState, launcherState, taskManagerState, taskManagerPosition
+      drawerState, launcherState, taskManagerState
     }, setGlobalState
   }: ITaskManagerContext = useContext(TaskManagerContext);
   const {
-    apps, appRegistryStatus, loadAppComponent: getAppComponent
+    apps, loadAppComponent: getAppComponent
   }: IAppProviderContext = useContext(AppProviderContext);
   const { palette } = useContext(ThemeProviderContext);
-
-  useEffect(() => void 0, [appRegistryStatus]);
 
   return <div className={css`
     position: fixed;
@@ -220,7 +218,7 @@ export function TaskViewMobile() {
             font-size: 16px;
             color: ${palette.text}
           `}
-            onClick={event => (
+            onClick={(event: MouseEvent) => (
               generateTask(pkg),
               setGlobalState({ launcherState: false }),
               event.stopPropagation()
@@ -246,27 +244,8 @@ export function TaskViewMobile() {
           width: 100%;
           height: 100%;
         `}>
-          {getAppComponent(pkg, page) &&
-            getAppComponent(pkg, page)(propsGenerator(key, page, sharedState))}
+          {getAppComponent(pkg, page)}
         </Scrollbars>}
-        {status === 'active' && !launcherState && <Drawer
-          anchor='left'
-          on={drawerState}
-          onClose={() => setGlobalState({ drawerState: false })}
-        >
-          <div className={css`
-            width: ${document.body.clientWidth * .4};
-            height: 100%;
-          `}>
-            <Scrollbars className={css`
-              width: 100%;
-              height: 100%;
-            `}>
-              {getAppComponent(pkg, 'drawer') &&
-                getAppComponent(pkg, 'drawer')(propsGenerator(key, page, sharedState))}
-            </Scrollbars>
-          </div>
-        </Drawer>}
       </>;
     })}
   </div >;

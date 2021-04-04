@@ -79,9 +79,6 @@ export interface ITaskManagerContext {
 };
 
 export function TaskManager({ children }: { children?: any }) {
-  const {
-    appRegistryStatus, loadAppComponent
-  }: IAppProviderContext = useContext(AppProviderContext);
   const { media } = useContext(ThemeProviderContext);
   const [tasks, setTasksInside]: [
     ITaskMap, (tasks: (tasks: ITaskMap) => ITaskMap) => void
@@ -169,28 +166,11 @@ export function TaskManager({ children }: { children?: any }) {
     })
   }, []);
 
-  useEffect(() => {
-    setGenerateTaskCache(cache => cache.filter(
-      ({ id, pkg, page, initState }) => {
-        if (appRegistryStatus.indexOf(pkg) >= 0) {
-          wsSocket.send('#init', { id, pkg, page, initState });
-          return false;
-        } else {
-          return true;
-        }
-      }));
-  }, [appRegistryStatus]);
-
   function generateTask(
     pkg: string, page?: string, initState?: ISharedState
   ) {
     const id = generate();
-    if (appRegistryStatus.indexOf(pkg) < 0) {
-      setGenerateTaskCache(cache => [...cache, { id, pkg, page, initState }]);
-    } else {
-      wsSocket.send('#init', { id, pkg, page, initState });
-    }
-    loadAppComponent(pkg, page);
+    wsSocket.send('#init', { id, pkg, page, initState });
   }
 
   function destoryTask(id: string) {

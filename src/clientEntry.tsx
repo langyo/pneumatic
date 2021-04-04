@@ -10,7 +10,6 @@ import { AuthProvider, AuthProviderContext } from './utils/frontend/authProvider
 import { LoginView } from './utils/frontend/loginView';
 
 import { render } from 'react-dom';
-import './__client_id';
 
 render(
   createElement(function () {

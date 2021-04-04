@@ -98,16 +98,11 @@ for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
     }
   }
   if (externalFilename !== '') {
-    const id = appsIdMap[`pneumatic.${pkgName}`] = generateId().split('-').join('');
-    const path = join(
-      __dirname, 'apps', pkgName, externalFilename
-    ).split('\\').join('\\\\');
+    appsIdMap[`pneumatic.${pkgName}`] = generateId();
     const body = `
-      if (window.__apps) {
-        window.__apps['${id}'] = require("${path}");
-      } else {
-        throw Error('Cannot register the app.');
-      }
+      require('react-dom').render(require('react').createElement(
+        require("${join(__dirname, 'apps', pkgName, externalFilename).split('\\').join('\\\\')}")
+      ), document.querySelector('#root'));
     `;
     fs.writeFileSync(join(__dirname, `${appsIdMap[`pneumatic.${pkgName}`]}.ts`), body);
   }
@@ -142,19 +137,35 @@ export async function clientSideMiddleware(
       ctx.type = 'text/javascript';
       break;
     default:
+      for (const key of Object.keys(appsIdMap)) {
+        if (ctx.path === `/${appsIdMap[key]}`) {
+          ctx.body = `<html>
+            <head>
+              <title>Pneumatic</title>
+              <meta name='viewport' content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no'>
+            </head>
+            <body>
+              <div id='root'></div>
+              ${ctx.query.debug === '1' && `
+              <script src='//cdn.jsdelivr.net/npm/eruda'></script><script>eruda.init();</script>
+              ` || ``}
+              ${clientDepsOrder.map(key => `
+                <script src='/${clientDepsIdMap[key]}'></script>
+              `).join('\n')}
+              <script>
+                ${fs.readFileSync(join(__dirname, `/${appsIdMap[key]}.bundle.js`), 'utf8')}
+              </script>
+            </body>
+          </html>
+          `;
+          ctx.type = 'text/html';
+          break;
+        }
+      }
       for (const key of clientDepsList) {
         if (ctx.path === `/${clientDepsIdMap[key]}`) {
           ctx.body = fs.readFileSync(
             join(__dirname, `/${clientDepsIdMap[key]}.bundle.js`), 'utf8'
-          );
-          ctx.type = 'text/javascript';
-          break;
-        }
-      }
-      for (const key of Object.keys(appsIdMap)) {
-        if (ctx.path === `/${appsIdMap[key]}`) {
-          ctx.body = fs.readFileSync(
-            join(__dirname, `/${appsIdMap[key]}.bundle.js`), 'utf8'
           );
           ctx.type = 'text/javascript';
           break;
@@ -199,14 +210,17 @@ function watcherTrigger() {
     let serverEntryMap: {
       [pkg: string]: {
         client?: string,
-        server?: string
+        server?: string,
+        info?: string
       }
     } = {};
 
     for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
+      // TODO - Use regular expression to make the code more pretter.
       serverEntryMap[`pneumatic.${pkgName}`] = {};
       let clientFileName = '';
       let serverFileName = '';
+      let infoFileName = '';
       for (const ex of ['.js', '.jsx', '.mjs', '.ts', '.tsx']) {
         if (realFs.existsSync(join(__dirname, 'apps', pkgName, 'frontend' + ex))) {
           clientFileName = `frontend${ex}`;
@@ -219,6 +233,12 @@ function watcherTrigger() {
           break;
         }
       }
+      for (const ex of ['.js', '.jsx', '.mjs', '.ts', '.tsx']) {
+        if (realFs.existsSync(join(__dirname, 'apps', pkgName, 'info' + ex))) {
+          infoFileName = `info${ex}`;
+          break;
+        }
+      }
       if (clientFileName !== '') {
         serverEntryMap[`pneumatic.${pkgName}`].client =
           join(__dirname, 'apps', pkgName, clientFileName).split('\\').join('\\\\');
@@ -227,16 +247,18 @@ function watcherTrigger() {
         serverEntryMap[`pneumatic.${pkgName}`].server =
           join(__dirname, 'apps', pkgName, serverFileName).split('\\').join('\\\\');
       }
+      if (infoFileName !== '') {
+        serverEntryMap[`pneumatic.${pkgName}`].info =
+          join(__dirname, 'apps', pkgName, infoFileName).split('\\').join('\\\\');
+      }
     }
 
-    fs.writeFileSync(join(__dirname, '__client_id.ts'), `
-      window.__appIdMap = ${JSON.stringify(appsIdMap)};
-      window.__apps = {};
-    `);
     fs.writeFileSync(join(__dirname, '__server_id.ts'), `
       export const entryMap = {${Object.keys(serverEntryMap).map(pkg => `"${pkg}": {
         ${serverEntryMap[pkg].client ? `...require("${serverEntryMap[pkg].client}")` : ''},
-        ${serverEntryMap[pkg].server ? `...require("${serverEntryMap[pkg].server}")` : ''}
+        ${serverEntryMap[pkg].server ? `...require("${serverEntryMap[pkg].server}")` : ''},
+        ${serverEntryMap[pkg].info ? `...require("${serverEntryMap[pkg].info}")` : ''},
+        id: '${appsIdMap[pkg]}'
       }`).join(',')}};
     `);
 
