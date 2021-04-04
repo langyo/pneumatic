@@ -7,16 +7,9 @@ import { Union } from 'unionfs'
 import * as realFs from 'fs';
 import { Script, createContext } from 'vm';
 import { generate as generateId } from 'shortid';
-import { Keccak } from 'sha3';
 import { watch as watchFiles } from 'chokidar';
 
 import { log } from './utils/backend/logger';
-
-function hash(str: string): string {
-  const shaObj = new Keccak(512);
-  shaObj.update(str);
-  return shaObj.digest('hex');
-}
 
 const globalConfig = {
   context: __dirname,
@@ -100,9 +93,10 @@ for (const pkgName of realFs.readdirSync(join(__dirname, 'apps'))) {
   if (externalFilename !== '') {
     appsIdMap[`pneumatic.${pkgName}`] = generateId();
     const body = `
-      require('react-dom').render(require('react').createElement(
-        require("${join(__dirname, 'apps', pkgName, externalFilename).split('\\').join('\\\\')}")
-      ), document.querySelector('#root'));
+      const component = require("${join(__dirname, 'apps', pkgName, externalFilename)
+        .split('\\').join('\\\\')}").pages[/page=(.+)\\&?/.exec(location.search)[1]];
+      console.log(component);
+      require('react-dom').render(require('react').createElement(component), document.querySelector('#root'));
     `;
     fs.writeFileSync(join(__dirname, `${appsIdMap[`pneumatic.${pkgName}`]}.ts`), body);
   }
@@ -146,9 +140,6 @@ export async function clientSideMiddleware(
             </head>
             <body>
               <div id='root'></div>
-              ${ctx.query.debug === '1' && `
-              <script src='//cdn.jsdelivr.net/npm/eruda'></script><script>eruda.init();</script>
-              ` || ``}
               ${clientDepsOrder.map(key => `
                 <script src='/${clientDepsIdMap[key]}'></script>
               `).join('\n')}
