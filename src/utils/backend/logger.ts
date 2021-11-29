@@ -1,4 +1,4 @@
-import { bold, green, yellow, red, blue, bgWhite, bgYellow } from 'chalk';
+import { bold, green, yellow, red, blue, bgWhite, bgYellow } from 'ansi-colors';
 
 type ILogLevel = 'info' | 'debug' | 'warn' | 'error';
 const logLevelMap = {

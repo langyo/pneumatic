@@ -1,5 +1,4 @@
 import { createServer } from 'http';
-import { EventEmitter } from 'events';
 import * as Koa from 'koa';
 import * as ws from 'ws';
 import * as bodyParserMiddleware from 'koa-bodyparser';
@@ -27,7 +26,7 @@ app.use(async (
 });
 
 const server = createServer(app.callback()).listen(
-  process.env.PORT && +process.env.PORT || 80,
+  process.env.PORT && +process.env.PORT || 30233,
   process.env.HOST || undefined
 );
 

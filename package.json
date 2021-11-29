@@ -4,7 +4,7 @@
   "description": "A server that using to watch and compare the changes for the web page.",
   "private": true,
   "scripts": {
-    "start": "cross-env PORT=8080 ts-node ./src/index.ts",
+    "start": "ts-node ./src/index.ts",
     "test": "jest --watch"
   },
   "repository": {
@@ -25,7 +25,9 @@
     "@emotion/css": "^11.5.0",
     "@mdi/js": "^6.5.95",
     "@mdi/react": "^1.5.0",
+    "ansi-colors": "^4.1.1",
     "axios": "^0.24.0",
+    "get-port": "^6.0.0",
     "react": "^17.0.2",
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^17.0.2",
@@ -49,9 +51,7 @@
     "@types/node": "^16.11.10",
     "@types/uuid": "^8.3.3",
     "babel-loader": "^8.2.3",
-    "chalk": "^5.0.0",
     "chokidar": "^3.5.2",
-    "cross-env": "^7.0.3",
     "jest": "^27.3.1",
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
