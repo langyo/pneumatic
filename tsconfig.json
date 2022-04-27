@@ -2,8 +2,15 @@
   "compilerOptions": {
     "module": "CommonJS",
     "moduleResolution": "Node",
-    "sourceMap": true,
+    "jsx": "preserve",
+    "importHelpers": true,
+    "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "jsx": "react"
+    "resolveJsonModule": true,
+    "lib": ["DOM", "es6", "webworker"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@res/*": ["./res/*"]
+    }
   }
 }
