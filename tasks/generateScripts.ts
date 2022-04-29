@@ -81,28 +81,3 @@ export async function generateMainlyScripts() {
   compiler.inputFileSystem = createWebpackVirtualFileSystem({});
   await resolveWebpackCompileResult(compiler);
 }
-
-export async function generateServiceWorkerScripts() {
-  const compiler = webpack({
-    entry: join(process.cwd(), './src/serviceWorker.ts'),
-    module: {
-      rules: [
-        {
-          test: /\.json5$/,
-          use: ['json5-loader'],
-        },
-        {
-          test: /\.ts$/,
-          use: ['ts-loader'],
-        },
-      ],
-    },
-    ...globalWebpackConfig,
-    target: 'webworker',
-    output: {
-      path: join(process.cwd(), './dist/'),
-      filename: `sw.js`,
-    },
-  });
-  await resolveWebpackCompileResult(compiler);
-}

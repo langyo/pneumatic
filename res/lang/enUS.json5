@@ -1,1 +1,23 @@
-{}
+{
+  drawer: {
+    overview: 'Overview',
+    dashboardSettings: 'Dashboard Settings',
+    router: {
+      router: 'Router',
+      siteMap: 'Site Map',
+      staticFileManage: 'Static File Management',
+      routeRule: 'Route Rule',
+      auditRule: 'Audit Rule',
+    },
+    service: {
+      service: 'Services',
+      moduleManage: 'Module Management',
+      dataSourceManage: 'Data Source Management',
+      aggregateManage: 'Aggregate Management',
+    },
+    module: {
+      module: 'Modules',
+      noModuleAvailable: 'No modules are available',
+    },
+  },
+}

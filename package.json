@@ -23,6 +23,8 @@
   },
   "homepage": "https://github.com/langyo/pneumatic#readme",
   "dependencies": {
+    "@fluentui/web-components": "^2.4.0",
+    "@microsoft/fast-element": "^1.10.0",
     "axios": "^0.27.2",
     "get-port": "^6.1.2",
     "gulp": "^4.0.2",

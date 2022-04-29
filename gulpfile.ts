@@ -2,15 +2,13 @@ import { series, watch } from 'gulp';
 
 import { clean } from './tasks/clean';
 import {
-  generateMainlyScripts,
-  generateServiceWorkerScripts,
+  generateMainlyScripts
 } from './tasks/generateScripts';
 export { clean };
 
 export const build = series(
   clean,
-  generateMainlyScripts,
-  generateServiceWorkerScripts
+  generateMainlyScripts
 );
 
 export const publish = series(clean, build);

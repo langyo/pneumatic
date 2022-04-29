@@ -3,6 +3,7 @@ import { createPinia } from 'pinia';
 
 import { i18n } from './utils/i18n';
 
+import './utils/normalize.scss';
 import App from './app.vue';
 
 function createWarningFrame(messages: string[]) {
@@ -55,19 +56,5 @@ function createWarningFrame(messages: string[]) {
       `The page has encountered some errors. We apologize for the inconvenience. The page will try to refresh later.`
     ]);
     setTimeout(() => location.reload(), 1000);
-  }
-
-  try {
-    // Try to create service worker.
-    if (typeof navigator !== 'undefined' && 'serviceWorker' in navigator) {
-      await navigator.serviceWorker.register('/sw.js', { scope: '/' });
-      navigator.serviceWorker.addEventListener('controllerchange', () =>
-        location.reload()
-      );
-    } else {
-      throw Error('Not supported service worker.');
-    }
-  } catch (e) {
-    console.error(e);
   }
 })();

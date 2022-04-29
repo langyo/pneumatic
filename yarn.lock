@@ -313,6 +313,17 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@fluentui/web-components@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.npmmirror.com/@fluentui/web-components/-/web-components-2.4.0.tgz#10fb6fdc74dd436c2634f0fee88171f524e27965"
+  integrity sha512-/Gqkp9O95u4leHftl5FfywEcJUhdKKIb2cq9f48Zi2nGksPg5wA2EDU5jhErH4VirVdhttFZ5ZMLM49h5jXQXw==
+  dependencies:
+    "@microsoft/fast-colors" "^5.1.5"
+    "@microsoft/fast-element" "^1.9.0"
+    "@microsoft/fast-foundation" "^2.42.0"
+    "@microsoft/fast-web-utilities" "^5.3.0"
+    tslib "^1.13.0"
+
 "@humanwhocodes/config-array@^0.9.2":
   version "0.9.5"
   resolved "https://registry.npmmirror.com/@humanwhocodes/config-array/-/config-array-0.9.5.tgz#2cbaf9a89460da24b5ca6531b8bbfc23e1df50c7"
@@ -631,6 +642,33 @@
   dependencies:
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
+
+"@microsoft/fast-colors@^5.1.5":
+  version "5.3.0"
+  resolved "https://registry.npmmirror.com/@microsoft/fast-colors/-/fast-colors-5.3.0.tgz#4970a77d883bc1312d69ff84fd78fc90e3b9fa39"
+  integrity sha512-MtuVlnvoirgc3cyEGzkDdv+zlEt0dEm7y3HaBqoOYwti5OVROi7x99Kbn/cWGlqF13+a/TEX6L8IkYW0/LT7Yw==
+
+"@microsoft/fast-element@^1.10.0", "@microsoft/fast-element@^1.9.0":
+  version "1.10.0"
+  resolved "https://registry.npmmirror.com/@microsoft/fast-element/-/fast-element-1.10.0.tgz#a14d498e98a8fc6a80efab0013577db0f7ba4aae"
+  integrity sha512-z68APaW2CehGoL3iktXl9H/Pkn0PB6HLsG1sN0/2fS0XpBFjT3+teWdmTEs92FmSXdOeE2MzSy8nvPmJ9sy3xQ==
+
+"@microsoft/fast-foundation@^2.42.0":
+  version "2.44.0"
+  resolved "https://registry.npmmirror.com/@microsoft/fast-foundation/-/fast-foundation-2.44.0.tgz#582d04f3efae3843b055c6fd8d0c57588454e6f8"
+  integrity sha512-KFxLSICGPTl8NL7w6zukWNduWtS8/azrQ+Dcj8m+EaiJtLQsMH6Cce0s885bPYvIgt1RYQeKZ0oi6oU79o5Uog==
+  dependencies:
+    "@microsoft/fast-element" "^1.10.0"
+    "@microsoft/fast-web-utilities" "^5.4.0"
+    tabbable "^5.2.0"
+    tslib "^1.13.0"
+
+"@microsoft/fast-web-utilities@^5.3.0", "@microsoft/fast-web-utilities@^5.4.0":
+  version "5.4.0"
+  resolved "https://registry.npmmirror.com/@microsoft/fast-web-utilities/-/fast-web-utilities-5.4.0.tgz#bb9bc548ae39224c550d2637d1d33fd9ffc6db79"
+  integrity sha512-bXgwsqbj2vNs34rTPdeSomiKG/Enotill+2ImOoF7MOU+GasQGpL1ksEUYSou616327Rh9wVMqRE6EGiSSMFwQ==
+  dependencies:
+    exenv-es6 "^1.1.1"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -2635,6 +2673,11 @@ execa@^5.0.0:
     onetime "^5.1.2"
     signal-exit "^3.0.3"
     strip-final-newline "^2.0.0"
+
+exenv-es6@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmmirror.com/exenv-es6/-/exenv-es6-1.1.1.tgz#80b7a8c5af24d53331f755bac07e84abb1f6de67"
+  integrity sha512-vlVu3N8d6yEMpMsEm+7sUBAI81aqYYuEvfK0jNqmdb/OPXzzH7QWDDnVjMvDSY47JdHEqx/dfC/q8WkfoTmpGQ==
 
 exit@^0.1.2:
   version "0.1.2"
@@ -5816,6 +5859,11 @@ sver-compat@^1.5.0:
     es6-iterator "^2.0.1"
     es6-symbol "^3.1.1"
 
+tabbable@^5.2.0:
+  version "5.3.1"
+  resolved "https://registry.npmmirror.com/tabbable/-/tabbable-5.3.1.tgz#059f2a19b829efce2a0ec05785a47dd3bcd0a25b"
+  integrity sha512-NtO7I7eoAHR+JwwcNsi/PipamtAEebYDnur/k9wM6n238HHy/+1O4+7Zx7e/JaDAbKJPlIFYsfsV/6tPqTOQvg==
+
 tapable@^2.0.0, tapable@^2.1.1, tapable@^2.2.0:
   version "2.2.1"
   resolved "https://registry.npmmirror.com/tapable/-/tapable-2.2.1.tgz#1967a73ef4060a82f12ab96af86d52fdb76eeca0"
@@ -6002,7 +6050,7 @@ ts-node@^10.7.0:
     v8-compile-cache-lib "^3.0.0"
     yn "3.1.1"
 
-tslib@^1.8.1:
+tslib@^1.13.0, tslib@^1.8.1:
   version "1.14.1"
   resolved "https://registry.npmmirror.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
