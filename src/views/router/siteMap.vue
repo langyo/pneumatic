@@ -1,5 +1,4 @@
 <template>
-  <h1>{{ $t('drawer.router.siteMap') }}</h1>
 </template>
 
 <script lang="ts" setup>

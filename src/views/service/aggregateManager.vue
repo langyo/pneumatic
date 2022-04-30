@@ -1,5 +1,4 @@
 <template>
-  <h1>{{ $t('drawer.service.aggregateManager') }}</h1>
 </template>
 
 <script lang="ts" setup>

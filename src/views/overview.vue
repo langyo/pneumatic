@@ -1,5 +1,4 @@
 <template>
-  <h1>{{ $t('drawer.overview') }}</h1>
 </template>
 
 <script lang="ts" setup>

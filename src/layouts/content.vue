@@ -1,4 +1,7 @@
 <template>
+  <div class="title">
+    {{ $t(`router.${routeName}`) }}
+  </div>
   <article class="border">
     <router-view v-slot="{ Component }">
       <transition
@@ -18,9 +21,21 @@
 </template>
 
 <style scoped lang="scss">
-.border {
+.title {
   position: fixed;
   top: 0%;
+  right: 0%;
+  width: 80%;
+  height: 64px;
+  line-height: 64px;
+  font-size: 2em;
+  padding: 0px 32px;
+  user-select: none;
+}
+
+.border {
+  position: fixed;
+  top: 64px;
   right: 0%;
   width: 80%;
   height: 100%;
@@ -41,3 +56,14 @@
   pointer-events: auto;
 }
 </style>
+
+<script lang="ts" setup>
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+
+const route = useRoute();
+const { t: $t } = useI18n();
+
+const routeName = computed(() => String(route.name));
+</script>

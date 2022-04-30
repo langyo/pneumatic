@@ -6,10 +6,10 @@
         v-for="name of ['overview', 'dashboardSettings']"
         @click="jumpTo(name)"
       >
-        {{ $t(`drawer.${name}`) }}
+        {{ $t(`router.${name}`) }}
       </fluent-tree-item>
       <fluent-tree-item expanded>
-        {{ $t('drawer.router.router') }}
+        {{ $t('router.router') }}
         <fluent-tree-item
           v-for="name of [
             'siteMap',
@@ -19,11 +19,11 @@
           ]"
           @click="jumpTo(name)"
         >
-          {{ $t(`drawer.router.${name}`) }}
+          {{ $t(`router.${name}`) }}
         </fluent-tree-item>
       </fluent-tree-item>
       <fluent-tree-item expanded>
-        {{ $t('drawer.service.service') }}
+        {{ $t('router.service') }}
         <fluent-tree-item
           v-for="name of [
             'moduleManager',
@@ -32,14 +32,14 @@
           ]"
           @click="jumpTo(name)"
         >
-          {{ $t(`drawer.service.${name}`) }}
+          {{ $t(`router.${name}`) }}
         </fluent-tree-item>
       </fluent-tree-item>
       <fluent-tree-item expanded>
-        {{ $t('drawer.module.module') }}
+        {{ $t('router.module') }}
         <fluent-tree-item disabled>
           <p class="disabled-text">
-            {{ $t('drawer.module.noModuleAvailable') }}
+            {{ $t('router.noModuleAvailable') }}
           </p>
         </fluent-tree-item>
       </fluent-tree-item>

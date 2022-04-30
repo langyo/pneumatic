@@ -1,23 +1,17 @@
 {
-  drawer: {
+  router: {
     overview: '总览',
     dashboardSettings: '仪表板配置',
-    router: {
-      router: '路由',
-      siteMap: '站点地图',
-      staticFileManager: '静态文件管理',
-      routeRule: '路由规则',
-      auditRule: '审计规则',
-    },
-    service: {
-      service: '服务',
-      moduleManager: '模块管理',
-      dataSourceManager: '数据源管理',
-      aggregateManager: '集群管理',
-    },
-    module: {
-      module: '模块',
-      noModuleAvailable: '暂无模块可用',
-    },
+    router: '路由',
+    siteMap: '站点地图',
+    staticFileManager: '静态文件管理',
+    routeRule: '路由规则',
+    auditRule: '审计规则',
+    service: '服务',
+    moduleManager: '模块管理',
+    dataSourceManager: '数据源管理',
+    aggregateManager: '集群管理',
+    module: '模块',
+    noModuleAvailable: '暂无模块可用',
   },
 }

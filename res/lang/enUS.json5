@@ -1,23 +1,17 @@
 {
-  drawer: {
+  router: {
     overview: 'Overview',
     dashboardSettings: 'Dashboard Settings',
-    router: {
-      router: 'Router',
-      siteMap: 'Site Map',
-      staticFileManager: 'Static File Management',
-      routeRule: 'Route Rule',
-      auditRule: 'Audit Rule',
-    },
-    service: {
-      service: 'Services',
-      moduleManager: 'Module Management',
-      dataSourceManager: 'Data Source Management',
-      aggregateManager: 'Aggregate Management',
-    },
-    module: {
-      module: 'Modules',
-      noModuleAvailable: 'No modules are available',
-    },
+    router: 'Router',
+    siteMap: 'Site Map',
+    staticFileManager: 'Static File Management',
+    routeRule: 'Route Rule',
+    auditRule: 'Audit Rule',
+    service: 'Services',
+    moduleManager: 'Module Management',
+    dataSourceManager: 'Data Source Management',
+    aggregateManager: 'Aggregate Management',
+    module: 'Modules',
+    noModuleAvailable: 'No modules are available',
   },
 }
