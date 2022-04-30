@@ -5,15 +5,15 @@
     router: {
       router: 'Router',
       siteMap: 'Site Map',
-      staticFileManage: 'Static File Management',
+      staticFileManager: 'Static File Management',
       routeRule: 'Route Rule',
       auditRule: 'Audit Rule',
     },
     service: {
       service: 'Services',
-      moduleManage: 'Module Management',
-      dataSourceManage: 'Data Source Management',
-      aggregateManage: 'Aggregate Management',
+      moduleManager: 'Module Management',
+      dataSourceManager: 'Data Source Management',
+      aggregateManager: 'Aggregate Management',
     },
     module: {
       module: 'Modules',

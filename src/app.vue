@@ -8,19 +8,19 @@
 import {
   provideFluentDesignSystem,
   allComponents,
-} from "@fluentui/web-components";
+} from '@fluentui/web-components';
 
 provideFluentDesignSystem().register(allComponents);
 
-import backgroundVue from "./layouts/background.vue";
-import contentVue from "./layouts/content.vue";
-import drawerVue from "./layouts/drawer.vue";
+import BackgroundVue from '@/layouts/background.vue';
+import DrawerVue from '@/layouts/drawer.vue';
+import ContentVue from '@/layouts/content.vue';
 
 export default {
   components: {
-    background: backgroundVue,
-    content: contentVue,
-    drawer: drawerVue,
+    background: BackgroundVue,
+    drawer: DrawerVue,
+    content: ContentVue,
   },
 };
 </script>

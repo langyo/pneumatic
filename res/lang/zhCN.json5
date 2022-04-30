@@ -5,15 +5,15 @@
     router: {
       router: '路由',
       siteMap: '站点地图',
-      staticFileManage: '静态文件管理',
+      staticFileManager: '静态文件管理',
       routeRule: '路由规则',
       auditRule: '审计规则',
     },
     service: {
       service: '服务',
-      moduleManage: '模块管理',
-      dataSourceManage: '数据源管理',
-      aggregateManage: '集群管理',
+      moduleManager: '模块管理',
+      dataSourceManager: '数据源管理',
+      aggregateManager: '集群管理',
     },
     module: {
       module: '模块',

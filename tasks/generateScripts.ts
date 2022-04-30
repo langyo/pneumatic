@@ -1,6 +1,5 @@
 import webpack from 'webpack';
 import { VueLoaderPlugin } from 'vue-loader';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { join } from 'path';
 import {
@@ -38,21 +37,9 @@ export async function generateMainlyScripts() {
           ],
         },
         {
-          test: /\.css$/,
-          use: [
-            MiniCssExtractPlugin.loader,
-            {
-              loader: 'css-loader',
-              options: {
-                url: false,
-              },
-            },
-          ],
-        },
-        {
           test: /\.scss$/,
           use: [
-            MiniCssExtractPlugin.loader,
+            'vue-style-loader',
             {
               loader: 'css-loader',
               options: {
@@ -66,9 +53,9 @@ export async function generateMainlyScripts() {
     },
     plugins: [
       new VueLoaderPlugin(),
-      new MiniCssExtractPlugin({ filename: '[name].bundle.css' }),
       new HtmlWebpackPlugin({
-        title: 'Pneumatic'
+        title: 'Pneumatic',
+        publicPath: '/'
       }),
     ],
     ...globalWebpackConfig,
