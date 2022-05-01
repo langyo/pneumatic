@@ -6,6 +6,7 @@ import { generateRouter } from './utils/router';
 import { i18n } from './utils/i18n';
 
 import './utils/normalize.scss';
+import 'element-plus/dist/index.css';
 import App from './app.vue';
 
 (async () => {

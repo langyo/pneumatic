@@ -1,6 +1,7 @@
 import webpack from 'webpack';
 import { VueLoaderPlugin } from 'vue-loader';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import { join } from 'path';
 import {
   globalWebpackConfig,
@@ -37,9 +38,21 @@ export async function generateMainlyScripts() {
           ],
         },
         {
+          test: /\.css$/,
+          use: [
+            MiniCssExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: {
+                url: false,
+              },
+            },
+          ],
+        },
+        {
           test: /\.scss$/,
           use: [
-            'vue-style-loader',
+            MiniCssExtractPlugin.loader,
             {
               loader: 'css-loader',
               options: {
@@ -57,6 +70,7 @@ export async function generateMainlyScripts() {
         title: 'Pneumatic',
         publicPath: '/'
       }),
+      new MiniCssExtractPlugin({ filename: '[name].bundle.css' })
     ],
     ...globalWebpackConfig,
     target: 'web',

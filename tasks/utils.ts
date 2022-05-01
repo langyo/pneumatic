@@ -55,11 +55,15 @@ export const globalWebpackConfig: webpack.Configuration = {
         devtool: 'inline-source-map',
         cache: {
           type: 'filesystem'
-        }
+        },
+        optimization: {
+          usedExports: true,
+        },
       }
     : {
         mode: 'production',
         optimization: {
+          usedExports: true,
           minimize: true,
           minimizer: [
             new WebpackTerserPlugin({
